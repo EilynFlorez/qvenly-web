@@ -51,12 +51,13 @@ export interface PlanResponse {
   maxStaff: number;
   /** Estado actual del plan */
   status: 'active' | 'inactive';
+  /** Indica si el plan fue eliminado lógicamente */
+  deleted: boolean;
   /** Fecha de creación del plan */
   createdAt: string;
   /** Fecha de última actualización del plan */
   updatedAt: string;
 }
-
 /**
  * Solicitud para asignar un plan a un organizador.
  * Usada tanto por el administrador como por el propio organizador.

@@ -1,0 +1,128 @@
+// ============================================================
+// FOOTER COMPONENT STYLES
+// Estilos del pie de página: layout, colores, tipografía y links.
+// Breakpoint principal: 768px (tablet/desktop)
+// ============================================================
+
+
+// ── Variables de color ──────────────────────────────────────
+$color-bg:         #111827;   // Fondo oscuro del footer
+$color-text:       #9ca3af;   // Texto general (gris claro)
+$color-text-muted: #6b7280;   // Texto secundario (copyright)
+$color-white:      #ffffff;   // Títulos de columnas
+$color-accent:     #2dd4bf;   // Color de acento (teal) para hover y logo
+$color-border:     #1f2937;   // Color de la línea divisoria
+
+
+// ── Base del footer ─────────────────────────────────────────
+footer {
+  width: 100%;
+  background-color: $color-bg;
+  color: $color-text;
+}
+
+
+// ── Contenedor centrado con padding responsive ───────────────
+.footer-container {
+  max-width: 80rem;       // Ancho máximo equivalente a 1280px
+  margin: 0 auto;
+  padding: 3rem 1.5rem;   // Padding base (móvil)
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;   // Padding ampliado en desktop
+  }
+}
+
+
+// ── Grid de columnas ────────────────────────────────────────
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;   // 1 columna en móvil
+  gap: 2.5rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);   // 4 columnas en desktop
+  }
+}
+
+
+// ── Logo: imagen + nombre de la marca ───────────────────────
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  img {
+    height: 2rem;
+    width: auto;
+  }
+
+  span {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $color-accent;   // Nombre resaltado en teal
+  }
+}
+
+
+// ── Párrafo descriptivo bajo el logo ────────────────────────
+.footer-description {
+  font-size: 0.875rem;
+  line-height: 1.625;
+  margin: 0;
+}
+
+
+// ── Columnas de navegación (Producto, Soporte, Legal) ────────
+.footer-col {
+
+  // Título de cada columna
+  h4 {
+    color: $color-white;
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 0 1rem;
+  }
+
+  // Lista de links sin estilos de lista
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  // Links individuales
+  a {
+    font-size: 0.875rem;
+    color: $color-text;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-accent;   // Cambia a teal al hacer hover
+    }
+  }
+}
+
+
+// ── Franja inferior con línea divisoria y copyright ──────────
+.footer-bottom {
+  border-top: 1px solid $color-border;
+
+  p {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    text-align: center;
+    color: $color-text-muted;
+
+    @media (min-width: 768px) {
+      padding: 1rem 2rem;
+    }
+  }
+}
