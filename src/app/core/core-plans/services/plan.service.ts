@@ -73,13 +73,14 @@ export class PlanService {
   }
 
   /**
-   * Elimina un plan del sistema (HU41).
-   * Solo se puede eliminar si no está asignado a ningún organizador.
-   * Requiere rol ADMIN.
-   * @param id Identificador del plan a eliminar
-   * @returns Observable con la confirmación de eliminación
-   */
-  deletePlan(id: number): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`, { withCredentials: true });
+ * Elimina lógicamente un plan del sistema (HU41).
+ * Solo se puede eliminar si no está asignado a ningún organizador.
+ * Requiere rol ADMIN.
+ * @param id Identificador del plan a eliminar
+ * @param reason Motivo de la eliminación
+ * @returns Observable con la confirmación de eliminación
+ */
+  deletePlan(id: number, reason: string): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}?reason=${reason}`, { withCredentials: true });
   }
 }
