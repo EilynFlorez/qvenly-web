@@ -11,7 +11,9 @@ import { NavAdminComponent } from './components/nav-admin/nav-admin.component';
 @NgModule({
   declarations: [
     FooterComponent,
-    NavComponent
+    NavComponent,
+    TopbarComponent,
+    NavAdminComponent
   ],
   imports: [
     CommonModule,
@@ -19,16 +21,10 @@ import { NavAdminComponent } from './components/nav-admin/nav-admin.component';
   ],
   exports: [
     NavComponent, 
-    FooterComponent
+    FooterComponent,
     TopbarComponent,
     NavAdminComponent
-  ],
-  imports: [
-    CommonModule
-  ],
-  exports: [
-    NavAdminComponent,
-    TopbarComponent
   ]
+  
 })
 export class SharedModule { }
