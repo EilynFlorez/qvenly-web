@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MainLayoutComponent } from './shared/layouts/main-layout/main-layout.component';
-
-const routes: Routes = [ {
+const routes: Routes = [ 
+  {
     path: '',
     component: MainLayoutComponent,
     children: [
@@ -10,19 +10,22 @@ const routes: Routes = [ {
         path: '',
         loadChildren: () =>
           import('./features/home/home.module').then(m => m.HomeModule)
-      },
-      {
-        path: 'dashboard',
-        loadChildren: () =>
-          import('./features/dashboard/dashboard.module').then(m => m.DashboardModule)
       }
     ]
   },
+
+  { 
+    path: 'dashboard', 
+    loadChildren: () =>
+      import('./features/dashboard/dashboard.module')
+        .then(m => m.DashboardModule) 
+  },
+
   {
     path: '**',
     redirectTo: ''
-  }];
-
+  }
+  ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
