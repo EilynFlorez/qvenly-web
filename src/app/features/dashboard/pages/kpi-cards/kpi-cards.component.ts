@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { DashboardService } from '../../../../core/services/dashboard/dashboard.service';
-import { GeneralStats } from '../../../../core/models/dashboard/dashboard';
+import { DashboardService } from '../../../../core/core-dashboard/services/dashboard.service';
+import { GeneralStats } from '../../../../core/core-dashboard/models/dashboard';
 
 @Component({
   selector: 'app-kpi-cards',

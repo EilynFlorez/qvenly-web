@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { DashboardService } from '../../core/services/dashboard/dashboard.service';
-import { DashboardFilters } from '../../core/models/dashboard/dashboard-filters';
+import { DashboardService } from '../../core/core-dashboard/services/dashboard.service';
+import { DashboardFilters } from '../../core/core-dashboard/models/dashboard-filters';
 
 @Component({
   selector: 'app-dashboard',

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { DashboardFilters } from '../../../../core/models/dashboard/dashboard-filters';
-import { FilterService } from '../../../../core/services/dashboard/filter.service';
+import { DashboardFilters } from '../../../../core/core-dashboard/models/dashboard-filters';
+import { FilterService } from '../../../../core/core-dashboard/services/filter.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({

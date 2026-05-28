@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { PlanStats } from '../../../../core/models/dashboard/dashboard';
-import { DashboardService } from '../../../../core/services/dashboard/dashboard.service';
-import { FilterService } from '../../../../core/services/dashboard/filter.service';
+import { PlanStats } from '../../../../core/core-dashboard/models/dashboard';
+import { DashboardService } from '../../../../core/core-dashboard/services/dashboard.service';
+import { FilterService } from '../../../../core/core-dashboard/services/filter.service';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);

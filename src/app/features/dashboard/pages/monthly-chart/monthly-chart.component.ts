@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { DashboardService } from '../../../../core/services/dashboard/dashboard.service';
+import { DashboardService } from '../../../../core/core-dashboard/services/dashboard.service';
 import { Chart } from 'chart.js';
-import { FilterService } from '../../../../core/services/dashboard/filter.service';
-import { MonthlyGrowh } from '../../../../core/models/dashboard/dashboard';
+import { FilterService } from '../../../../core/core-dashboard/services/filter.service';
+import { MonthlyGrowh } from '../../../../core/core-dashboard/models/dashboard';
 
 @Component({
   selector: 'app-monthly-chart',
