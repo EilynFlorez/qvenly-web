@@ -1,0 +1,32 @@
+<div class="auth-page">
+  <div class="auth-card auth-card--center">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <img src="assets/images/logoQvenly.png" alt="Qvenly logo">
+      <span>Qvenly</span>
+    </div>
+
+    <!-- Cargando -->
+    <div *ngIf="isLoading" class="confirm-state">
+      <span class="confirm-state__icon confirm-state__icon--loading">
+        <i class="ti ti-loader-2"></i>
+      </span>
+      <h2 class="auth-title">Confirmando tu cuenta...</h2>
+      <p class="auth-subtitle">Por favor espera un momento.</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="!isLoading && !success" class="confirm-state">
+      <span class="confirm-state__icon confirm-state__icon--error">
+        <i class="ti ti-circle-x"></i>
+      </span>
+      <h2 class="auth-title">Enlace no válido</h2>
+      <p class="auth-subtitle">{{ errorMessage }}</p>
+      <a routerLink="/auth/login" class="btn-primary btn-primary--inline">
+        Ir al inicio de sesión
+      </a>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,176 @@
+@use '../../auth-shared' as *;
+
+// ─── Página ───────────────────────────────────────────────────────────────
+.auth-page {
+  @extend %auth-page;
+}
+
+// ─── Card ─────────────────────────────────────────────────────────────────
+.auth-card {
+  @include card;
+}
+
+// ─── Logo ─────────────────────────────────────────────────────────────────
+.auth-logo {
+  @extend %auth-logo;
+}
+
+// ─── Textos ───────────────────────────────────────────────────────────────
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $gray-900;
+  text-align: center;
+  margin: 0 0 0.25rem;
+}
+
+.auth-subtitle {
+  font-size: 0.875rem;
+  color: $gray-500;
+  text-align: center;
+  margin: 0 0 2rem;
+}
+
+// ─── Alertas ──────────────────────────────────────────────────────────────
+.alert {
+  &--success { @include alert($green-50, $green-200, $green-600); }
+  &--error   { @include alert($red-50, $red-200, $red-600); }
+}
+
+// ─── Formulario ───────────────────────────────────────────────────────────
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $gray-700;
+}
+
+.form-input {
+  @include input-base;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: $gray-500;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    accent-color: $teal-500;
+  }
+}
+
+.form-link {
+  font-size: 0.875rem;
+  color: $teal-500;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover { color: $teal-600; }
+}
+
+// ─── Botón principal ──────────────────────────────────────────────────────
+.btn-primary {
+  @include btn-primary;
+  margin-top: 0.5rem;
+}
+
+// ─── Divider ──────────────────────────────────────────────────────────────
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $gray-200;
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: $gray-400;
+    white-space: nowrap;
+  }
+}
+
+// ─── Botón Google ─────────────────────────────────────────────────────────
+.btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid $gray-200;
+  border-radius: 0.75rem;
+  background: #fff;
+  color: $gray-500;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: $teal-500;
+    color: $teal-600;
+  }
+
+  &__icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────
+.auth-footer-text {
+  text-align: center;
+  font-size: 0.875rem;
+  color: $gray-500;
+  margin-top: 1.5rem;
+}
+
+.auth-link {
+  color: $teal-500;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover { color: $teal-600; }
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  &--success { @include alert($green-50, $green-200, $green-600); }
+  &--error   { @include alert($red-50, $red-200, $red-600); }
+}

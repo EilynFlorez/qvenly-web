@@ -1,0 +1,88 @@
+@use '../../auth-shared' as *;
+
+.auth-page   { @extend %auth-page; }
+.auth-card   { @include card; }
+.auth-logo   { @extend %auth-logo; }
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $gray-900;
+  text-align: center;
+  margin: 0 0 0.25rem;
+}
+
+.auth-subtitle {
+  font-size: 0.875rem;
+  color: $gray-500;
+  text-align: center;
+  margin: 0 0 1.5rem;
+}
+
+.alert {
+  &--success { @include alert($green-50, $green-200, $green-700); }
+  &--error   { @include alert($red-50, $red-200, $red-600); }
+}
+
+.auth-success-action {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $gray-700;
+
+  &__hint {
+    font-weight: 400;
+    color: $gray-400;
+  }
+}
+
+.form-input {
+  @include input-base;
+
+  &--error {
+    border-color: $red-400;
+  }
+}
+
+.form-error {
+  font-size: 0.75rem;
+  color: $red-600;
+  margin-top: 0.125rem;
+}
+
+.btn-primary {
+  @include btn-primary;
+  margin-top: 0.5rem;
+}
+
+.auth-footer-text {
+  text-align: center;
+  font-size: 0.875rem;
+  color: $gray-500;
+  margin-top: 1.5rem;
+}
+
+.auth-link {
+  color: $teal-500;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover { color: $teal-600; }
+}
