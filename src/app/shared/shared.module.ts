@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FooterComponent } from './footer/footer.component';
 import { NavComponent } from './nav/nav.component';
 import { RouterModule} from '@angular/router';
-import { TopbarComponent } from './components/topbar/topbar.component';
-import { NavAdminComponent } from './components/nav-admin/nav-admin.component';
+import { TopbarComponent } from './topbar/topbar.component';
+import { NavAdminComponent } from './nav-admin/nav-admin.component';
 import { SkeletonComponent } from './components/skeleton/skeleton.component';
 
 
