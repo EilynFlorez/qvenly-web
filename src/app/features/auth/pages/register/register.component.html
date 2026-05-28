@@ -1,0 +1,150 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <img src="assets/images/logoQvenly.png" alt="Qvenly logo">
+      <span>Qvenly</span>
+    </div>
+
+    <!-- Título -->
+    <h2 class="auth-title">Registrarse</h2>
+    <p class="auth-subtitle">Crea tu cuenta en Qvenly</p>
+
+    <!-- Alerta error -->
+    <div *ngIf="errorMessage" class="alert alert--error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Alerta éxito -->
+    <div *ngIf="successMessage" class="alert alert--success">
+      {{ successMessage }}
+    </div>
+
+    <div *ngIf="successMessage" class="auth-success-action">
+      <a routerLink="/auth/login" class="auth-link">Ir al inicio de sesión</a>
+    </div>
+
+    <!-- Formulario -->
+    <div *ngIf="!successMessage" class="auth-form">
+
+      <!-- Nombres -->
+      <div class="form-field">
+        <label class="form-label">Nombres</label>
+        <input
+          type="text"
+          placeholder="Juan"
+          [(ngModel)]="registerData.name"
+          name="name"
+          class="form-input"
+          [class.form-input--error]="fieldErrors['name']"
+        />
+        <span *ngIf="fieldErrors['name']" class="form-error">{{ fieldErrors['name'] }}</span>
+      </div>
+
+      <!-- Apellidos -->
+      <div class="form-field">
+        <label class="form-label">Apellidos</label>
+        <input
+          type="text"
+          placeholder="Pérez"
+          [(ngModel)]="registerData.lastName"
+          name="lastName"
+          class="form-input"
+          [class.form-input--error]="fieldErrors['lastName']"
+        />
+        <span *ngIf="fieldErrors['lastName']" class="form-error">{{ fieldErrors['lastName'] }}</span>
+      </div>
+
+      <!-- Correo -->
+      <div class="form-field">
+        <label class="form-label">Correo Electrónico</label>
+        <input
+          type="email"
+          placeholder="tu@email.com"
+          [(ngModel)]="registerData.email"
+          name="email"
+          class="form-input"
+          [class.form-input--error]="fieldErrors['email']"
+        />
+        <span *ngIf="fieldErrors['email']" class="form-error">{{ fieldErrors['email'] }}</span>
+      </div>
+
+      <!-- Tipo de Identificación -->
+      <div class="form-field">
+        <label class="form-label">Tipo de Identificación</label>
+        <select
+          [(ngModel)]="registerData.documentType"
+          name="documentType"
+          class="form-input"
+        >
+          <option value="CC">Cédula de Ciudadanía</option>
+          <option value="CE">Cédula de Extranjería</option>
+          <option value="PASSPORT">Pasaporte</option>
+          <option value="TI">Tarjeta de Identidad</option>
+        </select>
+      </div>
+
+      <!-- Número de Identificación -->
+      <div class="form-field">
+        <label class="form-label">Número de Identificación</label>
+        <input
+          type="text"
+          placeholder="123456789"
+          [(ngModel)]="registerData.documentNumber"
+          name="documentNumber"
+          class="form-input"
+          [class.form-input--error]="fieldErrors['documentNumber']"
+        />
+        <span *ngIf="fieldErrors['documentNumber']" class="form-error">{{ fieldErrors['documentNumber'] }}</span>
+      </div>
+
+      <!-- Número de Teléfono -->
+      <div class="form-field">
+        <label class="form-label">Número de Teléfono</label>
+        <input
+          type="tel"
+          placeholder="+573001234567"
+          [(ngModel)]="registerData.phoneNumber"
+          name="phoneNumber"
+          class="form-input"
+          [class.form-input--error]="fieldErrors['phoneNumber']"
+        />
+        <span *ngIf="fieldErrors['phoneNumber']" class="form-error">{{ fieldErrors['phoneNumber'] }}</span>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-field">
+        <label class="form-label">
+          Contraseña
+          <span class="form-label__hint">(mín. 8 caracteres, incluir mayúsculas y números)</span>
+        </label>
+        <input
+          type="password"
+          placeholder="••••••••"
+          [(ngModel)]="registerData.password"
+          name="password"
+          class="form-input"
+          [class.form-input--error]="fieldErrors['password']"
+        />
+        <span *ngIf="fieldErrors['password']" class="form-error">{{ fieldErrors['password'] }}</span>
+      </div>
+
+      <button
+        class="btn-primary"
+        (click)="onSubmit()"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+      </button>
+
+    </div>
+
+    <!-- Link login -->
+    <p class="auth-footer-text">
+      ¿Ya tienes cuenta?
+      <a routerLink="/auth/login" class="auth-link">Iniciar Sesión</a>
+    </p>
+
+  </div>
+</div>

@@ -1,0 +1,108 @@
+<section class="pricing">
+    <div class="pricing-container">
+
+        <!-- Encabezado -->
+        <div class="pricing-header">
+            <div class="pricing-badge">
+                <span class="badge-dot"></span>
+                Planes
+            </div>
+            <h2>Elige el plan perfecto para tu evento</h2>
+            <p>Planes flexibles que se adaptan al tamaño y necesidades de tu evento.</p>
+        </div>
+
+        <!-- Loading -->
+        <div class="pricing-loading" *ngIf="isLoading">
+            <div class="loading-spinner"></div>
+            <p>Cargando planes...</p>
+        </div>
+
+        <!-- Error -->
+        <div class="pricing-error" *ngIf="!isLoading && errorMessage">
+            <i class="ti ti-alert-circle"></i>
+            <p>{{ errorMessage }}</p>
+            <button (click)="loadPlans()">
+                <i class="ti ti-refresh"></i>
+                Reintentar
+            </button>
+        </div>
+
+        <!-- Sin planes -->
+        <div class="pricing-empty" *ngIf="!isLoading && !errorMessage && plans.length === 0">
+            <i class="ti ti-mood-empty"></i>
+            <p>No hay planes disponibles en este momento.</p>
+        </div>
+
+        <!-- Cards -->
+        <div class="pricing-grid" *ngIf="!isLoading && !errorMessage && visiblePlans.length > 0">
+            <div class="plan-card" *ngFor="let plan of visiblePlans">
+
+                <!-- Info del plan -->
+                <div class="plan-info">
+                    <div class="plan-icon">
+                        <i class="ti ti-layout-grid"></i>
+                    </div>
+                    <h3>{{ plan.name }}</h3>
+                    <div class="plan-price">
+                        <span class="price-amount">{{ formatPrice(plan.price) }}</span>
+                        <span class="price-period">/mes</span>
+                    </div>
+                    <p class="plan-description">{{ plan.description }}</p>
+                </div>
+
+                <!-- Características -->
+                <ul class="plan-features">
+                    <li *ngIf="plan.maxAttendees > 0">
+                        <i class="ti ti-users"></i>
+                        Hasta {{ plan.maxAttendees }} asistentes
+                    </li>
+                    <li *ngIf="plan.maxOrganizers > 0">
+                        <i class="ti ti-user-check"></i>
+                        {{ plan.maxOrganizers }} organizador(es)
+                    </li>
+                    <li *ngIf="plan.maxParticipants > 0">
+                        <i class="ti ti-user-plus"></i>
+                        Hasta {{ plan.maxParticipants }} participantes
+                    </li>
+                    <li *ngIf="plan.maxJudges > 0">
+                        <i class="ti ti-gavel"></i>
+                        Hasta {{ plan.maxJudges }} jueces
+                    </li>
+                    <li *ngIf="plan.maxStaff > 0">
+                        <i class="ti ti-briefcase"></i>
+                        Hasta {{ plan.maxStaff }} personal de apoyo
+                    </li>
+                    <li>
+                        <i class="ti ti-calendar"></i>
+                        Duración: {{ plan.durationDays }} días
+                    </li>
+                </ul>
+
+                <!-- Botón -->
+                <a routerLink="/auth/register" class="plan-btn">
+                    Comenzar ahora
+                    <i class="ti ti-arrow-right"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="pricing-pagination" *ngIf="totalPages > 1">
+            <button class="pagination-btn" [disabled]="!hasPrev" (click)="prevPage()">
+                <i class="ti ti-chevron-left"></i>
+                Anterior
+            </button>
+
+            <span class="pagination-info">
+                {{ currentPage + 1 }} / {{ totalPages }}
+            </span>
+
+            <button class="pagination-btn" [disabled]="!hasNext" (click)="nextPage()">
+                Siguiente
+                <i class="ti ti-chevron-right"></i>
+            </button>
+        </div>
+
+    </div>
+</section>

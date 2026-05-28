@@ -1,0 +1,205 @@
+// ============================================================
+// HOME COMPONENT STYLES
+// Sección hero: layout, texto, botones y calendario.
+// Breakpoint principal: 768px
+// ============================================================
+
+
+// ── Variables ────────────────────────────────────────────────
+$color-bg:         #ffffff;
+$color-text:       #111827;    // gray-900
+$color-text-soft:  #6b7280;    // gray-500
+$color-text-mid:   #374151;    // gray-700
+$color-accent:     #14b8a6;    // teal-500
+$color-accent-hv:  #0d9488;    // teal-600
+$color-border:     #f3f4f6;    // gray-100
+$color-bg-soft:    #f9fafb;    // gray-50
+$color-white:      #ffffff;
+
+
+// ── Sección hero ─────────────────────────────────────────────
+.hero {
+  width: 100%;
+  min-height: 100vh;
+  background-color: $color-bg;
+  display: flex;
+  align-items: center;
+}
+
+
+// ── Contenedor principal (grid de 2 columnas en desktop) ─────
+.hero-container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+
+  @media (min-width: 768px) {
+    padding: 4rem 2rem;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+// ── Bloque de texto ──────────────────────────────────────────
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: $color-text;
+    line-height: 1.2;
+
+    @media (min-width: 768px) {
+      font-size: 3rem;
+    }
+
+    // Palabra resaltada en teal
+    span {
+      color: $color-accent;
+    }
+  }
+
+  p {
+    color: $color-text-soft;
+    font-size: 1.125rem;
+    line-height: 1.75;
+    margin: 0;
+  }
+}
+
+
+// ── Botones CTA ──────────────────────────────────────────────
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-primary {
+  background-color: $color-accent;
+  color: $color-white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: $color-accent-hv;
+  }
+}
+
+.btn-link {
+  color: $color-text-mid;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-accent;
+  }
+}
+
+
+// ── Wrapper del calendario ───────────────────────────────────
+.hero-calendar-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+// ── Tarjeta exterior del calendario ─────────────────────────
+.calendar-card {
+  background-color: $color-bg-soft;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid $color-border;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+
+// ── Tarjeta interior blanca ──────────────────────────────────
+.calendar-inner {
+  background-color: $color-white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+
+// ── Encabezado: mes y botones de navegación ──────────────────
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $color-text-mid;
+  }
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 0.5rem;
+
+  button {
+    background: none;
+    border: none;
+    color: $color-text-soft;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-accent;
+    }
+  }
+}
+
+
+// ── Fila de días de la semana ────────────────────────────────
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.75rem;
+  color: $color-text-soft;
+  margin-bottom: 0.5rem;
+}
+
+
+// ── Grid de días del mes ─────────────────────────────────────
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.875rem;
+
+  span {
+    padding: 0.25rem 0;
+    color: $color-text-mid;
+
+    // Día activo (resaltado en teal)
+    &.active {
+      background-color: $color-accent;
+      color: $color-white;
+      border-radius: 50%;
+      font-weight: 500;
+    }
+  }
+}
