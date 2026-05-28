@@ -1,0 +1,119 @@
+// Variables de color
+$teal-400: #2dd4bf;
+$teal-500: #14b8a6;
+$teal-600: #0d9488;
+$teal-50:  #f0fdfa;
+$teal-100: #ccfbf1;
+
+$gray-50:  #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-700: #374151;
+$gray-900: #111827;
+
+$red-50:   #fef2f2;
+$red-100:  #fee2e2;
+$red-200:  #fecaca;
+$red-400:  #f87171;
+$red-600:  #dc2626;
+
+$green-50:  #f0fdf4;
+$green-200: #bbf7d0;
+$green-600: #16a34a;
+$green-700: #15803d;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 448px;
+}
+
+@mixin input-base {
+  border: 1px solid $gray-300;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $teal-500;
+  }
+
+  &.error {
+    border-color: $red-400;
+  }
+}
+
+@mixin btn-primary {
+  width: 100%;
+  background: $teal-500;
+  color: #fff;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: $teal-600;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin alert($bg, $border, $color) {
+  background: $bg;
+  border: 1px solid $border;
+  color: $color;
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+// Layout base de página auth
+%auth-page {
+  min-height: 100vh;
+  background: $gray-50;
+  @include flex-center;
+  padding: 1rem;
+}
+
+// Logo
+%auth-logo {
+  @include flex-center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+
+  img {
+    height: 2rem;
+    width: auto;
+  }
+
+  span {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $teal-500;
+  }
+}

@@ -1,0 +1,68 @@
+<app-skeleton *ngIf="loading" type="table"></app-skeleton>
+
+<!-- Tabla -->
+<div *ngIf="!loading && !error" class="table-card">
+
+  <div class="table-header">
+    <div>
+      <h3 class="table-title">Usuarios por evento</h3>
+      <p class="table-sub">Cantidad de usuarios por rol en cada evento</p>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Evento</th>
+          <th>
+            <span class="th-badge personal">
+              <i class="ti ti-id-badge"></i>
+              Personal
+            </span>
+          </th>
+          <th>
+            <span class="th-badge asistentes">
+              <i class="ti ti-ticket"></i>
+              Asistentes
+            </span>
+          </th>
+          <th>
+            <span class="th-badge jurados">
+              <i class="ti ti-gavel"></i>
+              Jurados
+            </span>
+          </th>
+          <th>
+            <span class="th-badge participantes">
+              <i class="ti ti-trophy"></i>
+              Participantes
+            </span>
+          </th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let event of events">
+          <td class="event-name">{{ event.eventName }}</td>
+          <td>
+            <span class="badge personal">{{ event.staff }}</span>
+          </td>
+          <td>
+            <span class="badge asistentes">{{ event.assistants }}</span>
+          </td>
+          <td>
+            <span class="badge jurados">{{ event.judges }}</span>
+          </td>
+          <td>
+            <span class="badge participantes">{{ event.participants }}</span>
+          </td>
+          <td>
+            <span class="total">{{ getTotal(event) }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

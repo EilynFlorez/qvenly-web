@@ -1,0 +1,27 @@
+<app-skeleton *ngIf="loading" type="chart" [height]="260"></app-skeleton>
+
+<!-- Datos -->
+<div *ngIf="!loading && !error" class="chart-card">
+
+  <div class="chart-header">
+    <div>
+      <h3 class="chart-title">Eventos por organizador</h3>
+      <p class="chart-sub">Comparativa de eventos creados por cada organizador</p>
+    </div>
+
+    <div class="badge-top" *ngIf="topOrganizers.length === 1">
+      <i class="ti ti-crown"></i>
+      {{ topOrganizers[0] }}
+    </div>
+
+    <div class="badge-top empate" *ngIf="topOrganizers.length > 1">
+        <i class="ti ti-medal"></i>
+        Empate - {{topOrganizers.join(', ')}}
+    </div>
+  </div>
+
+  <div class="chart-wrapper">
+    <canvas id="organizerChart"></canvas>
+  </div>
+
+</div>

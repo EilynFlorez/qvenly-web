@@ -1,0 +1,39 @@
+<ng-container *ngIf = "type === 'chart'">
+    <div class="chart-card">
+        <div class="sk-header">
+            <div class="sk-title"></div>
+            <div class="sk-badge"></div>
+        </div>
+        <div class="sk-chart" [style.height.px]="height"></div>
+    </div>
+</ng-container>
+
+
+<ng-container *ngIf="type === 'cards'">
+    <div class="kpi-grid">
+        <div class="kpi-card" *ngFor="let i of [1,2,3,4,5,6,7]">
+            <div class="sk-icon"></div>
+            <div class="sk-text">
+                <div class="sk-val"></div>
+                <div class="sk-lbl"></div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+
+<ng-container *ngIf="type === 'table'">
+    <div class="chart-card">
+        <div class="sk-header">
+            <div class="sk-title"></div>
+        </div>
+        <div class="sk-row" *ngFor="let i of [1,2,3,4,5]">
+            <div class="sk-cell widw"></div>
+            <div class="sk-cell"></div>
+            <div class="sk-cell"></div>
+            <div class="sk-cell"></div>
+            <div class="sk-cell"></div>
+            <div class="sk-cell"></div>
+        </div>
+    </div>
+</ng-container>

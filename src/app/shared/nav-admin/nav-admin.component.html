@@ -1,0 +1,50 @@
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <img src="assets/img/logoQvn.png" alt="">
+      </div>
+      <span class="logo-name">Qvenly</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="nav-group">Principal</p>
+      <a class="nav-item active" routerLink="/dashboard">
+        <i class="ti ti-layout-dashboard"></i>
+        Dashboard
+      </a>
+      <p class="nav-group">Planes</p>
+      <a class="nav-item" routerLink="/planes">
+        <i class="ti ti-diamond"></i>
+        Gestión de planes
+      </a>
+      <p class="nav-group">Sistema</p>
+      <a class="nav-item" routerLink="/notificaciones">
+        <i class="ti ti-bell"></i>
+        Notificaciones
+      </a>
+      <a class="nav-item" routerLink="/auditoria">
+        <i class="ti ti-shield-check"></i>
+        Auditoría
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-profile">AD</div>
+      <div class="user-info">
+        <p class="user-name">Admin</p>
+        <p class="user-email">admin&#64;qvenly.com</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="main-content">
+      <ng-content></ng-content>  
+    </div>
+  </main>
+
+</div>
