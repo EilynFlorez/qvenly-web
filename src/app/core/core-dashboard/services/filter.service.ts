@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { DashboardFilters } from '../../models/dashboard/dashboard-filters';
+import { DashboardFilters } from '../models/dashboard-filters';
 
 @Injectable({
   providedIn: 'root'

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EventByOrganizerResponse, EventUserDetail, GeneralStats, MonthlyGrowthResponse, PlanStatsResponse } from '../../models/dashboard/dashboard';
+import { EventByOrganizerResponse, EventUserDetail, GeneralStats, MonthlyGrowthResponse, PlanStatsResponse } from '../models/dashboard';
 
 @Injectable({
   providedIn: 'root'
