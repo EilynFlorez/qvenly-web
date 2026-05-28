@@ -1,0 +1,134 @@
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.kpi-card {
+    background-color: #fff;
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid #f0fdfb;
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 90px;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 184, 169, 0.1);
+    }
+
+
+    &.c-teal {
+        border-left: 4px solid #00B8A9;
+    }
+
+    &.c-gold {
+        border-left: 4px solid #F8B739;
+    }
+
+    &.c-purple {
+        border-left: 4px solid #8b5cf6;
+    }
+
+    &.c-green {
+        border-left: 4px solid #10b981;
+    }
+
+    &.c-orange {
+        border-left: 4px solid #f97316;
+    }
+
+    &.c-pink {
+        border-left: 4px solid #ec4899;
+    }
+
+    &.c-blue {
+        border-left: 4px solid #3b82f6;
+    }
+}
+
+.kpi-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i {
+        font-size: 20px;
+    }
+
+    &.teal {
+        background: rgba(0, 184, 169, 0.08);
+
+        i {
+            color: #00B8A9;
+        }
+    }
+
+    &.gold {
+        background: rgba(248, 183, 57, 0.1);
+
+        i {
+            color: #F8B739;
+        }
+    }
+
+    &.purple {
+        background: rgba(139, 92, 246, 0.1);
+
+        i {
+            color: #8b5cf6;
+        }
+    }
+
+    &.green {
+        background: rgba(16, 185, 129, 0.1);
+
+        i {
+            color: #10b981;
+        }
+    }
+
+    &.orange {
+        background: rgba(249, 115, 22, 0.1);
+
+        i {
+            color: #f97316;
+        }
+    }
+
+    &.pink {
+        background: rgba(236, 72, 153, 0.1);
+
+        i {
+            color: #ec4899;
+        }
+    }
+
+    &.blue {
+        background: rgba(59, 130, 246, 0.1);
+
+        i {
+            color: #3b82f6;
+        }
+    }
+}
+
+.kpi-value{
+    font-size: 22px;
+    font-weight: 500;
+    color:#1A2332;
+    line-height: 1;
+}
+
+.kpi-title{
+    font-size: 12px;
+    color: #9ca3af;
+    margin:0;
+}
