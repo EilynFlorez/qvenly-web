@@ -1,0 +1,110 @@
+/* Base de animación */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.sk-pulse {
+  background: #f0f0f0;
+  border-radius: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+/* Chart */
+.chart-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  border: 1px solid #f0fdfb;
+}
+
+.sk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sk-title {
+  height: 16px;
+  width: 220px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+.sk-badge {
+  height: 30px;
+  width: 120px;
+  background: #f0f0f0;
+  border-radius: 50px;
+  animation: pulse 1.5s infinite;
+}
+
+.sk-chart {
+  background: #f0f0f0;
+  border-radius: 12px;
+  animation: pulse 1.5s infinite;
+}
+
+/* Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.kpi-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #f0fdfb;
+}
+
+.sk-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #f0f0f0;
+  flex-shrink: 0;
+  animation: pulse 1.5s infinite;
+}
+
+.sk-text { flex: 1; }
+
+.sk-val {
+  height: 22px;
+  width: 60%;
+  background: #f0f0f0;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+.sk-lbl {
+  height: 12px;
+  width: 80%;
+  background: #f0f0f0;
+  border-radius: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+/* Table */
+.sk-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sk-cell {
+  height: 16px;
+  flex: 1;
+  background: #f0f0f0;
+  border-radius: 6px;
+  animation: pulse 1.5s infinite;
+
+  &.wide { flex: 2; }
+}
