@@ -1,0 +1,52 @@
+import { Component } from '@angular/core';
+import { DashboardService } from '../../core/services/dashboard/dashboard.service';
+import { DashboardFilters } from '../../core/models/dashboard/dashboard-filters';
+
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss'
+})
+export class DashboardComponent {
+
+  backendOnline = false;
+  checking = true;
+  private interval: any;
+
+  constructor(private dashboardService: DashboardService) { }
+
+  ngOnInit(): void {
+    this.checkBackend();
+    this.interval = setInterval(() => this.checkBackend(), 5000);
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.interval);
+  }
+
+  checkBackend(): void {
+    this.dashboardService.getGeneralStats().subscribe({
+      next: () => {
+        this.backendOnline = true;
+        this.checking = false;
+        clearInterval(this.interval);
+      },
+
+      error: () => {
+        this.backendOnline = false;
+        this.checking = false;
+      }
+    });
+  }
+
+
+  currenFilters: DashboardFilters = {
+    startDate: '',
+    endDate: '',
+    plan: ''
+  };
+
+  onFiltersChanged(filters: DashboardFilters): void {
+    this.currenFilters = filters;
+  }
+}
