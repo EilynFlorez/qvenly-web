@@ -2,15 +2,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { DashboardComponent } from './dashboard.component';
-import { KpiCardsComponent } from './pages/kpi-cards/kpi-cards.component';
-import { PlanChartComponent } from './pages/plan-chart/plan-chart.component';
-import { MonthlyChartComponent } from './pages/monthly-chart/monthly-chart.component';
-import { OrganizerChartComponent } from './pages/organizer-chart/organizer-chart.component';
-import { UsersByEventComponent } from './pages/users-by-event/users-by-event.component';
+import { PlanChartComponent } from './components/plan-chart/plan-chart.component';
+import { MonthlyChartComponent } from './components/monthly-chart/monthly-chart.component';
+import { OrganizerChartComponent } from './components/organizer-chart/organizer-chart.component';
+import { UsersByEventComponent } from './components/users-by-event/users-by-event.component';
 import { SharedModule } from '../../shared/shared.module';
-import { FiltersComponent } from './pages/filters/filters.component';
+import { FiltersComponent } from './components/filters/filters.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { KpiCardsComponent } from './components/kpi-cards/kpi-cards.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 
 @NgModule({
