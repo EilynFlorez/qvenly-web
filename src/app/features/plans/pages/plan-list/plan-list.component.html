@@ -1,7 +1,8 @@
 <div class="page">
 
     <!-- Topbar -->
-    <app-topbar title="Gestión de Planes" subtitle="Administra los planes de servicio del sistema" [showExport]="false"></app-topbar>
+    <app-topbar title="Gestión de Planes" subtitle="Administra los planes de servicio del sistema"
+        [showExport]="false"></app-topbar>
 
     <div class="page-content">
 
@@ -107,7 +108,7 @@
                 <!-- Precio -->
                 <div class="plan-card__price">
                     <span class="price-amount">{{ formatPrice(plan.price) }}</span>
-                    <span class="price-period">/plan</span>
+                    <span class="price-period">/mes</span>
                 </div>
 
                 <!-- Características -->
@@ -156,6 +157,8 @@
     </div>
 </div>
 
+
+
 <!-- Modal de eliminación -->
 <div class="modal-overlay" *ngIf="planToDelete" (click)="closeDeleteModal()">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -198,4 +201,22 @@
             </button>
         </div>
     </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal-overlay" *ngIf="successMessage" (click)="successMessage = ''">
+  <div class="modal modal--success" (click)="$event.stopPropagation()">
+    <div class="modal__body modal__body--centered">
+      <div class="success-icon">
+        <i class="ti ti-circle-check"></i>
+      </div>
+      <h3 class="success-title">¡Eliminado exitosamente!</h3>
+      <p>{{ successMessage }}</p>
+    </div>
+    <div class="modal__footer modal__footer--centered">
+      <button class="btn btn-primary" (click)="successMessage = ''">
+        Aceptar
+      </button>
+    </div>
+  </div>
 </div>

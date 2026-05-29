@@ -467,3 +467,40 @@ $fs-sm:   12px;   // texto secundario / badges
   font-size: $fs-sm;
   color: $danger;
 }
+
+// ── Modal de éxito ────────────────────────────────────────────
+.modal--success {
+  max-width: 380px;
+  text-align: center;
+}
+
+.modal__body--centered {
+  align-items: center;
+}
+
+.modal__footer--centered {
+  justify-content: center;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $accent-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+
+  i {
+    font-size: 32px;
+    color: $accent;
+  }
+}
+
+.success-title {
+  font-size: $fs-lg;
+  font-weight: 600;
+  color: $text;
+  margin: 0;
+}

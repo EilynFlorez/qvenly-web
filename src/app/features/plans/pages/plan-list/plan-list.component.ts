@@ -16,6 +16,9 @@ import { Router } from '@angular/router';
 })
 export class PlanListComponent implements OnInit {
 
+  /** Mensaje de éxito tras eliminar */
+  successMessage = '';
+
   /** Lista de planes cargados */
   plans: PlanResponse[] = [];
 
@@ -157,6 +160,7 @@ export class PlanListComponent implements OnInit {
         this.isDeleting = false;
         this.closeDeleteModal();
         this.loadPlans();
+        this.successMessage = 'El plan fue eliminado exitosamente.';
       },
       error: (err) => {
         this.isDeleting = false;

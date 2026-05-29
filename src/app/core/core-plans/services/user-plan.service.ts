@@ -37,7 +37,7 @@ export class UserPlanService {
    */
   acquirePlanByOrganizer(request: UserPlanRequest): Observable<ApiResponse<UserPlanResponse>> {
     return this.http.post<ApiResponse<UserPlanResponse>>(
-      `${this.apiUrl}/acquire`, request, { withCredentials: true });
+      `${this.apiUrl}/acquire`, request);
   }
 
   /**
@@ -48,7 +48,7 @@ export class UserPlanService {
    */
   renewPlan(userPlanId: number): Observable<ApiResponse<UserPlanResponse>> {
     return this.http.put<ApiResponse<UserPlanResponse>>(
-      `${this.apiUrl}/${userPlanId}/renew`, {}, { withCredentials: true });
+      `${this.apiUrl}/${userPlanId}/renew`, {});
   }
 
   /**

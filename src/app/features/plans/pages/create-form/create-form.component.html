@@ -1,1 +1,191 @@
-<p>create-form works!</p>
+<div class="page">
+
+  <!-- Topbar -->
+  <app-topbar
+    title="Nuevo Plan"
+    subtitle="Completa la información para crear un plan de servicio">
+  </app-topbar>
+
+  <div class="page-content">
+
+    <!-- Alerta de error -->
+    <div class="alert alert--error" *ngIf="errorMessage">
+      <i class="ti ti-alert-circle"></i>
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="planForm" (ngSubmit)="onSubmit()" class="form-card">
+
+      <!-- Información básica -->
+      <div class="form-section">
+        <h3 class="form-section__title">
+          <i class="ti ti-info-circle"></i>
+          Información básica
+        </h3>
+
+        <div class="form-grid">
+
+          <div class="form-field form-field--full">
+            <label>Nombre del plan <span class="required">*</span></label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Ej: Plan Básico"
+              [class.input--error]="hasError('name')" />
+            <span class="field-error" *ngIf="hasError('name')">{{ getError('name') }}</span>
+          </div>
+
+          <div class="form-field form-field--full">
+            <label>Descripción <span class="required">*</span></label>
+            <textarea
+              formControlName="description"
+              placeholder="Describe las características y beneficios del plan..."
+              rows="3"
+              [class.input--error]="hasError('description')">
+            </textarea>
+            <span class="field-error" *ngIf="hasError('description')">{{ getError('description') }}</span>
+          </div>
+
+          <div class="form-field">
+            <label>Precio (COP) <span class="required">*</span></label>
+            <input
+              type="number"
+              formControlName="price"
+              placeholder="Ej: 50000"
+              [class.input--error]="hasError('price')" />
+            <span class="field-error" *ngIf="hasError('price')">{{ getError('price') }}</span>
+          </div>
+
+          <div class="form-field">
+            <label>Duración (días) <span class="required">*</span></label>
+            <input
+              type="number"
+              formControlName="durationDays"
+              placeholder="Ej: 30"
+              [class.input--error]="hasError('durationDays')" />
+            <span class="field-error" *ngIf="hasError('durationDays')">{{ getError('durationDays') }}</span>
+          </div>
+
+          <div class="form-field">
+            <label>Estado <span class="required">*</span></label>
+            <select formControlName="status" [class.input--error]="hasError('status')">
+              <option value="active">Activo</option>
+              <option value="inactive">Inactivo</option>
+            </select>
+            <span class="field-error" *ngIf="hasError('status')">{{ getError('status') }}</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Límites de usuarios -->
+      <div class="form-section">
+        <h3 class="form-section__title">
+          <i class="ti ti-users"></i>
+          Límites de usuarios por rol
+        </h3>
+
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label>
+              <i class="ti ti-user-check"></i>
+              Máx. Organizadores
+            </label>
+            <input
+              type="number"
+              formControlName="maxOrganizers"
+              min="0"
+              [class.input--error]="hasError('maxOrganizers')" />
+            <span class="field-error" *ngIf="hasError('maxOrganizers')">{{ getError('maxOrganizers') }}</span>
+          </div>
+
+          <div class="form-field">
+            <label>
+              <i class="ti ti-users"></i>
+              Máx. Asistentes
+            </label>
+            <input
+              type="number"
+              formControlName="maxAttendees"
+              min="0"
+              [class.input--error]="hasError('maxAttendees')" />
+            <span class="field-error" *ngIf="hasError('maxAttendees')">{{ getError('maxAttendees') }}</span>
+          </div>
+
+          <div class="form-field">
+            <label>
+              <i class="ti ti-user-plus"></i>
+              Máx. Participantes
+            </label>
+            <input
+              type="number"
+              formControlName="maxParticipants"
+              min="0"
+              [class.input--error]="hasError('maxParticipants')" />
+            <span class="field-error" *ngIf="hasError('maxParticipants')">{{ getError('maxParticipants') }}</span>
+          </div>
+
+          <div class="form-field">
+            <label>
+              <i class="ti ti-gavel"></i>
+              Máx. Jueces
+            </label>
+            <input
+              type="number"
+              formControlName="maxJudges"
+              min="0"
+              [class.input--error]="hasError('maxJudges')" />
+            <span class="field-error" *ngIf="hasError('maxJudges')">{{ getError('maxJudges') }}</span>
+          </div>
+
+          <div class="form-field">
+            <label>
+              <i class="ti ti-briefcase"></i>
+              Máx. Personal de apoyo
+            </label>
+            <input
+              type="number"
+              formControlName="maxStaff"
+              min="0"
+              [class.input--error]="hasError('maxStaff')" />
+            <span class="field-error" *ngIf="hasError('maxStaff')">{{ getError('maxStaff') }}</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" (click)="cancel()">
+          <i class="ti ti-arrow-left"></i>
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+          <i class="ti ti-check"></i>
+          {{ isSubmitting ? 'Creando...' : 'Crear plan' }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<!-- Modal de éxito — agregar al final del archivo -->
+<div class="modal-overlay" *ngIf="successMessage" (click)="acceptSuccess()">
+  <div class="modal modal--success" (click)="$event.stopPropagation()">
+    <div class="modal__body modal__body--centered">
+      <div class="success-icon">
+        <i class="ti ti-circle-check"></i>
+      </div>
+      <h3 class="success-title">¡Plan creado exitosamente!</h3>
+      <p>{{ successMessage }}</p>
+    </div>
+    <div class="modal__footer modal__footer--centered">
+      <button class="btn btn-primary" (click)="acceptSuccess()">
+        Aceptar
+      </button>
+    </div>
+  </div>
+</div>
