@@ -6,6 +6,7 @@ import { RouterModule} from '@angular/router';
 import { TopbarComponent } from './topbar/topbar.component';
 import { NavAdminComponent } from './nav-admin/nav-admin.component';
 import { SkeletonComponent } from './components/skeleton/skeleton.component';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 
 
 
@@ -15,7 +16,8 @@ import { SkeletonComponent } from './components/skeleton/skeleton.component';
     NavComponent,
     TopbarComponent,
     NavAdminComponent,
-    SkeletonComponent
+    SkeletonComponent,
+    AdminLayoutComponent
   ],
   imports: [
     CommonModule,
@@ -27,8 +29,7 @@ import { SkeletonComponent } from './components/skeleton/skeleton.component';
     SkeletonComponent,
     NavComponent, 
     FooterComponent,
-    TopbarComponent,
-    NavAdminComponent
+    AdminLayoutComponent
   ]
   
 })
