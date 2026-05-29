@@ -1,0 +1,191 @@
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
+
+// ── Variables ─────────────────────────────────────────────────
+$accent:       #00B8A9;
+$accent-dark:  #008A7D;
+$accent-light: #f0fdfa;
+$text:         #1A2332;
+$text-soft:    #9ca3af;
+$border:       rgba(0, 184, 169, 0.1);
+$bg:           #F3F4F6;
+$white:        #ffffff;
+$danger:       #ef4444;
+$success:      #10b981;
+
+$fs-xl:  25px;
+$fs-lg:  18px;
+$fs-md:  14px;
+$fs-sm:  12px;
+
+// ── Página ────────────────────────────────────────────────────
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;  // ← cambia height por min-height
+}
+
+.page-content {
+  flex: 1;
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;  // ← agrega esto
+}
+
+// ── Alertas ───────────────────────────────────────────────────
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: $fs-md;
+  font-weight: 500;
+
+  i { font-size: 18px; }
+
+  &--success {
+    background: #f0fdf4;
+    color: $success;
+    border: 1px solid #bbf7d0;
+  }
+
+  &--error {
+    background: #fef2f2;
+    color: $danger;
+    border: 1px solid #fecaca;
+  }
+}
+
+// ── Card del formulario ───────────────────────────────────────
+.form-card {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border;
+  overflow: hidden;
+}
+
+// ── Sección del formulario ────────────────────────────────────
+.form-section {
+  padding: 24px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border;
+  }
+
+  &__title {
+    font-size: $fs-lg;
+    font-weight: 600;
+    color: $text;
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { color: $accent; }
+  }
+}
+
+// ── Grid del formulario ───────────────────────────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Campo ─────────────────────────────────────────────────────
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: $fs-sm;
+    font-weight: 500;
+    color: $text;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    i { color: $accent; font-size: 14px; }
+  }
+
+  input, select, textarea {
+    padding: 10px 14px;
+    border: 1px solid $border;
+    border-radius: 10px;
+    font-size: $fs-md;
+    color: $text;
+    background: $white;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: $accent; }
+
+    &.input--error { border-color: $danger; }
+  }
+
+  textarea { resize: vertical; }
+}
+
+// ── Error de campo ────────────────────────────────────────────
+.field-error {
+  font-size: $fs-sm;
+  color: $danger;
+}
+
+.required { color: $danger; }
+
+// ── Acciones ──────────────────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid $border;
+}
+
+// ── Botones ───────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: $fs-md;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: opacity 0.2s, background-color 0.2s;
+
+  i { font-size: 16px; }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &-primary {
+    background: linear-gradient(135deg, $accent, $accent-dark);
+    color: $white;
+    &:hover { opacity: 0.9; }
+  }
+
+  &-outline {
+    background: $white;
+    border: 1px solid $border;
+    color: $text;
+    &:hover { border-color: $accent; color: $accent; }
+  }
+}

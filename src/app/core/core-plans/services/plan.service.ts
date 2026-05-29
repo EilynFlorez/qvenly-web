@@ -69,7 +69,7 @@ export class PlanService {
    * @returns Observable con el plan actualizado
    */
   updatePlan(id: number, plan: PlanRequest): Observable<ApiResponse<PlanResponse>> {
-    return this.http.put<ApiResponse<PlanResponse>>(`${this.apiUrl}/${id}`, plan, { withCredentials: true });
+    return this.http.put<ApiResponse<PlanResponse>>(`${this.apiUrl}/${id}`, plan);
   }
 
   /**
@@ -81,6 +81,6 @@ export class PlanService {
  * @returns Observable con la confirmación de eliminación
  */
   deletePlan(id: number, reason: string): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}?reason=${reason}`, { withCredentials: true });
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}?reason=${reason}`);
   }
 }

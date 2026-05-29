@@ -20,7 +20,7 @@ export class PlanAuditService {
   /** URL base del endpoint de auditoría de planes */
   private apiUrl = `${environment.apiUrl}/api/plan-audit`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Obtiene la auditoría de acciones realizadas sobre un plan (HU48).
