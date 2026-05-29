@@ -1,0 +1,362 @@
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
+
+// ── Variables ─────────────────────────────────────────────────
+$accent:       #00B8A9;
+$accent-dark:  #008A7D;
+$accent-light: #f0fdfa;
+$text:         #1A2332;
+$text-soft:    #9ca3af;
+$border:       rgba(0, 184, 169, 0.1);
+$bg:           #F3F4F6;
+$white:        #ffffff;
+$danger:       #ef4444;
+
+$fs-xl:  25px;
+$fs-lg:  18px;
+$fs-md:  14px;
+$fs-sm:  12px;
+
+// ── Página ────────────────────────────────────────────────────
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// ── Botones ───────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: $fs-md;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  i { font-size: 16px; }
+
+  &-primary {
+    background: linear-gradient(135deg, $accent, $accent-dark);
+    color: $white;
+    &:hover { opacity: 0.9; }
+  }
+
+  &-outline {
+    background: $white;
+    border: 1px solid $border;
+    color: $text;
+    &:hover { border-color: $accent; color: $accent; }
+  }
+}
+
+// ── Estado ────────────────────────────────────────────────────
+.state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  background: $white;
+  border-radius: 16px;
+  color: $text-soft;
+  font-size: $fs-md;
+  text-align: center;
+
+  i { font-size: 36px; }
+
+  &--error { color: $danger; i { color: $danger; } }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $border;
+  border-top-color: $accent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Detail card ───────────────────────────────────────────────
+.detail-card {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  &__name {
+    font-size: $fs-xl;
+    font-weight: 700;
+    color: $text;
+    margin: 0 0 6px;
+  }
+
+  &__description {
+    font-size: $fs-md;
+    color: $text-soft;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  &__price-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  &__divider {
+    height: 1px;
+    background: $border;
+  }
+}
+
+// ── Precio ────────────────────────────────────────────────────
+.price-amount {
+  font-size: $fs-xl;
+  font-weight: 700;
+  color: $accent;
+  line-height: 1;
+}
+
+.price-period {
+  font-size: $fs-sm;
+  color: $text-soft;
+  margin-bottom: 3px;
+}
+
+.price-duration {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $fs-sm;
+  color: $text-soft;
+  margin-bottom: 3px;
+  margin-left: 8px;
+
+  i { font-size: 13px; color: $accent; }
+}
+
+// ── Badge ─────────────────────────────────────────────────────
+.badge {
+  font-size: $fs-sm;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--active  { background: $accent-light; color: $accent-dark; }
+  &--inactive { background: #f3f4f6; color: $text-soft; }
+}
+
+// ── Límites ───────────────────────────────────────────────────
+.limits-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__title {
+    font-size: $fs-lg;
+    font-weight: 600;
+    color: $text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { color: $accent; }
+  }
+}
+
+.limits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.limit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $accent-light;
+  border-radius: 12px;
+  padding: 12px 14px;
+
+  i { font-size: 20px; color: $accent; flex-shrink: 0; }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: $fs-sm;
+    color: $text-soft;
+  }
+
+  &__value {
+    font-size: $fs-lg;
+    font-weight: 700;
+    color: $text;
+    line-height: 1;
+  }
+}
+
+// ── Fechas ────────────────────────────────────────────────────
+.dates-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  i { font-size: 18px; color: $accent; }
+
+  div { display: flex; flex-direction: column; gap: 2px; }
+
+  &__label {
+    font-size: $fs-sm;
+    color: $text-soft;
+  }
+
+  &__value {
+    font-size: $fs-md;
+    font-weight: 500;
+    color: $text;
+  }
+}
+
+// ── Sección auditoría ─────────────────────────────────────────
+.audit-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__title {
+    font-size: $fs-lg;
+    font-weight: 600;
+    color: $text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { color: $accent; }
+  }
+}
+
+// ── Tabla auditoría ───────────────────────────────────────────
+.audit-table-wrapper {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border;
+  overflow: hidden;
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: $accent-light;
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: $fs-sm;
+      font-weight: 600;
+      color: $accent-dark;
+    }
+  }
+
+  tbody tr {
+    border-top: 1px solid $border;
+    transition: background 0.15s;
+
+    &:hover { background: $bg; }
+
+    td {
+      padding: 12px 16px;
+      font-size: $fs-md;
+      color: $text;
+      vertical-align: middle;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: $text-soft !important;
+    font-size: $fs-sm !important;
+
+    i { color: $accent; }
+  }
+
+  &__desc {
+    color: $text-soft !important;
+    max-width: 300px;
+  }
+
+  &__date {
+    color: $text-soft !important;
+    font-size: $fs-sm !important;
+    white-space: nowrap;
+  }
+}
+
+// ── Badge auditoría ───────────────────────────────────────────
+.audit-badge {
+  font-size: $fs-sm;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+
+  &--create { background: #f0fdf4; color: #16a34a; }
+  &--update { background: #fefce8; color: #ca8a04; }
+  &--delete { background: #fef2f2; color: #ef4444; }
+  &--assign { background: #eff6ff; color: #3b82f6; }
+  &--renew  { background: $accent-light; color: $accent-dark; }
+}
