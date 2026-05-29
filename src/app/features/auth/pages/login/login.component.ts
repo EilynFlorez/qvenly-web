@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const confirmed = this.route.snapshot.queryParamMap.get('confirmed');
@@ -46,7 +46,16 @@ export class LoginComponent implements OnInit {
             response.data.email,
             response.data.role
           );
-          this.router.navigate(['/dashboard']);
+          // Redirigir según el rol
+          const role = response.data.role;
+
+          if (role === 'ADMIN') {
+            this.router.navigate(['/dashboard']);
+          } else if (role === 'USER') {
+            this.router.navigate(['/dashboard-user']);
+          } else {
+            this.errorMessage = 'Rol no reconocido';
+          }
         } else {
           this.errorMessage = response.message;
         }
