@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FooterComponent } from './footer/footer.component';
 import { NavComponent } from './nav/nav.component';
 import { RouterModule} from '@angular/router';
-import { TopbarComponent } from './components/topbar/topbar.component';
-import { NavAdminComponent } from './components/nav-admin/nav-admin.component';
+import { TopbarComponent } from './topbar/topbar.component';
+import { NavAdminComponent } from './nav-admin/nav-admin.component';
+import { SkeletonComponent } from './components/skeleton/skeleton.component';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 
 
 
@@ -13,17 +15,21 @@ import { NavAdminComponent } from './components/nav-admin/nav-admin.component';
     FooterComponent,
     NavComponent,
     TopbarComponent,
-    NavAdminComponent
+    NavAdminComponent,
+    SkeletonComponent,
+    AdminLayoutComponent
   ],
   imports: [
     CommonModule,
     RouterModule 
   ],
   exports: [
+    NavAdminComponent,
+    TopbarComponent, 
+    SkeletonComponent,
     NavComponent, 
     FooterComponent,
-    TopbarComponent,
-    NavAdminComponent
+    AdminLayoutComponent
   ]
   
 })

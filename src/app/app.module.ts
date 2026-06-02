@@ -15,6 +15,7 @@ import { MainLayoutComponent } from './shared/layouts/main-layout/main-layout.co
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     HttpClientModule,
     AppRoutingModule,
     CoreModule,     // ← registra TokenInterceptor

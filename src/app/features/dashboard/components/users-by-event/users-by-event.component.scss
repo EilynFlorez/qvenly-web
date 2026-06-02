@@ -1,0 +1,131 @@
+.table-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  border: 1px solid #f0fdfb;
+}
+
+.table-header {
+  margin-bottom: 20px;
+}
+
+.table-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A2332;
+  margin: 0 0 4px;
+}
+
+.table-sub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead tr {
+  border-bottom: 2px solid #f0fdfb;
+}
+
+th {
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: 500;
+  color: #9ca3af;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid #f9fafb;
+  transition: background 0.15s;
+
+  &:hover { background: #f9fafb; }
+  &:last-child { border-bottom: none; }
+}
+
+td {
+  padding: 12px 16px;
+  color: #1A2332;
+}
+
+.event-name {
+  font-weight: 500;
+  background: rgba(92, 197, 246, 0.08);
+  color:#00B8A9;
+  border-radius: 20px;
+  margin: 10px;
+  display: inline-flex;
+  font-size: 12px;
+}
+
+/* Badges de encabezado */
+.th-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+
+  i { font-size: 14px; }
+
+  &.personal     { color: #8b5cf6; }
+  &.asistentes   { color: #10b981; }
+  &.jurados      { color: #f97316; }
+  &.participantes{ color: #ec4899; }
+}
+
+/* Badges de valores */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+
+  &.personal      { background: rgba(139,92,246,0.08);  color: #8b5cf6; }
+  &.asistentes    { background: rgba(16,185,129,0.08);  color: #10b981; }
+  &.jurados       { background: rgba(249,115,22,0.08);  color: #f97316; }
+  &.participantes { background: rgba(236,72,153,0.08);  color: #ec4899; }
+}
+
+.total {
+  font-weight: 600;
+  color: #00B8A9;
+}
+
+/* Error */
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #fff5f5;
+  border-radius: 12px;
+  border: 1px solid #fecaca;
+  font-size: 14px;
+  color: #ef4444;
+
+  i { font-size: 20px; }
+
+  button {
+    padding: 6px 16px;
+    border-radius: 50px;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+  }
+}

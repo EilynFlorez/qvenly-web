@@ -1,0 +1,42 @@
+<div class="filters-card">
+
+    <div class="filters-header">
+        <div class="filters-title">
+            <i class="ti ti-adjustments-horizontal"></i>
+            Filtros
+        </div>
+    </div>
+
+    <form [formGroup]="filterForm" class="filters-body">
+
+        <div class="filter-group">
+            <label class="filter-label">Fecha inicio</label>
+            <input type="date" class="filter-input" formControlName="startDate">
+        </div>
+
+
+        <div class="filter-group">
+            <label class="filter-label">Fecha fin</label>
+            <input type="date" class="filter-input" formControlName="endDate">
+        </div>
+
+        <div class="filter-group">
+            <label class="filter-label">Tipo de plan</label>
+            <select class="filter-input" formControlName="plan">
+                <option value="">Todos los planes</option>
+                <option [value]="plan" *ngFor="let plan of plans">{{plan}}</option>
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="button" class="btn-clear" (click)="clearFilters()">
+                <i class="ti ti-trash"></i>
+                Limpiar
+            </button>
+
+            <button type="button" class="btn-apply" (click)="applyFilters()">
+                Aplicar
+            </button>
+        </div>
+    </form>
+</div>
