@@ -61,10 +61,16 @@ export class AuthService {
     );
   }
 
-  saveUserInfo(name: string, email: string, role: string): void {
+  saveUserInfo(name: string, email: string, role: string, userId: number): void {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('role', role);
+    localStorage.setItem('userId', userId.toString());
+  }
+
+  getUserId(): number | null {
+    const id = localStorage.getItem('userId');
+    return id ? parseInt(id) : null;
   }
 
   getUserName(): string | null {
