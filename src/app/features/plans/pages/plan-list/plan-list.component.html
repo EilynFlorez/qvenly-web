@@ -86,72 +86,9 @@
 
         <!-- Lista de planes -->
         <div class="plans-grid" *ngIf="!isLoading && !errorMessage && plans.length > 0">
-            <div class="plan-card" *ngFor="let plan of plans">
-
-                <!-- Header de la card -->
-                <div class="plan-card__header">
-                    <div class="plan-card__title-group">
-                        <h3 class="plan-card__name">{{ plan.name }}</h3>
-                        <p class="plan-card__meta">
-                            <i class="ti ti-clock"></i>
-                            {{ plan.durationDays }} días ·
-                            <i class="ti ti-users"></i>
-                            {{ plan.maxOrganizers }} organizador(es)
-                        </p>
-                    </div>
-                    <span class="badge" [class.badge--active]="plan.status === 'active'"
-                        [class.badge--inactive]="plan.status === 'inactive'">
-                        {{ plan.status === 'active' ? 'Activo' : 'Inactivo' }}
-                    </span>
-                </div>
-
-                <!-- Precio -->
-                <div class="plan-card__price">
-                    <span class="price-amount">{{ formatPrice(plan.price) }}</span>
-                    <span class="price-period">/mes</span>
-                </div>
-
-                <!-- Características -->
-                <ul class="plan-card__features">
-                    <li *ngIf="plan.maxOrganizers > 0">
-                        <i class="ti ti-user-check"></i>
-                        Máx. Organizadores: {{ plan.maxOrganizers }}
-                    </li>
-                    <li *ngIf="plan.maxAttendees > 0">
-                        <i class="ti ti-users"></i>
-                        Máx. Asistentes: {{ plan.maxAttendees }}
-                    </li>
-                    <li *ngIf="plan.maxStaff > 0">
-                        <i class="ti ti-briefcase"></i>
-                        Máx. Personal: {{ plan.maxStaff }}
-                    </li>
-                    <li *ngIf="plan.maxJudges > 0">
-                        <i class="ti ti-gavel"></i>
-                        Máx. Jueces: {{ plan.maxJudges }}
-                    </li>
-                    <li *ngIf="plan.maxParticipants > 0">
-                        <i class="ti ti-user-plus"></i>
-                        Máx. Participantes: {{ plan.maxParticipants }}
-                    </li>
-                </ul>
-
-                <!-- Acciones -->
-                <div class="plan-card__actions">
-                    <button class="action-btn action-btn--view" (click)="viewPlan(plan.idPlan)" title="Ver detalle">
-                        <i class="ti ti-eye"></i>
-                        Ver
-                    </button>
-                    <button class="action-btn action-btn--edit" (click)="editPlan(plan.idPlan)" title="Editar">
-                        <i class="ti ti-pencil"></i>
-                        Editar
-                    </button>
-                    <button class="action-btn action-btn--delete" (click)="openDeleteModal(plan)" title="Eliminar">
-                        <i class="ti ti-trash"></i>
-                        Eliminar
-                    </button>
-                </div>
-
-            </div>
+            <app-plan-card *ngFor="let plan of plans" [plan]="plan" (view)="viewPlan($event)" (edit)="editPlan($event)"
+                (delete)="openDeleteModal($event)">
+            </app-plan-card>
         </div>
 
     </div>
