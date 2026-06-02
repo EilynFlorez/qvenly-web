@@ -1,6 +1,5 @@
 <form [formGroup]="planForm" (ngSubmit)="onSubmit()" class="form-card">
 
-  <!-- Error general -->
   <div class="alert alert--error" *ngIf="errorMessage">
     <i class="ti ti-alert-circle"></i>
     {{ errorMessage }}
@@ -12,58 +11,53 @@
       <i class="ti ti-info-circle"></i>
       Información básica
     </h3>
-
     <div class="form-grid">
 
-      <div class="form-field form-field--full">
-        <label>Nombre del plan <span class="required">*</span></label>
-        <input
-          type="text"
-          formControlName="name"
+      <div class="form-field--full">
+        <app-form-field
+          label="Nombre del plan"
           placeholder="Ej: Plan Básico"
-          [class.input--error]="hasError('name')" />
-        <span class="field-error" *ngIf="hasError('name')">{{ getError('name') }}</span>
+          [control]="planForm.get('name')"
+          [required]="true">
+        </app-form-field>
       </div>
 
-      <div class="form-field form-field--full">
-        <label>Descripción <span class="required">*</span></label>
-        <textarea
-          formControlName="description"
+      <div class="form-field--full">
+        <app-form-field
+          label="Descripción"
+          type="textarea"
           placeholder="Describe las características y beneficios del plan..."
-          rows="3"
-          [class.input--error]="hasError('description')">
-        </textarea>
-        <span class="field-error" *ngIf="hasError('description')">{{ getError('description') }}</span>
+          [control]="planForm.get('description')"
+          [required]="true">
+        </app-form-field>
       </div>
 
-      <div class="form-field">
-        <label>Precio (COP) <span class="required">*</span></label>
-        <input
-          type="number"
-          formControlName="price"
-          placeholder="Ej: 50000"
-          [class.input--error]="hasError('price')" />
-        <span class="field-error" *ngIf="hasError('price')">{{ getError('price') }}</span>
-      </div>
+      <app-form-field
+        label="Precio (COP)"
+        type="number"
+        placeholder="Ej: 50000"
+        [control]="planForm.get('price')"
+        [required]="true">
+      </app-form-field>
 
-      <div class="form-field">
-        <label>Duración (días) <span class="required">*</span></label>
-        <input
-          type="number"
-          formControlName="durationDays"
-          placeholder="Ej: 30"
-          [class.input--error]="hasError('durationDays')" />
-        <span class="field-error" *ngIf="hasError('durationDays')">{{ getError('durationDays') }}</span>
-      </div>
+      <app-form-field
+        label="Duración (días)"
+        type="number"
+        placeholder="Ej: 30"
+        [control]="planForm.get('durationDays')"
+        [required]="true">
+      </app-form-field>
 
-      <div class="form-field">
-        <label>Estado <span class="required">*</span></label>
-        <select formControlName="status" [class.input--error]="hasError('status')">
-          <option value="active">Activo</option>
-          <option value="inactive">Inactivo</option>
-        </select>
-        <span class="field-error" *ngIf="hasError('status')">{{ getError('status') }}</span>
-      </div>
+      <app-form-field
+        label="Estado"
+        type="select"
+        [control]="planForm.get('status')"
+        [required]="true"
+        [options]="[
+          { value: 'active', label: 'Activo' },
+          { value: 'inactive', label: 'Inactivo' }
+        ]">
+      </app-form-field>
 
     </div>
   </div>
@@ -74,43 +68,42 @@
       <i class="ti ti-users"></i>
       Límites de usuarios por rol
     </h3>
-
     <div class="form-grid">
 
-      <div class="form-field">
-        <label><i class="ti ti-user-check"></i> Máx. Organizadores</label>
-        <input type="number" formControlName="maxOrganizers" min="0"
-          [class.input--error]="hasError('maxOrganizers')" />
-        <span class="field-error" *ngIf="hasError('maxOrganizers')">{{ getError('maxOrganizers') }}</span>
-      </div>
+      <app-form-field
+        label="Máx. Organizadores"
+        type="number"
+        icon="ti-user-check"
+        [control]="planForm.get('maxOrganizers')">
+      </app-form-field>
 
-      <div class="form-field">
-        <label><i class="ti ti-users"></i> Máx. Asistentes</label>
-        <input type="number" formControlName="maxAttendees" min="0"
-          [class.input--error]="hasError('maxAttendees')" />
-        <span class="field-error" *ngIf="hasError('maxAttendees')">{{ getError('maxAttendees') }}</span>
-      </div>
+      <app-form-field
+        label="Máx. Asistentes"
+        type="number"
+        icon="ti-users"
+        [control]="planForm.get('maxAttendees')">
+      </app-form-field>
 
-      <div class="form-field">
-        <label><i class="ti ti-user-plus"></i> Máx. Participantes</label>
-        <input type="number" formControlName="maxParticipants" min="0"
-          [class.input--error]="hasError('maxParticipants')" />
-        <span class="field-error" *ngIf="hasError('maxParticipants')">{{ getError('maxParticipants') }}</span>
-      </div>
+      <app-form-field
+        label="Máx. Participantes"
+        type="number"
+        icon="ti-user-plus"
+        [control]="planForm.get('maxParticipants')">
+      </app-form-field>
 
-      <div class="form-field">
-        <label><i class="ti ti-gavel"></i> Máx. Jueces</label>
-        <input type="number" formControlName="maxJudges" min="0"
-          [class.input--error]="hasError('maxJudges')" />
-        <span class="field-error" *ngIf="hasError('maxJudges')">{{ getError('maxJudges') }}</span>
-      </div>
+      <app-form-field
+        label="Máx. Jueces"
+        type="number"
+        icon="ti-gavel"
+        [control]="planForm.get('maxJudges')">
+      </app-form-field>
 
-      <div class="form-field">
-        <label><i class="ti ti-briefcase"></i> Máx. Personal de apoyo</label>
-        <input type="number" formControlName="maxStaff" min="0"
-          [class.input--error]="hasError('maxStaff')" />
-        <span class="field-error" *ngIf="hasError('maxStaff')">{{ getError('maxStaff') }}</span>
-      </div>
+      <app-form-field
+        label="Máx. Personal de apoyo"
+        type="number"
+        icon="ti-briefcase"
+        [control]="planForm.get('maxStaff')">
+      </app-form-field>
 
     </div>
   </div>
