@@ -1,0 +1,159 @@
+// ── Variables ─────────────────────────────────────────────────
+$accent:       #00B8A9;
+$accent-dark:  #008A7D;
+$text:         #1A2332;
+$text-soft:    #4B5563;
+$border:       rgba(0, 184, 169, 0.1);
+$white:        #ffffff;
+$danger:       #ef4444;
+$success:      #10b981;
+
+// ── Escala tipográfica ────────────────────────────────────────
+$fs-lg:  18px;
+$fs-md:  14px;
+$fs-sm:  12px;
+
+// ── Card del formulario ───────────────────────────────────────
+.form-card {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border;
+  overflow: hidden;
+}
+
+// ── Alerta de error ───────────────────────────────────────────
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  font-size: $fs-md;
+  font-weight: 500;
+
+  i { font-size: 18px; }
+
+  &--error {
+    background: #fef2f2;
+    color: $danger;
+    border-bottom: 1px solid #fecaca;
+  }
+}
+
+// ── Sección del formulario ────────────────────────────────────
+.form-section {
+  padding: 24px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border;
+  }
+
+  // Título de cada sección
+  &__title {
+    font-size: $fs-lg;
+    font-weight: 600;
+    color: $text;
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { color: $accent; }
+  }
+}
+
+// ── Grid de campos ────────────────────────────────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Campo individual ──────────────────────────────────────────
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  // Ocupa el ancho completo del grid
+  &--full { grid-column: 1 / -1; }
+
+  label {
+    font-size: $fs-sm;
+    font-weight: 500;
+    color: $text;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    i { color: $accent; font-size: 14px; }
+  }
+
+  input, select, textarea {
+    padding: 10px 14px;
+    border: 1px solid $border;
+    border-radius: 10px;
+    font-size: $fs-md;
+    color: $text;
+    background: $white;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: $accent; }
+    &.input--error { border-color: $danger; }
+  }
+
+  textarea { resize: vertical; }
+}
+
+// ── Mensajes de error de campo ────────────────────────────────
+.field-error {
+  font-size: $fs-sm;
+  color: $danger;
+}
+
+.required { color: $danger; }
+
+// ── Acciones del formulario ───────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid $border;
+}
+
+// ── Botones ───────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: $fs-md;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+
+  i { font-size: 16px; }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  &-primary {
+    background: linear-gradient(135deg, $accent, $accent-dark);
+    color: $white;
+    &:hover { opacity: 0.9; }
+  }
+
+  &-outline {
+    background: $white;
+    border: 1px solid $border;
+    color: $text;
+    &:hover { border-color: $accent; color: $accent; }
+  }
+}
