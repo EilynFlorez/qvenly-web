@@ -1,0 +1,146 @@
+// ── Variables ─────────────────────────────────────────────────
+$accent:       #00B8A9;
+$accent-dark:  #008A7D;
+$accent-light: #f0fdfa;
+$text:         #1A2332;
+$text-soft:    #4B5563;
+$border:       rgba(0, 184, 169, 0.1);
+$danger:       #ef4444;
+$danger-light: #fef2f2;
+$white:        #ffffff;
+
+// ── Escala tipográfica (máx 4 tamaños) ───────────────────────
+$fs-xl:  25px;   // precio destacado
+$fs-lg:  18px;   // nombre del plan
+$fs-md:  14px;   // texto normal
+$fs-sm:  12px;   // metadata y badges
+
+// ── Card ──────────────────────────────────────────────────────
+.plan-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 184, 169, 0.1);
+  }
+
+  // ── Header ─────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  // ── Nombre del plan ────────────────────────────────────────
+  &__name {
+    font-size: $fs-lg;
+    font-weight: 600;
+    color: $text;
+    margin: 0 0 4px;
+  }
+
+  // ── Metadata: duración y organizadores ────────────────────
+  &__meta {
+    font-size: $fs-sm;
+    color: $text-soft;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+
+    i { font-size: 13px; }
+  }
+
+  // ── Precio ─────────────────────────────────────────────────
+  &__price {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  // ── Lista de características ───────────────────────────────
+  &__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: $fs-md;
+      color: $text-soft;
+
+      i { color: $accent; font-size: 15px; }
+    }
+  }
+
+  // ── Botones de acción ──────────────────────────────────────
+  &__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 16px;
+    border-top: 1px solid $border;
+  }
+}
+
+// ── Precio destacado ──────────────────────────────────────────
+.price-amount {
+  font-size: $fs-xl;
+  font-weight: 700;
+  color: $accent;
+  line-height: 1;
+}
+
+.price-period {
+  font-size: $fs-sm;
+  color: $text-soft;
+  margin-bottom: 4px;
+}
+
+// ── Badge de estado ───────────────────────────────────────────
+.badge {
+  font-size: $fs-sm;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--active   { background: $accent-light; color: $accent-dark; }
+  &--inactive { background: #f3f4f6; color: $text-soft; }
+}
+
+// ── Botones de acción ─────────────────────────────────────────
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: $fs-sm;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+
+  i { font-size: 14px; }
+  &:hover { opacity: 0.85; }
+
+  &--view   { background: #eff6ff; color: #3b82f6; }
+  &--edit   { background: #fefce8; color: #ca8a04; }
+  &--delete { background: $danger-light; color: $danger; }
+}

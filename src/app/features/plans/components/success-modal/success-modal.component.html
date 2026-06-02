@@ -1,0 +1,16 @@
+<div class="modal-overlay" (click)="accept()">
+  <div class="modal modal--success" (click)="$event.stopPropagation()">
+    <div class="modal__body modal__body--centered">
+      <div class="success-icon">
+        <i class="ti ti-circle-check"></i>
+      </div>
+      <h3 class="success-title">{{ title }}</h3>
+      <p>{{ message }}</p>
+    </div>
+    <div class="modal__footer modal__footer--centered">
+      <button class="btn btn-primary" (click)="accept()">
+        Aceptar
+      </button>
+    </div>
+  </div>
+</div>

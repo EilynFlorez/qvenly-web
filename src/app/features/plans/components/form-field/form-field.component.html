@@ -1,0 +1,40 @@
+<div class="form-field">
+
+  <!-- Label -->
+  <label>
+    <i *ngIf="icon" [class]="'ti ' + icon"></i>
+    {{ label }}
+    <span class="required" *ngIf="required">*</span>
+  </label>
+
+  <!-- Input -->
+  <input
+    *ngIf="type !== 'select' && type !== 'textarea'"
+    [type]="type"
+    [formControl]="$any(control)"
+    [placeholder]="placeholder"
+    [class.input--error]="hasError" />
+
+  <!-- Select -->
+  <select
+    *ngIf="type === 'select'"
+    [formControl]="$any(control)"
+    [class.input--error]="hasError">
+    <option *ngFor="let opt of options" [value]="opt.value">
+      {{ opt.label }}
+    </option>
+  </select>
+
+  <!-- Textarea -->
+  <textarea
+    *ngIf="type === 'textarea'"
+    [formControl]="$any(control)"
+    [placeholder]="placeholder"
+    [rows]="rows"
+    [class.input--error]="hasError">
+  </textarea>
+
+  <!-- Error -->
+  <span class="field-error" *ngIf="hasError">{{ errorMessage }}</span>
+
+</div>
