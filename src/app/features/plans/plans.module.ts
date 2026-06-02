@@ -10,6 +10,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TopbarComponent } from '../../shared/topbar/topbar.component';
 import { SharedModule } from '../../shared/shared.module';
+import { PlanCardComponent } from './components/plan-card/plan-card.component';
+import { PlanFormComponent } from './components/plan-form/plan-form.component';
+import { DeleteModalComponent } from './components/delete-modal/delete-modal.component';
+import { SuccessModalComponent } from './components/success-modal/success-modal.component';
+import { FormFieldComponent } from './components/form-field/form-field.component';
 
 
 @NgModule({
@@ -17,7 +22,12 @@ import { SharedModule } from '../../shared/shared.module';
     CreateFormComponent,
     UpdateFormComponent,
     PlanListComponent,
-    PlanDetailComponent
+    PlanDetailComponent,
+    PlanCardComponent,
+    PlanFormComponent,
+    DeleteModalComponent,
+    SuccessModalComponent,
+    FormFieldComponent
   ],
   imports: [
     CommonModule,

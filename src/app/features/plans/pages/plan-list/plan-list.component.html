@@ -160,63 +160,11 @@
 
 
 <!-- Modal de eliminación -->
-<div class="modal-overlay" *ngIf="planToDelete" (click)="closeDeleteModal()">
-    <div class="modal" (click)="$event.stopPropagation()">
-        <div class="modal__header">
-            <h3>
-                <i class="ti ti-alert-triangle"></i>
-                Confirmar eliminación
-            </h3>
-            <button class="modal__close" (click)="closeDeleteModal()">
-                <i class="ti ti-x"></i>
-            </button>
-        </div>
-
-        <div class="modal__body">
-            <p>¿Estás seguro de que deseas eliminar este plan?</p>
-
-            <div class="plan-summary">
-                <p class="plan-summary__name">{{ planToDelete.name }}</p>
-                <p class="plan-summary__meta">
-                    Precio: {{ formatPrice(planToDelete.price) }} |
-                    Duración: {{ planToDelete.durationDays }} días
-                </p>
-            </div>
-
-            <div class="form-field">
-                <label>Motivo de eliminación <span class="required">*</span></label>
-                <textarea [(ngModel)]="deleteReason" placeholder="Explica por qué se elimina este plan..." rows="3">
-        </textarea>
-                <span class="field-error" *ngIf="deleteReasonError">{{ deleteReasonError }}</span>
-            </div>
-        </div>
-
-        <div class="modal__footer">
-            <button class="btn btn-outline" (click)="closeDeleteModal()">
-                Cancelar
-            </button>
-            <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="isDeleting">
-                <i class="ti ti-trash"></i>
-                {{ isDeleting ? 'Eliminando...' : 'Eliminar plan' }}
-            </button>
-        </div>
-    </div>
-</div>
+<app-delete-modal *ngIf="planToDelete" [plan]="planToDelete" [isDeleting]="isDeleting" (cancelled)="closeDeleteModal()"
+    (confirmed)="confirmDelete($event)">
+</app-delete-modal>
 
 <!-- Modal de éxito -->
-<div class="modal-overlay" *ngIf="successMessage" (click)="successMessage = ''">
-  <div class="modal modal--success" (click)="$event.stopPropagation()">
-    <div class="modal__body modal__body--centered">
-      <div class="success-icon">
-        <i class="ti ti-circle-check"></i>
-      </div>
-      <h3 class="success-title">¡Eliminado exitosamente!</h3>
-      <p>{{ successMessage }}</p>
-    </div>
-    <div class="modal__footer modal__footer--centered">
-      <button class="btn btn-primary" (click)="successMessage = ''">
-        Aceptar
-      </button>
-    </div>
-  </div>
-</div>
+<app-success-modal *ngIf="successMessage" title="¡Eliminado exitosamente!" [message]="successMessage"
+    (accepted)="successMessage = ''">
+</app-success-modal>
