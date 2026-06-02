@@ -19,12 +19,14 @@ export class LoginComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   isLoading = false;
+  showPassword = false;
+  touched: { [key: string]: boolean } = {};
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const confirmed = this.route.snapshot.queryParamMap.get('confirmed');
@@ -33,7 +35,31 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  touch(field: string): void {
+    this.touched[field] = true;
+  }
+
+  getEmailError(): string {
+    if (!this.touched['email']) return '';
+    if (!this.loginData.email) return 'El correo es requerido';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.loginData.email)) return 'Ingresa un correo válido';
+    return '';
+  }
+
+  getPasswordError(): string {
+    if (!this.touched['password']) return '';
+    if (!this.loginData.password) return 'La contraseña es requerida';
+    if (this.loginData.password.length < 8) return 'Mínimo 8 caracteres';
+    return '';
+  }
+
   onSubmit(): void {
+    this.touched['email'] = true;
+    this.touched['password'] = true;
+
+    if (this.getEmailError() || this.getPasswordError()) return;
+
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
@@ -46,7 +72,16 @@ export class LoginComponent implements OnInit {
             response.data.email,
             response.data.role
           );
-          this.router.navigate(['/dashboard']);
+          // Redirigir según el rol
+          const role = response.data.role;
+
+          if (role === 'ADMIN') {
+            this.router.navigate(['/dashboard']);
+          } else if (role === 'USER') {
+            this.router.navigate(['/dashboard-user']);
+          } else {
+            this.errorMessage = 'Rol no reconocido';
+          }
         } else {
           this.errorMessage = response.message;
         }

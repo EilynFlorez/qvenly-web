@@ -1,4 +1,4 @@
-// Variables de color
+// ─── Variables de color ────────────────────────────────────────────────────
 $teal-400: #2dd4bf;
 $teal-500: #14b8a6;
 $teal-600: #0d9488;
@@ -25,7 +25,17 @@ $green-200: #bbf7d0;
 $green-600: #16a34a;
 $green-700: #15803d;
 
-// Mixins
+// ─── Tipografía ────────────────────────────────────────────────────────────
+// DM Sans cargada globalmente en styles.scss
+$font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+
+// Escala tipográfica de 4 niveles para auth
+$fs-title:    1.625rem;   // h2 principal (Iniciar Sesión, Registrarse)
+$fs-subtitle: 0.9rem;     // subtítulo debajo del h2
+$fs-base:     0.9rem;     // labels, inputs, botones
+$fs-small:    0.775rem;   // hints, errores, links secundarios
+
+// ─── Mixins ────────────────────────────────────────────────────────────────
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -34,29 +44,45 @@ $green-700: #15803d;
 
 @mixin card {
   background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  padding: 2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0,0,0,0.04);
+  padding: 2.25rem 2rem;
   width: 100%;
   max-width: 448px;
 }
 
 @mixin input-base {
-  border: 1px solid $gray-300;
-  border-radius: 0.5rem;
+  border: 1.5px solid $gray-200;
+  border-radius: 0.625rem;
   padding: 0.75rem 1rem;
-  font-size: 0.875rem;
+  font-size: $fs-base;
+  font-family: $font-family;
   outline: none;
   width: 100%;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  color: $gray-900;
+  background: $gray-50;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+
+  &::placeholder {
+    color: $gray-400;
+  }
 
   &:focus {
     border-color: $teal-500;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba($teal-500, 0.1);
   }
 
-  &.error {
+  &--error {
     border-color: $red-400;
+    background: $red-50;
+    box-shadow: 0 0 0 3px rgba($red-400, 0.1);
+  }
+
+  &--success {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(#22c55e, 0.1);
   }
 }
 
@@ -64,47 +90,55 @@ $green-700: #15803d;
   width: 100%;
   background: $teal-500;
   color: #fff;
-  padding: 0.75rem;
+  padding: 0.8rem;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  border-radius: 0.625rem;
+  font-size: $fs-base;
+  font-family: $font-family;
   font-weight: 600;
+  letter-spacing: 0.2px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
 
   &:hover:not(:disabled) {
     background: $teal-600;
+    box-shadow: 0 4px 12px rgba($teal-500, 0.35);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.99);
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.55;
     cursor: not-allowed;
   }
 }
 
 @mixin alert($bg, $border, $color) {
   background: $bg;
-  border: 1px solid $border;
+  border: 1.5px solid $border;
   color: $color;
-  font-size: 0.875rem;
+  font-size: $fs-small;
+  font-family: $font-family;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   margin-bottom: 1rem;
 }
 
-// Layout base de página auth
+// ─── Layout base de página auth ───────────────────────────────────────────
 %auth-page {
   min-height: 100vh;
   background: $gray-50;
   @include flex-center;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
 }
 
 // Logo
 %auth-logo {
   @include flex-center;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 
   img {
     height: 2rem;
@@ -112,8 +146,10 @@ $green-700: #15803d;
   }
 
   span {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: $teal-500;
+    font-family: $font-family;
+    letter-spacing: -0.3px;
   }
 }

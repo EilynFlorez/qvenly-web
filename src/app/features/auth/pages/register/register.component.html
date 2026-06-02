@@ -11,13 +11,15 @@
     <h2 class="auth-title">Registrarse</h2>
     <p class="auth-subtitle">Crea tu cuenta en Qvenly</p>
 
-    <!-- Alerta error -->
+    <!-- Alerta error general -->
     <div *ngIf="errorMessage" class="alert alert--error">
+      <i class="ti ti-alert-circle"></i>
       {{ errorMessage }}
     </div>
 
     <!-- Alerta éxito -->
     <div *ngIf="successMessage" class="alert alert--success">
+      <i class="ti ti-mail-check"></i>
       {{ successMessage }}
     </div>
 
@@ -31,53 +33,43 @@
       <!-- Nombres -->
       <div class="form-field">
         <label class="form-label">Nombres</label>
-        <input
-          type="text"
-          placeholder="Juan"
-          [(ngModel)]="registerData.name"
-          name="name"
-          class="form-input"
-          [class.form-input--error]="fieldErrors['name']"
-        />
-        <span *ngIf="fieldErrors['name']" class="form-error">{{ fieldErrors['name'] }}</span>
+        <input type="text" placeholder="Juan" [(ngModel)]="registerData.name" name="name" (blur)="touch('name')"
+          class="form-input" [class.form-input--error]="fieldState('name') === 'error'"
+          [class.form-input--error]="fieldErrors['name']" />
+        <span *ngIf="getNameError() || fieldErrors['name']" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getNameError() || fieldErrors['name'] }}
+        </span>
       </div>
 
       <!-- Apellidos -->
       <div class="form-field">
         <label class="form-label">Apellidos</label>
-        <input
-          type="text"
-          placeholder="Pérez"
-          [(ngModel)]="registerData.lastName"
-          name="lastName"
-          class="form-input"
-          [class.form-input--error]="fieldErrors['lastName']"
-        />
-        <span *ngIf="fieldErrors['lastName']" class="form-error">{{ fieldErrors['lastName'] }}</span>
+        <input type="text" placeholder="Pérez" [(ngModel)]="registerData.lastName" name="lastName"
+          (blur)="touch('lastName')" class="form-input" [class.form-input--error]="fieldState('lastName') === 'error'"
+          [class.form-input--error]="fieldErrors['lastName']" />
+        <span *ngIf="getLastNameError() || fieldErrors['lastName']" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getLastNameError() || fieldErrors['lastName'] }}
+        </span>
       </div>
 
       <!-- Correo -->
       <div class="form-field">
         <label class="form-label">Correo Electrónico</label>
-        <input
-          type="email"
-          placeholder="tu@email.com"
-          [(ngModel)]="registerData.email"
-          name="email"
-          class="form-input"
-          [class.form-input--error]="fieldErrors['email']"
-        />
-        <span *ngIf="fieldErrors['email']" class="form-error">{{ fieldErrors['email'] }}</span>
+        <input type="email" placeholder="tu@email.com" [(ngModel)]="registerData.email" name="email"
+          (blur)="touch('email')" class="form-input" [class.form-input--error]="fieldState('email') === 'error'"
+          [class.form-input--error]="fieldErrors['email']" />
+        <span *ngIf="getEmailError() || fieldErrors['email']" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getEmailError() || fieldErrors['email'] }}
+        </span>
       </div>
 
       <!-- Tipo de Identificación -->
       <div class="form-field">
         <label class="form-label">Tipo de Identificación</label>
-        <select
-          [(ngModel)]="registerData.documentType"
-          name="documentType"
-          class="form-input"
-        >
+        <select [(ngModel)]="registerData.documentType" name="documentType" class="form-input">
           <option value="CC">Cédula de Ciudadanía</option>
           <option value="CE">Cédula de Extranjería</option>
           <option value="PASSPORT">Pasaporte</option>
@@ -88,53 +80,91 @@
       <!-- Número de Identificación -->
       <div class="form-field">
         <label class="form-label">Número de Identificación</label>
-        <input
-          type="text"
-          placeholder="123456789"
-          [(ngModel)]="registerData.documentNumber"
-          name="documentNumber"
-          class="form-input"
-          [class.form-input--error]="fieldErrors['documentNumber']"
-        />
-        <span *ngIf="fieldErrors['documentNumber']" class="form-error">{{ fieldErrors['documentNumber'] }}</span>
+        <input type="text" placeholder="123456789" [(ngModel)]="registerData.documentNumber" name="documentNumber"
+          (blur)="touch('documentNumber')" class="form-input"
+          [class.form-input--error]="fieldState('documentNumber') === 'error'"
+          [class.form-input--error]="fieldErrors['documentNumber']" />
+        <span *ngIf="getDocumentError() || fieldErrors['documentNumber']" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getDocumentError() || fieldErrors['documentNumber'] }}
+        </span>
       </div>
 
       <!-- Número de Teléfono -->
       <div class="form-field">
         <label class="form-label">Número de Teléfono</label>
-        <input
-          type="tel"
-          placeholder="+573001234567"
-          [(ngModel)]="registerData.phoneNumber"
-          name="phoneNumber"
-          class="form-input"
-          [class.form-input--error]="fieldErrors['phoneNumber']"
-        />
-        <span *ngIf="fieldErrors['phoneNumber']" class="form-error">{{ fieldErrors['phoneNumber'] }}</span>
+        <input type="tel" placeholder="+573001234567" [(ngModel)]="registerData.phoneNumber" name="phoneNumber"
+          (blur)="touch('phoneNumber')" class="form-input"
+          [class.form-input--error]="fieldState('phoneNumber') === 'error'"
+          [class.form-input--error]="fieldErrors['phoneNumber']" />
+        <span *ngIf="getPhoneError() || fieldErrors['phoneNumber']" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getPhoneError() || fieldErrors['phoneNumber'] }}
+        </span>
       </div>
 
       <!-- Contraseña -->
       <div class="form-field">
         <label class="form-label">
           Contraseña
-          <span class="form-label__hint">(mín. 8 caracteres, incluir mayúsculas y números)</span>
+          <span class="form-label__hint">(mín. 8 caracteres, 1 mayúscula, 1 número y 1 carácter especial)</span>
         </label>
-        <input
-          type="password"
-          placeholder="••••••••"
-          [(ngModel)]="registerData.password"
-          name="password"
-          class="form-input"
-          [class.form-input--error]="fieldErrors['password']"
-        />
-        <span *ngIf="fieldErrors['password']" class="form-error">{{ fieldErrors['password'] }}</span>
+        <div class="input-password">
+          <input [type]="showPassword ? 'text' : 'password'" placeholder="••••••••" [(ngModel)]="registerData.password"
+            name="password" (blur)="touch('password')" (ngModelChange)="touch('confirmPassword')" class="form-input"
+            [class.form-input--error]="fieldState('password') === 'error'"
+            [class.form-input--success]="fieldState('password') === 'success'" />
+          <button type="button" class="input-password__toggle" (click)="showPassword = !showPassword">
+            <i [class]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+          </button>
+        </div>
+
+        <!-- Barra de fortaleza -->
+        <div *ngIf="touched['password'] && registerData.password" class="password-strength">
+          <div class="password-strength__bars">
+            <span class="bar"
+              [class.active]="passwordStrength.level === 'weak' || passwordStrength.level === 'medium' || passwordStrength.level === 'strong'"
+              [class.weak]="passwordStrength.level === 'weak'"></span>
+            <span class="bar"
+              [class.active]="passwordStrength.level === 'medium' || passwordStrength.level === 'strong'"
+              [class.medium]="passwordStrength.level === 'medium'"></span>
+            <span class="bar" [class.active]="passwordStrength.level === 'strong'"
+              [class.strong]="passwordStrength.level === 'strong'"></span>
+          </div>
+          <span class="password-strength__label" [class]="'label--' + passwordStrength.level">
+            {{ passwordStrength.label }}
+          </span>
+        </div>
+
+        <span *ngIf="getPasswordError()" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getPasswordError() }}
+        </span>
       </div>
 
-      <button
-        class="btn-primary"
-        (click)="onSubmit()"
-        [disabled]="isLoading"
-      >
+      <!-- Confirmar Contraseña -->
+      <div class="form-field">
+        <label class="form-label">Confirmar contraseña</label>
+        <div class="input-password">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" placeholder="••••••••" [(ngModel)]="confirmPassword"
+            name="confirmPassword" (blur)="touch('confirmPassword')" class="form-input"
+            [class.form-input--error]="fieldState('confirmPassword') === 'error'"
+            [class.form-input--success]="fieldState('confirmPassword') === 'success'" />
+          <button type="button" class="input-password__toggle" (click)="showConfirmPassword = !showConfirmPassword">
+            <i [class]="showConfirmPassword ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+          </button>
+        </div>
+        <span *ngIf="getConfirmPasswordError()" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getConfirmPasswordError() }}
+        </span>
+        <span *ngIf="touched['confirmPassword'] && !getConfirmPasswordError() && confirmPassword" class="form-success">
+          <i class="ti ti-circle-check"></i>
+          Las contraseñas coinciden
+        </span>
+      </div>
+
+      <button class="btn-primary" (click)="onSubmit()" [disabled]="isLoading">
         {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
       </button>
 
