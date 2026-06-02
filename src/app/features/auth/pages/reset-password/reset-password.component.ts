@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-// línea 3 - cambiar
 import { AuthService } from '../../../../core/core-auth/services/auth.service';
 
 @Component({
@@ -16,6 +15,9 @@ export class ResetPasswordComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   isLoading = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+  touched: { [key: string]: boolean } = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -30,15 +32,54 @@ export class ResetPasswordComponent implements OnInit {
     }
   }
 
+  touch(field: string): void {
+    this.touched[field] = true;
+  }
+
+  getNewPasswordError(): string {
+    if (!this.touched['newPassword']) return '';
+    const p = this.newPassword;
+    if (!p) return 'La contraseña es requerida';
+    if (p.length < 8) return 'Mínimo 8 caracteres';
+    if (!/[A-Z]/.test(p)) return 'Debe incluir al menos una mayúscula';
+    if (!/[0-9]/.test(p)) return 'Debe incluir al menos un número';
+    return '';
+  }
+
+  getConfirmPasswordError(): string {
+    if (!this.touched['confirmPassword']) return '';
+    if (!this.confirmPassword) return 'Confirma tu contraseña';
+    if (this.newPassword !== this.confirmPassword) return 'Las contraseñas no coinciden';
+    return '';
+  }
+
+  fieldState(field: string): 'error' | 'success' | '' {
+    if (!this.touched[field]) return '';
+    const err = field === 'newPassword'
+      ? this.getNewPasswordError()
+      : this.getConfirmPasswordError();
+    return err ? 'error' : 'success';
+  }
+
+  get passwordStrength(): { level: 'weak' | 'medium' | 'strong'; label: string } {
+    const p = this.newPassword;
+    if (!p) return { level: 'weak', label: '' };
+    let score = 0;
+    if (p.length >= 8)  score++;
+    if (p.length >= 12) score++;
+    if (/[A-Z]/.test(p)) score++;
+    if (/[0-9]/.test(p)) score++;
+    if (/[^A-Za-z0-9]/.test(p)) score++;
+    if (score <= 2) return { level: 'weak',   label: 'Débil' };
+    if (score <= 3) return { level: 'medium', label: 'Media' };
+    return              { level: 'strong', label: 'Fuerte' };
+  }
+
   onSubmit(): void {
-    if (this.newPassword !== this.confirmPassword) {
-      this.errorMessage = 'Las contraseñas no coinciden.';
-      return;
-    }
-    if (this.newPassword.length < 8) {
-      this.errorMessage = 'La contraseña debe tener mínimo 8 caracteres.';
-      return;
-    }
+    this.touched['newPassword'] = true;
+    this.touched['confirmPassword'] = true;
+
+    if (this.getNewPasswordError() || this.getConfirmPasswordError()) return;
 
     this.isLoading = true;
     this.errorMessage = '';

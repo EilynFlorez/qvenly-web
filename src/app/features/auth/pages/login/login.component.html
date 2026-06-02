@@ -19,12 +19,14 @@
 
     <!-- Alerta error -->
     <div *ngIf="errorMessage" class="alert alert--error">
+      <i class="ti ti-alert-circle"></i>
       {{ errorMessage }}
     </div>
 
     <!-- Formulario -->
     <div class="auth-form">
 
+      <!-- Email -->
       <div class="form-field">
         <label class="form-label">Correo electrónico</label>
         <input
@@ -32,19 +34,37 @@
           placeholder="tucorreo@ejemplo.com"
           [(ngModel)]="loginData.email"
           name="email"
+          (blur)="touch('email')"
           class="form-input"
+          [class.form-input--error]="getEmailError()"
         />
+        <span *ngIf="getEmailError()" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getEmailError() }}
+        </span>
       </div>
 
+      <!-- Contraseña -->
       <div class="form-field">
         <label class="form-label">Contraseña</label>
-        <input
-          type="password"
-          placeholder="••••••••"
-          [(ngModel)]="loginData.password"
-          name="password"
-          class="form-input"
-        />
+        <div class="input-password">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="loginData.password"
+            name="password"
+            (blur)="touch('password')"
+            class="form-input"
+            [class.form-input--error]="getPasswordError()"
+          />
+          <button type="button" class="input-password__toggle" (click)="showPassword = !showPassword">
+            <i [class]="showPassword ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+          </button>
+        </div>
+        <span *ngIf="getPasswordError()" class="form-error">
+          <i class="ti ti-alert-circle"></i>
+          {{ getPasswordError() }}
+        </span>
       </div>
 
       <div class="form-row">
