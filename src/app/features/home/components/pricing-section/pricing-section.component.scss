@@ -1,4 +1,10 @@
-// Variables
+// ── Escala tipográfica (5 niveles) ───────────────────────────
+$fs-lg:   2.25rem;    // h2 sección
+$fs-md:   1.25rem;    // h3 plan name
+$fs-base: 0.875rem;   // texto cuerpo, botones, listas
+$fs-sm:   0.75rem;    // badges, paginación
+
+// ── Variables ────────────────────────────────────────────────
 $color-bg:           #ffffff;
 $color-text:         #111827;
 $color-text-soft:    #6b7280;
@@ -9,14 +15,14 @@ $color-accent-icon:  #99f6e4;
 $color-border:       #e5e7eb;
 $color-white:        #ffffff;
 
-// Sección
+
+// ── Sección ──────────────────────────────────────────────────
 .pricing {
   width: 100%;
   background-color: $color-bg;
   padding: 5rem 0;
 }
 
-// Contenedor
 .pricing-container {
   max-width: 80rem;
   margin: 0 auto;
@@ -27,30 +33,29 @@ $color-white:        #ffffff;
   }
 }
 
-// Encabezado 
+
+// ── Encabezado ───────────────────────────────────────────────
 .pricing-header {
   text-align: center;
   margin-bottom: 4rem;
 
   h2 {
-    font-size: 1.875rem;
+    font-size: $fs-lg;
     font-weight: 700;
     color: $color-text;
     margin: 0 0 1rem;
-
-    @media (min-width: 768px) {
-      font-size: 2.25rem;
-    }
   }
 
   p {
+    font-size: $fs-base;
     color: $color-text-soft;
     max-width: 42rem;
     margin: 0 auto;
   }
 }
 
-// Badge
+
+// ── Badge ─────────────────────────────────────────────────────
 .pricing-badge {
   display: inline-flex;
   align-items: center;
@@ -58,7 +63,7 @@ $color-white:        #ffffff;
   background-color: $color-accent-light;
   border: 1px solid #ccfbf1;
   color: $color-accent-dark;
-  font-size: 0.75rem;
+  font-size: $fs-sm;
   font-weight: 600;
   padding: 0.375rem 1rem;
   border-radius: 9999px;
@@ -73,7 +78,8 @@ $color-white:        #ffffff;
   border-radius: 50%;
 }
 
-// Grid 
+
+// ── Grid ─────────────────────────────────────────────────────
 .pricing-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -84,7 +90,8 @@ $color-white:        #ffffff;
   }
 }
 
-// Card 
+
+// ── Card ─────────────────────────────────────────────────────
 .plan-card {
   border: 1px solid $color-border;
   border-radius: 1rem;
@@ -101,7 +108,6 @@ $color-white:        #ffffff;
   }
 }
 
-// Icono del plan
 .plan-icon {
   width: 2.5rem;
   height: 2.5rem;
@@ -113,15 +119,14 @@ $color-white:        #ffffff;
   margin-bottom: 0.75rem;
 
   i {
-    font-size: 1.25rem;
+    font-size: $fs-md;
     color: $color-accent;
   }
 }
 
-// Info del plan 
 .plan-info {
   h3 {
-    font-size: 1.125rem;
+    font-size: $fs-md;
     font-weight: 600;
     color: $color-text;
     margin: 0 0 0.5rem;
@@ -136,26 +141,27 @@ $color-white:        #ffffff;
 }
 
 .price-amount {
-  font-size: 2rem;
+  font-size: 2rem;      // excepción justificada: número de precio necesita destacar
   font-weight: 700;
   color: $color-text;
   line-height: 1;
 }
 
 .price-period {
-  font-size: 0.875rem;
+  font-size: $fs-base;
   color: $color-text-soft;
   margin-bottom: 0.25rem;
 }
 
 .plan-description {
-  font-size: 0.875rem;
+  font-size: $fs-base;
   color: $color-text-soft;
   line-height: 1.6;
   margin: 0;
 }
 
-// Características 
+
+// ── Características ───────────────────────────────────────────
 .plan-features {
   list-style: none;
   padding: 0;
@@ -169,7 +175,7 @@ $color-white:        #ffffff;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: $fs-base;
     color: $color-text-soft;
 
     i {
@@ -180,7 +186,8 @@ $color-white:        #ffffff;
   }
 }
 
-// Botón
+
+// ── Botón ────────────────────────────────────────────────────
 .plan-btn {
   display: flex;
   align-items: center;
@@ -188,7 +195,7 @@ $color-white:        #ffffff;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  font-size: 0.875rem;
+  font-size: $fs-base;
   font-weight: 500;
   text-decoration: none;
   border: 1px solid $color-accent;
@@ -206,24 +213,16 @@ $color-white:        #ffffff;
     background-color: $color-accent;
     color: $color-white;
 
-    i {
-      transform: translateX(4px);
-    }
+    i { transform: translateX(4px); }
   }
 }
 
-// Loading 
+
+// ── Loading ───────────────────────────────────────────────────
 .pricing-loading {
   text-align: center;
   padding: 3rem 0;
   color: $color-text-soft;
-
-  i {
-    font-size: 2rem;
-    color: $color-accent;
-    margin-bottom: 1rem;
-    display: block;
-  }
 }
 
 .loading-spinner {
@@ -240,7 +239,8 @@ $color-white:        #ffffff;
   to { transform: rotate(360deg); }
 }
 
-// Error
+
+// ── Error ─────────────────────────────────────────────────────
 .pricing-error {
   text-align: center;
   padding: 2rem 0;
@@ -263,16 +263,15 @@ $color-white:        #ffffff;
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
-    font-size: 0.875rem;
+    font-size: $fs-base;
     transition: background-color 0.2s ease;
 
-    &:hover {
-      background-color: $color-accent-dark;
-    }
+    &:hover { background-color: $color-accent-dark; }
   }
 }
 
-// Empty 
+
+// ── Empty ─────────────────────────────────────────────────────
 .pricing-empty {
   text-align: center;
   padding: 2rem 0;
@@ -285,7 +284,8 @@ $color-white:        #ffffff;
   }
 }
 
-// Paginación 
+
+// ── Paginación ────────────────────────────────────────────────
 .pricing-pagination {
   display: flex;
   justify-content: center;
@@ -303,13 +303,11 @@ $color-white:        #ffffff;
   border-radius: 0.5rem;
   background-color: $color-white;
   color: $color-text;
-  font-size: 0.875rem;
+  font-size: $fs-base;
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease;
 
-  i {
-    font-size: 1rem;
-  }
+  i { font-size: 1rem; }
 
   &:hover:not(:disabled) {
     border-color: $color-accent;
@@ -323,6 +321,6 @@ $color-white:        #ffffff;
 }
 
 .pagination-info {
-  font-size: 0.875rem;
+  font-size: $fs-sm;
   color: $color-text-soft;
 }

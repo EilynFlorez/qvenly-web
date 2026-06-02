@@ -1,17 +1,14 @@
-// ============================================================
-// CTA SECTION STYLES
-// Sección de llamada a la acción sobre fondo oscuro.
-// Breakpoint principal: 576px (sm)
-// ============================================================
-
+// ── Escala tipográfica (5 niveles) ───────────────────────────
+$fs-lg:   2.25rem;    // h2
+$fs-base: 0.875rem;   // texto cuerpo, botones
 
 // ── Variables ────────────────────────────────────────────────
-$color-bg:        #111827;   // gray-900
+$color-bg:        #111827;
 $color-text:      #ffffff;
-$color-text-soft: #9ca3af;   // gray-400
-$color-accent:    #14b8a6;   // teal-500
-$color-accent-hv: #0d9488;   // teal-600
-$color-border:    #4b5563;   // gray-600
+$color-text-soft: #9ca3af;
+$color-accent:    #14b8a6;
+$color-accent-hv: #0d9488;
+$color-border:    #4b5563;
 
 
 // ── Sección ──────────────────────────────────────────────────
@@ -34,21 +31,18 @@ $color-border:    #4b5563;   // gray-600
   }
 
   h2 {
-    font-size: 1.875rem;
+    font-size: $fs-lg;
     font-weight: 700;
     color: $color-text;
     margin: 0 0 1rem;
-
-    @media (min-width: 768px) {
-      font-size: 2.25rem;
-    }
   }
 
   p {
     color: $color-text-soft;
-    font-size: 1.125rem;
+    font-size: $fs-base;
     max-width: 42rem;
     margin: 0 auto 2rem;
+    line-height: 1.75;
   }
 }
 
@@ -66,14 +60,13 @@ $color-border:    #4b5563;   // gray-600
   }
 }
 
-// Botón primario (fondo teal)
 .btn-primary {
   width: 100%;
   background-color: $color-accent;
   color: $color-text;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
-  font-size: 0.875rem;
+  font-size: $fs-base;
   font-weight: 500;
   text-decoration: none;
   text-align: center;
@@ -88,14 +81,13 @@ $color-border:    #4b5563;   // gray-600
   }
 }
 
-// Botón secundario (borde gris, hover teal)
 .btn-outline {
   width: 100%;
   border: 1px solid $color-border;
   color: $color-text;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
-  font-size: 0.875rem;
+  font-size: $fs-base;
   font-weight: 500;
   text-decoration: none;
   text-align: center;
