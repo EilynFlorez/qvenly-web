@@ -161,3 +161,15 @@ export interface ApiResponse<T> {
   /** Fecha y hora de la respuesta */
   timestamp: string;
 }
+
+/**
+ * Criterios de filtrado para la bitácora de auditoría.
+ */
+export interface AuditFilter {
+  /** Tipo de acción a filtrar */
+  action: string;
+  /** Fecha de inicio del rango */
+  startDate: string;
+  /** Fecha de fin del rango */
+  endDate: string;
+}

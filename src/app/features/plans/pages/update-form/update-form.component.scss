@@ -1,16 +1,13 @@
 // ── Variables ─────────────────────────────────────────────────
-$accent:       #00B8A9;
-$accent-dark:  #008A7D;
-$accent-light: #f0fdfa;
-$text:         #1A2332;
-$text-soft:    #9ca3af;
-$border:       rgba(0, 184, 169, 0.1);
-$bg:           #F3F4F6;
-$white:        #ffffff;
-$danger:       #ef4444;
-$success:      #10b981;
+$accent:      #00B8A9;
+$accent-dark: #008A7D;
+$text:        #1A2332;
+$text-soft:   #4B5563;
+$border:      rgba(0, 184, 169, 0.1);
+$bg:          #F3F4F6;
+$white:       #ffffff;
+$danger:      #ef4444;
 
-$fs-xl:  25px;
 $fs-lg:  18px;
 $fs-md:  14px;
 $fs-sm:  12px;
@@ -19,7 +16,7 @@ $fs-sm:  12px;
 .page {
   display: flex;
   flex-direction: column;
-  min-height: 100%;  // ← cambia height por min-height
+  min-height: 100%;
 }
 
 .page-content {
@@ -28,10 +25,10 @@ $fs-sm:  12px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  overflow-y: auto;  // ← agrega esto
+  overflow-y: auto;
 }
 
-// ── Alertas ───────────────────────────────────────────────────
+// ── Alerta de error ───────────────────────────────────────────
 .alert {
   display: flex;
   align-items: center;
@@ -43,12 +40,6 @@ $fs-sm:  12px;
 
   i { font-size: 18px; }
 
-  &--success {
-    background: #f0fdf4;
-    color: $success;
-    border: 1px solid #bbf7d0;
-  }
-
   &--error {
     background: #fef2f2;
     color: $danger;
@@ -56,101 +47,102 @@ $fs-sm:  12px;
   }
 }
 
-// ── Card del formulario ───────────────────────────────────────
-.form-card {
-  background: $white;
-  border-radius: 16px;
-  border: 1px solid $border;
-  overflow: hidden;
-}
-
-// ── Sección del formulario ────────────────────────────────────
-.form-section {
-  padding: 24px;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid $border;
-  }
-
-  &__title {
-    font-size: $fs-lg;
-    font-weight: 600;
-    color: $text;
-    margin: 0 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    i { color: $accent; }
-  }
-}
-
-// ── Grid del formulario ───────────────────────────────────────
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-// ── Campo ─────────────────────────────────────────────────────
-.form-field {
+// ── Estado ────────────────────────────────────────────────────
+.state-box {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
+  padding: 48px;
+  background: $white;
+  border-radius: 16px;
+  color: $text-soft;
+  font-size: $fs-md;
+  text-align: center;
+}
 
-  &--full {
-    grid-column: 1 / -1;
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $border;
+  border-top-color: $accent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Modal ─────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal {
+  background: $white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border;
+
+    h3 {
+      font-size: $fs-lg;
+      font-weight: 600;
+      color: $text;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      i { color: $accent; }
+    }
   }
 
-  label {
-    font-size: $fs-sm;
-    font-weight: 500;
-    color: $text;
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $text-soft;
+    font-size: 20px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    padding: 4px;
+    border-radius: 8px;
+    transition: background 0.2s;
 
-    i { color: $accent; font-size: 14px; }
+    &:hover { background: $bg; }
   }
 
-  input, select, textarea {
-    padding: 10px 14px;
-    border: 1px solid $border;
-    border-radius: 10px;
-    font-size: $fs-md;
-    color: $text;
-    background: $white;
-    outline: none;
-    font-family: inherit;
-    transition: border-color 0.2s;
+  &__body {
+    padding: 24px;
 
-    &:focus { border-color: $accent; }
-
-    &.input--error { border-color: $danger; }
+    p {
+      font-size: $fs-md;
+      color: $text-soft;
+      margin: 0;
+    }
   }
 
-  textarea { resize: vertical; }
-}
-
-// ── Error de campo ────────────────────────────────────────────
-.field-error {
-  font-size: $fs-sm;
-  color: $danger;
-}
-
-.required { color: $danger; }
-
-// ── Acciones ──────────────────────────────────────────────────
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 20px 24px;
-  border-top: 1px solid $border;
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid $border;
+  }
 }
 
 // ── Botones ───────────────────────────────────────────────────
@@ -164,15 +156,11 @@ $fs-sm:  12px;
   font-weight: 500;
   cursor: pointer;
   border: none;
-  text-decoration: none;
-  transition: opacity 0.2s, background-color 0.2s;
+  transition: opacity 0.2s;
 
   i { font-size: 16px; }
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 
   &-primary {
     background: linear-gradient(135deg, $accent, $accent-dark);

@@ -1,9 +1,6 @@
 <div class="page">
 
-  <app-topbar
-    title="Detalle del Plan"
-    subtitle="Información completa y auditoría del plan"
-    [showExport]="false">
+  <app-topbar title="Detalle del Plan" subtitle="Información completa y auditoría del plan" [showExport]="false">
   </app-topbar>
 
   <div class="page-content">
@@ -37,156 +34,12 @@
     </div>
 
     <!-- Detalle del plan -->
-    <div class="detail-card" *ngIf="!isLoadingPlan && plan">
-
-      <!-- Header -->
-      <div class="detail-card__header">
-        <div class="detail-card__title-group">
-          <h2 class="detail-card__name">{{ plan.name }}</h2>
-          <p class="detail-card__description">{{ plan.description }}</p>
-        </div>
-        <span class="badge"
-          [class.badge--active]="plan.status === 'active'"
-          [class.badge--inactive]="plan.status === 'inactive'">
-          {{ plan.status === 'active' ? 'Activo' : 'Inactivo' }}
-        </span>
-      </div>
-
-      <!-- Precio -->
-      <div class="detail-card__price-row">
-        <span class="price-amount">{{ formatPrice(plan.price) }}</span>
-        <span class="price-period">/plan</span>
-        <span class="price-duration">
-          <i class="ti ti-clock"></i>
-          {{ plan.durationDays }} días
-        </span>
-      </div>
-
-      <div class="detail-card__divider"></div>
-
-      <!-- Límites -->
-      <div class="limits-section">
-        <h3 class="limits-section__title">
-          <i class="ti ti-users"></i>
-          Límites por rol
-        </h3>
-        <div class="limits-grid">
-          <div class="limit-item">
-            <i class="ti ti-user-check"></i>
-            <div>
-              <span class="limit-item__label">Organizadores</span>
-              <span class="limit-item__value">{{ plan.maxOrganizers }}</span>
-            </div>
-          </div>
-          <div class="limit-item">
-            <i class="ti ti-users"></i>
-            <div>
-              <span class="limit-item__label">Asistentes</span>
-              <span class="limit-item__value">{{ plan.maxAttendees }}</span>
-            </div>
-          </div>
-          <div class="limit-item">
-            <i class="ti ti-user-plus"></i>
-            <div>
-              <span class="limit-item__label">Participantes</span>
-              <span class="limit-item__value">{{ plan.maxParticipants }}</span>
-            </div>
-          </div>
-          <div class="limit-item">
-            <i class="ti ti-gavel"></i>
-            <div>
-              <span class="limit-item__label">Jueces</span>
-              <span class="limit-item__value">{{ plan.maxJudges }}</span>
-            </div>
-          </div>
-          <div class="limit-item">
-            <i class="ti ti-briefcase"></i>
-            <div>
-              <span class="limit-item__label">Personal</span>
-              <span class="limit-item__value">{{ plan.maxStaff }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="detail-card__divider"></div>
-
-      <!-- Fechas -->
-      <div class="dates-row">
-        <div class="date-item">
-          <i class="ti ti-calendar-plus"></i>
-          <div>
-            <span class="date-item__label">Creado</span>
-            <span class="date-item__value">{{ formatDate(plan.createdAt) }}</span>
-          </div>
-        </div>
-        <div class="date-item">
-          <i class="ti ti-calendar-event"></i>
-          <div>
-            <span class="date-item__label">Última actualización</span>
-            <span class="date-item__value">{{ formatDate(plan.updatedAt) }}</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
+    <app-plan-detail-card *ngIf="!isLoadingPlan && plan" [plan]="plan">
+    </app-plan-detail-card>
 
     <!-- Auditoría -->
-    <div class="audit-section" *ngIf="!isLoadingPlan && plan">
-
-      <h3 class="audit-section__title">
-        <i class="ti ti-history"></i>
-        Bitácora de auditoría
-      </h3>
-
-      <!-- Loading auditoría -->
-      <div class="state-box" *ngIf="isLoadingAudit">
-        <div class="spinner"></div>
-        <p>Cargando auditoría...</p>
-      </div>
-
-      <!-- Error auditoría -->
-      <div class="state-box state-box--error" *ngIf="!isLoadingAudit && errorAudit">
-        <i class="ti ti-alert-circle"></i>
-        <p>{{ errorAudit }}</p>
-      </div>
-
-      <!-- Sin registros -->
-      <div class="state-box" *ngIf="!isLoadingAudit && !errorAudit && audits.length === 0">
-        <i class="ti ti-clipboard-off"></i>
-        <p>No hay registros de auditoría para este plan.</p>
-      </div>
-
-      <!-- Tabla de auditoría -->
-      <div class="audit-table-wrapper" *ngIf="!isLoadingAudit && !errorAudit && audits.length > 0">
-        <table class="audit-table">
-          <thead>
-            <tr>
-              <th>Acción</th>
-              <th>Usuario</th>
-              <th>Descripción</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let audit of audits">
-              <td>
-                <span class="audit-badge" [ngClass]="getActionClass(audit.action)">
-                  {{ getActionLabel(audit.action) }}
-                </span>
-              </td>
-              <td class="audit-table__user">
-                <i class="ti ti-user"></i>
-                {{ audit.userId }}
-              </td>
-              <td class="audit-table__desc">{{ audit.changeDescription }}</td>
-              <td class="audit-table__date">{{ formatDate(audit.auditDate) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
+    <app-audit-table *ngIf="!isLoadingPlan && plan" [audits]="audits" [isLoading]="isLoadingAudit" [error]="errorAudit">
+    </app-audit-table>
 
   </div>
 </div>

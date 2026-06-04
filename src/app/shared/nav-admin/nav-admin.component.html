@@ -16,7 +16,7 @@
         Dashboard
       </a>
       <p class="nav-group">Planes</p>
-      <a class="nav-item" routerLink="/plans" routerLinkActive="active">
+      <a class="nav-item" routerLink="/plans" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <i class="ti ti-diamond"></i>
         Gestión de planes
       </a>
@@ -25,7 +25,7 @@
         <i class="ti ti-bell"></i>
         Notificaciones
       </a>
-      <a class="nav-item" routerLink="#" routerLinkActive="active">
+      <a class="nav-item" routerLink="/plans/audit" routerLinkActive="active">
         <i class="ti ti-shield-check"></i>
         Auditoría
       </a>

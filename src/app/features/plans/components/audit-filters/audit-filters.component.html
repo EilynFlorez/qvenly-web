@@ -1,0 +1,34 @@
+<div class="audit-filters">
+
+    <div class="filters-group">
+
+        <div class="filter-field">
+            <label>Acción</label>
+            <select [(ngModel)]="action" (change)="applyFilters()">
+                <option value="">Todas</option>
+                <option value="create">Creación</option>
+                <option value="update">Actualización</option>
+                <option value="delete">Eliminación</option>
+                <option value="assign">Asignación</option>
+                <option value="renew">Renovación</option>
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label>Fecha inicio</label>
+            <input type="date" [(ngModel)]="startDate" (change)="applyFilters()" />
+        </div>
+
+        <div class="filter-field">
+            <label>Fecha fin</label>
+            <input type="date" [(ngModel)]="endDate" (change)="applyFilters()" />
+        </div>
+
+    </div>
+
+    <button class="btn btn-outline" (click)="clearFilters()">
+        <i class="ti ti-x"></i>
+        Limpiar
+    </button>
+
+</div>

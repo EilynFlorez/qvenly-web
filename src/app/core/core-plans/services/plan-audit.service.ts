@@ -23,6 +23,15 @@ export class PlanAuditService {
   constructor(private http: HttpClient) { }
 
   /**
+ * Obtiene todos los registros de auditoría del sistema (HU48).
+ * Requiere rol ADMIN.
+ * @returns Observable con la lista completa de registros de auditoría
+ */
+  getAllAudits(): Observable<ApiResponse<PlanAuditResponse[]>> {
+    return this.http.get<ApiResponse<PlanAuditResponse[]>>(this.apiUrl);
+  }
+
+  /**
    * Obtiene la auditoría de acciones realizadas sobre un plan (HU48).
    * Requiere rol ADMIN.
    * @param planId ID del plan

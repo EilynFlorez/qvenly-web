@@ -4,6 +4,10 @@ import { PlanService } from '../../../../core/core-plans/services/plan.service';
 import { PlanAuditService } from '../../../../core/core-plans/services/plan-audit.service';
 import { PlanResponse, PlanAuditResponse } from '../../../../core/core-plans/models/plan.model';
 
+/**
+ * Página de detalle de un plan de servicio (HU39).
+ * Delega la visualización del plan y la auditoría a componentes hijos.
+ */
 @Component({
   selector: 'app-plan-detail',
   templateUrl: './plan-detail.component.html',
@@ -38,6 +42,9 @@ export class PlanDetailComponent implements OnInit {
     this.loadAudit(id);
   }
 
+  /**
+   * Carga los datos del plan desde el backend.
+   */
   loadPlan(id: number): void {
     this.isLoadingPlan = true;
     this.planService.getPlanById(id).subscribe({
@@ -52,6 +59,9 @@ export class PlanDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Carga los registros de auditoría del plan.
+   */
   loadAudit(id: number): void {
     this.isLoadingAudit = true;
     this.planAuditService.getAuditByPlan(id).subscribe({
@@ -66,48 +76,17 @@ export class PlanDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Vuelve a la lista de planes.
+   */
   goBack(): void {
     this.router.navigate(['/plans']);
   }
 
+  /**
+   * Navega al formulario de edición.
+   */
   editPlan(): void {
     this.router.navigate(['/plans/edit', this.plan?.idPlan]);
-  }
-
-  formatPrice(price: number): string {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0
-    }).format(price);
-  }
-
-  formatDate(date: string): string {
-    return new Intl.DateTimeFormat('es-CO', {
-      year: 'numeric', month: 'short', day: '2-digit',
-      hour: '2-digit', minute: '2-digit'
-    }).format(new Date(date));
-  }
-
-  getActionLabel(action: string): string {
-    const labels: Record<string, string> = {
-      create: 'Creación',
-      update: 'Actualización',
-      delete: 'Eliminación',
-      assign: 'Asignación',
-      renew: 'Renovación'
-    };
-    return labels[action] ?? action;
-  }
-
-  getActionClass(action: string): string {
-    const classes: Record<string, string> = {
-      create: 'audit-badge--create',
-      update: 'audit-badge--update',
-      delete: 'audit-badge--delete',
-      assign: 'audit-badge--assign',
-      renew:  'audit-badge--renew'
-    };
-    return classes[action] ?? '';
   }
 }

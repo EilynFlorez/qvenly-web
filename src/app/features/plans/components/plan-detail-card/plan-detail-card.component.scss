@@ -1,0 +1,186 @@
+// ── Variables ─────────────────────────────────────────────────
+$accent:       #00B8A9;
+$accent-dark:  #008A7D;
+$accent-light: #f0fdfa;
+$text:         #1A2332;
+$text-soft:    #4B5563;
+$border:       rgba(0, 184, 169, 0.1);
+$white:        #ffffff;
+
+// ── Escala tipográfica ────────────────────────────────────────
+$fs-xl:  25px;
+$fs-lg:  18px;
+$fs-md:  14px;
+$fs-sm:  12px;
+
+// ── Card de detalle ───────────────────────────────────────────
+.detail-card {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  // ── Header: nombre y badge ──────────────────────────────────
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  // ── Nombre del plan ────────────────────────────────────────
+  &__name {
+    font-size: $fs-xl;
+    font-weight: 700;
+    color: $text;
+    margin: 0 0 6px;
+  }
+
+  // ── Descripción ────────────────────────────────────────────
+  &__description {
+    font-size: $fs-md;
+    color: $text-soft;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  // ── Fila de precio y duración ──────────────────────────────
+  &__price-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  // ── Divisor ────────────────────────────────────────────────
+  &__divider {
+    height: 1px;
+    background: $border;
+  }
+}
+
+// ── Precio destacado ──────────────────────────────────────────
+.price-amount {
+  font-size: $fs-xl;
+  font-weight: 700;
+  color: $accent;
+  line-height: 1;
+}
+
+.price-period {
+  font-size: $fs-sm;
+  color: $text-soft;
+  margin-bottom: 3px;
+}
+
+.price-duration {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $fs-sm;
+  color: $text-soft;
+  margin-bottom: 3px;
+  margin-left: 8px;
+
+  i { font-size: 13px; color: $accent; }
+}
+
+// ── Badge de estado ───────────────────────────────────────────
+.badge {
+  font-size: $fs-sm;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &--active   { background: $accent-light; color: $accent-dark; }
+  &--inactive { background: #f3f4f6; color: $text-soft; }
+}
+
+// ── Sección de límites por rol ────────────────────────────────
+.limits-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__title {
+    font-size: $fs-lg;
+    font-weight: 600;
+    color: $text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { color: $accent; }
+  }
+}
+
+// ── Grid de límites ───────────────────────────────────────────
+.limits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+// ── Item de límite ────────────────────────────────────────────
+.limit-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $accent-light;
+  border-radius: 12px;
+  padding: 12px 14px;
+
+  i { font-size: 20px; color: $accent; flex-shrink: 0; }
+
+  div { display: flex; flex-direction: column; gap: 2px; }
+
+  &__label {
+    font-size: $fs-sm;
+    color: $text-soft;
+  }
+
+  &__value {
+    font-size: $fs-lg;
+    font-weight: 700;
+    color: $text;
+    line-height: 1;
+  }
+}
+
+// ── Fila de fechas ────────────────────────────────────────────
+.dates-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+// ── Item de fecha ─────────────────────────────────────────────
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  i { font-size: 18px; color: $accent; }
+
+  div { display: flex; flex-direction: column; gap: 2px; }
+
+  &__label {
+    font-size: $fs-sm;
+    color: $text-soft;
+  }
+
+  &__value {
+    font-size: $fs-md;
+    font-weight: 500;
+    color: $text;
+  }
+}

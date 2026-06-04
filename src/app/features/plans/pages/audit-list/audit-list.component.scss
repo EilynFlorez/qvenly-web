@@ -7,7 +7,6 @@ $border:      rgba(0, 184, 169, 0.1);
 $white:       #ffffff;
 $danger:      #ef4444;
 
-// ── Escala tipográfica ────────────────────────────────────────
 $fs-md: 14px;
 $fs-sm: 12px;
 
@@ -26,43 +25,6 @@ $fs-sm: 12px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-// ── Header de acciones ────────────────────────────────────────
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-// ── Botones ───────────────────────────────────────────────────
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 20px;
-  border-radius: 20px;
-  font-size: $fs-md;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  transition: opacity 0.2s;
-
-  i { font-size: 16px; }
-
-  &-primary {
-    background: linear-gradient(135deg, $accent, $accent-dark);
-    color: $white;
-    &:hover { opacity: 0.9; }
-  }
-
-  &-outline {
-    background: $white;
-    border: 1px solid $border;
-    color: $text;
-    &:hover { border-color: $accent; color: $accent; }
-  }
 }
 
 // ── Estados ───────────────────────────────────────────────────
@@ -95,3 +57,26 @@ $fs-sm: 12px;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Botones ───────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: $fs-md;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+
+  i { font-size: 16px; }
+
+  &-outline {
+    background: $white;
+    border: 1px solid $border;
+    color: $text;
+    &:hover { border-color: $accent; color: $accent; }
+  }
+}

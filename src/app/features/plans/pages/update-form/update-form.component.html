@@ -11,6 +11,11 @@
       <p>Cargando plan...</p>
     </div>
 
+    <div class="alert alert--error" *ngIf="errorMessage && !isLoading">
+      <i class="ti ti-alert-circle"></i>
+      {{ errorMessage }}
+    </div>
+
     <app-plan-form
       *ngIf="!isLoading && existingPlan"
       submitLabel="Guardar cambios"
@@ -23,3 +28,46 @@
 
   </div>
 </div>
+
+<!-- Modal de confirmación -->
+<div class="modal-overlay" *ngIf="showConfirmModal" (click)="cancelConfirm()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <h3>
+        <i class="ti ti-device-floppy"></i>
+        Confirmar cambios
+      </h3>
+      <button class="modal__close" (click)="cancelConfirm()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="modal__body">
+      <p>¿Estás seguro de que deseas guardar los cambios realizados en este plan?</p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn-outline" (click)="cancelConfirm()">
+        Cancelar
+      </button>
+      <button class="btn btn-primary" (click)="confirmSave()" [disabled]="isSubmitting">
+        <i class="ti ti-check"></i>
+        {{ isSubmitting ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de éxito -->
+<app-success-modal
+  *ngIf="successMessage"
+  title="¡Cambios guardados!"
+  [message]="successMessage"
+  (accepted)="acceptSuccess()">
+</app-success-modal>
+
+<!-- Modal sin cambios -->
+<app-success-modal
+  *ngIf="noChangesMessage"
+  title="Sin cambios"
+  [message]="noChangesMessage"
+  (accepted)="acceptNoChanges()">
+</app-success-modal>
