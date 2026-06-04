@@ -27,8 +27,7 @@
   <ng-container *ngIf="!isLoading && !error && audits.length > 0">
 
     <!-- Filtros -->
-    <app-audit-filters
-      (filtersChanged)="onFiltersChanged($event)">
+    <app-audit-filters (filtersChanged)="onFiltersChanged($event)">
     </app-audit-filters>
 
     <!-- Sin resultados tras filtrar -->
@@ -42,6 +41,7 @@
       <table class="audit-table">
         <thead>
           <tr>
+            <th>Plan</th> 
             <th>Acción</th>
             <th>Usuario</th>
             <th>Descripción</th>
@@ -50,6 +50,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let audit of filteredAudits">
+            <td class="audit-table__plan">{{ audit.plan.name }}</td> 
             <td>
               <span class="audit-badge" [ngClass]="getActionClass(audit.action)">
                 {{ getActionLabel(audit.action) }}

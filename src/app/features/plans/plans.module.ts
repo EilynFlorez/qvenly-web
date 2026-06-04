@@ -17,6 +17,7 @@ import { FormFieldComponent } from './components/form-field/form-field.component
 import { PlanDetailCardComponent } from './components/plan-detail-card/plan-detail-card.component';
 import { AuditTableComponent } from './components/audit-table/audit-table.component';
 import { AuditFiltersComponent } from './components/audit-filters/audit-filters.component';
+import { AuditListComponent } from './pages/audit-list/audit-list.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { AuditFiltersComponent } from './components/audit-filters/audit-filters.
     FormFieldComponent,
     PlanDetailCardComponent,
     AuditTableComponent,
-    AuditFiltersComponent
+    AuditFiltersComponent,
+    AuditListComponent
   ],
   imports: [
     CommonModule,
