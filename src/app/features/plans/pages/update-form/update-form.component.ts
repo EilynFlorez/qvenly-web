@@ -16,6 +16,9 @@ export class UpdateFormComponent implements OnInit {
   /** Plan existente cargado desde el backend */
   existingPlan: PlanResponse | null = null;
 
+  /** Valores originales del plan para detectar cambios */
+  originalValues: PlanRequest | null = null;
+
   /** ID del plan a editar */
   planId!: number;
 
@@ -27,6 +30,18 @@ export class UpdateFormComponent implements OnInit {
 
   /** Mensaje de error general */
   errorMessage = '';
+
+  /** Controla el modal de confirmación */
+  showConfirmModal = false;
+
+  /** Datos a guardar cuando confirme */
+  pendingData: PlanRequest | null = null;
+
+  /** Mensaje del modal de éxito */
+  successMessage = '';
+
+  /** Mensaje del modal de sin cambios */
+  noChangesMessage = '';
 
   constructor(
     private planService: PlanService,
@@ -47,6 +62,18 @@ export class UpdateFormComponent implements OnInit {
     this.planService.getPlanById(this.planId).subscribe({
       next: (res) => {
         this.existingPlan = res.data;
+        this.originalValues = {
+          name: res.data.name,
+          description: res.data.description,
+          price: res.data.price,
+          durationDays: res.data.durationDays,
+          maxOrganizers: res.data.maxOrganizers,
+          maxParticipants: res.data.maxParticipants,
+          maxJudges: res.data.maxJudges,
+          maxAttendees: res.data.maxAttendees,
+          maxStaff: res.data.maxStaff,
+          status: res.data.status
+        };
         this.isLoading = false;
       },
       error: () => {
@@ -57,22 +84,66 @@ export class UpdateFormComponent implements OnInit {
   }
 
   /**
-   * Envía el formulario para actualizar el plan (HU40).
+   * Verifica si hubo cambios y muestra modal de confirmación (HU40).
    */
   onSubmit(data: PlanRequest): void {
+    if (!this.hasChanges(data)) {
+      this.noChangesMessage = 'No se realizó ningún cambio.';
+      return;
+    }
+    this.pendingData = data;
+    this.showConfirmModal = true;
+  }
+
+  /**
+   * Compara los datos del formulario con los originales.
+   */
+  hasChanges(data: PlanRequest): boolean {
+    if (!this.originalValues) return true;
+    return JSON.stringify(data) !== JSON.stringify(this.originalValues);
+  }
+
+  /**
+   * Confirma y guarda los cambios.
+   */
+  confirmSave(): void {
+    if (!this.pendingData) return;
     this.isSubmitting = true;
+    this.showConfirmModal = false;
     this.errorMessage = '';
 
-    this.planService.updatePlan(this.planId, data).subscribe({
-      next: () => {
+    this.planService.updatePlan(this.planId, this.pendingData).subscribe({
+      next: (res) => {
         this.isSubmitting = false;
-        this.router.navigate(['/plans']);
+        this.successMessage = res.message || 'Los cambios fueron guardados exitosamente.';
       },
       error: (err) => {
         this.isSubmitting = false;
         this.errorMessage = err.error?.message || 'No se pudo actualizar el plan.';
       }
     });
+  }
+
+  /**
+   * Cancela la confirmación y vuelve al formulario.
+   */
+  cancelConfirm(): void {
+    this.showConfirmModal = false;
+    this.pendingData = null;
+  }
+
+  /**
+   * Acepta el mensaje de sin cambios y vuelve a la lista.
+   */
+  acceptNoChanges(): void {
+    this.router.navigate(['/plans']);
+  }
+
+  /**
+   * Acepta el éxito y vuelve a la lista.
+   */
+  acceptSuccess(): void {
+    this.router.navigate(['/plans']);
   }
 
   /**
