@@ -1,0 +1,23 @@
+<div class="callback-page">
+  <div class="callback-card">
+
+    <div class="callback-card__logo">
+      <img src="assets/images/logoQvenly.png" alt="Qvenly">
+      <span>Qvenly</span>
+    </div>
+
+    <!-- Cargando -->
+    <div *ngIf="!errorMessage" class="callback-card__loading">
+      <div class="spinner"></div>
+      <p>Iniciando sesión con Google...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="callback-card__error">
+      <i class="ti ti-circle-x"></i>
+      <p>{{ errorMessage }}</p>
+      <small>Redirigiendo al login...</small>
+    </div>
+
+  </div>
+</div>
