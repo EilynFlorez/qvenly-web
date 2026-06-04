@@ -181,6 +181,7 @@ $fs-sm:   12px;   // texto secundario / badges
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
+  align-items: stretch;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);

@@ -1,0 +1,80 @@
+// ── Variables ─────────────────────────────────────────────────
+$accent:    #00B8A9;
+$text:      #1A2332;
+$text-soft: #4B5563;
+$border:    rgba(0, 184, 169, 0.1);
+$white:     #ffffff;
+
+// ── Escala tipográfica ────────────────────────────────────────
+$fs-md: 14px;
+$fs-sm: 12px;
+
+// ── Contenedor de filtros ─────────────────────────────────────
+.audit-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: $white;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid $border;
+}
+
+// ── Grupo de campos ───────────────────────────────────────────
+.filters-group {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+// ── Campo individual ──────────────────────────────────────────
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 140px;
+
+  label {
+    font-size: $fs-sm;
+    font-weight: 500;
+    color: $text-soft;
+  }
+
+  input, select {
+    padding: 8px 12px;
+    border: 1px solid $border;
+    border-radius: 10px;
+    font-size: $fs-md;
+    color: $text;
+    background: $white;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: $accent; }
+  }
+}
+
+// ── Botón limpiar ─────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: $fs-md;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  i { font-size: 14px; }
+
+  &-outline {
+    background: $white;
+    border: 1px solid $border;
+    color: $text;
+    &:hover { border-color: $accent; color: $accent; }
+  }
+}

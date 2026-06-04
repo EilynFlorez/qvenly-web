@@ -8,13 +8,15 @@ import { PlanListComponent } from './pages/plan-list/plan-list.component';
 import { PlanDetailComponent } from './pages/plan-detail/plan-detail.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { TopbarComponent } from '../../shared/topbar/topbar.component';
 import { SharedModule } from '../../shared/shared.module';
 import { PlanCardComponent } from './components/plan-card/plan-card.component';
 import { PlanFormComponent } from './components/plan-form/plan-form.component';
 import { DeleteModalComponent } from './components/delete-modal/delete-modal.component';
 import { SuccessModalComponent } from './components/success-modal/success-modal.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
+import { PlanDetailCardComponent } from './components/plan-detail-card/plan-detail-card.component';
+import { AuditTableComponent } from './components/audit-table/audit-table.component';
+import { AuditFiltersComponent } from './components/audit-filters/audit-filters.component';
 
 
 @NgModule({
@@ -27,7 +29,10 @@ import { FormFieldComponent } from './components/form-field/form-field.component
     PlanFormComponent,
     DeleteModalComponent,
     SuccessModalComponent,
-    FormFieldComponent
+    FormFieldComponent,
+    PlanDetailCardComponent,
+    AuditTableComponent,
+    AuditFiltersComponent
   ],
   imports: [
     CommonModule,
