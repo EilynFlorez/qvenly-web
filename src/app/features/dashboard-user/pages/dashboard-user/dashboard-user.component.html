@@ -1,1 +1,314 @@
-<p>dashboard-user works!</p>
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <img src="assets/images/logoQvn.png" alt="Qvenly">
+            </div>
+            <span class="logo-name">Qvenly</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <p class="nav-group">Principal</p>
+            <a class="nav-item" routerLink="/dashboard-user" routerLinkActive="active"
+                [routerLinkActiveOptions]="{exact: true}">
+                <i class="ti ti-layout-dashboard"></i>
+                Dashboard
+            </a>
+
+            <p class="nav-group">Mi Plan</p>
+            <a class="nav-item" routerLink="/dashboard-user/plan" routerLinkActive="active">
+                <i class="ti ti-diamond"></i>
+                Mi plan activo
+            </a>
+            <a class="nav-item" routerLink="/dashboard-user/planes" routerLinkActive="active">
+                <i class="ti ti-layout-grid-add"></i>
+                Ver planes
+            </a>
+
+            <p class="nav-group">Mis Actividades</p>
+            <a class="nav-item" routerLink="/dashboard-user/eventos" routerLinkActive="active">
+                <i class="ti ti-calendar-event"></i>
+                Mis eventos
+            </a>
+            <a class="nav-item" routerLink="/dashboard-user/invitaciones" routerLinkActive="active">
+                <i class="ti ti-mail"></i>
+                Invitaciones
+            </a>
+
+            <p class="nav-group">Cuenta</p>
+            <a class="nav-item" routerLink="/dashboard-user/perfil" routerLinkActive="active">
+                <i class="ti ti-user-circle"></i>
+                Mi perfil
+            </a>
+            <a class="nav-item nav-item--danger" (click)="onLogout()">
+                <i class="ti ti-logout"></i>
+                Cerrar sesión
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-profile">{{ userInitials }}</div>
+            <div class="user-info">
+                <p class="user-name">{{ userName }}</p>
+                <p class="user-email">{{ userEmail }}</p>
+            </div>
+        </div>
+    </aside>
+
+    <!--  MAIN  -->
+    <main>
+        <div class="main-content">
+
+            <!-- Topbar -->
+            <div class="topbar">
+                <div>
+                    <h1 class="topbar-title">
+                        Bienvenido, <span class="topbar-title--accent">{{ userName }}</span>
+                    </h1>
+                    <p class="topbar-sub">Gestiona tu plan y tus eventos desde aquí</p>
+                </div>
+            </div>
+
+            <!-- Contenido scrolleable -->
+            <div class="page-body">
+
+                <!--  KPI Cards  -->
+                <div class="kpi-grid">
+
+                    <!-- Plan activo -->
+                    <div class="kpi-card">
+                        <div class="kpi-card__icon kpi-card__icon--teal">
+                            <i class="ti ti-diamond"></i>
+                        </div>
+                        <div class="kpi-card__body">
+                            <p class="kpi-card__label">Plan activo</p>
+                            <p class="kpi-card__value" *ngIf="!loadingActivePlan && activePlan">
+                                {{ activePlan.plan.name }}
+                            </p>
+                            <p class="kpi-card__value kpi-card__value--muted" *ngIf="!loadingActivePlan && !activePlan">
+                                Sin plan
+                            </p>
+                            <div class="kpi-skeleton" *ngIf="loadingActivePlan"></div>
+                        </div>
+                    </div>
+
+                    <!-- Días restantes -->
+                    <div class="kpi-card">
+                        <div class="kpi-card__icon kpi-card__icon--blue">
+                            <i class="ti ti-clock"></i>
+                        </div>
+                        <div class="kpi-card__body">
+                            <p class="kpi-card__label">Días restantes</p>
+                            <p class="kpi-card__value" *ngIf="!loadingActivePlan && activePlan">
+                                {{ getDaysRemaining() }}
+                            </p>
+                            <p class="kpi-card__value kpi-card__value--muted" *ngIf="!loadingActivePlan && !activePlan">
+                                —
+                            </p>
+                            <div class="kpi-skeleton" *ngIf="loadingActivePlan"></div>
+                        </div>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="kpi-card">
+                        <div class="kpi-card__icon kpi-card__icon--green">
+                            <i class="ti ti-circle-check"></i>
+                        </div>
+                        <div class="kpi-card__body">
+                            <p class="kpi-card__label">Estado</p>
+                            <p class="kpi-card__value" *ngIf="!loadingActivePlan && activePlan">
+                                <span class="badge badge--active">Activo</span>
+                            </p>
+                            <p class="kpi-card__value" *ngIf="!loadingActivePlan && !activePlan">
+                                <span class="badge badge--inactive">Sin plan</span>
+                            </p>
+                            <div class="kpi-skeleton" *ngIf="loadingActivePlan"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ── Sección: Mi Plan / Planes disponibles ────────────────── -->
+                <div class="section">
+
+                    <!-- Plan activo detallado -->
+                    <div class="section-card" *ngIf="!loadingActivePlan && activePlan">
+                        <div class="section-card__header">
+                            <h2 class="section-card__title">
+                                <i class="ti ti-diamond"></i>
+                                Mi plan activo
+                            </h2>
+                            <span class="badge badge--active">Activo</span>
+                        </div>
+
+                        <div class="plan-detail">
+                            <div class="plan-detail__main">
+                                <p class="plan-detail__name">{{ activePlan.plan.name }}</p>
+                                <p class="plan-detail__desc">{{ activePlan.plan.description }}</p>
+                                <div class="plan-detail__dates">
+                                    <span><i class="ti ti-calendar"></i> Inicio: {{ activePlan.startDate |
+                                        date:'dd/MM/yyyy' }}</span>
+                                    <span><i class="ti ti-calendar-off"></i> Vence: {{ activePlan.endDate |
+                                        date:'dd/MM/yyyy' }}</span>
+                                </div>
+                                <div class="progress-wrap">
+                                    <div class="progress-bar">
+                                        <div class="progress-bar__fill"
+                                            [style.width.%]="Math.min((getDaysRemaining() / (activePlan.plan.durationDays || 30)) * 100, 100)">
+                                        </div>
+                                    </div>
+                                    <span class="progress-label">{{ getDaysRemaining() }} días restantes</span>
+                                </div>
+                            </div>
+
+                            <div class="plan-detail__features">
+                                <p class="plan-detail__features-title">Incluye</p>
+                                <ul>
+                                    <li *ngIf="activePlan.plan.maxAttendees > 0">
+                                        <i class="ti ti-users"></i> Hasta {{ activePlan.plan.maxAttendees }} asistentes
+                                    </li>
+                                    <li *ngIf="activePlan.plan.maxOrganizers > 0">
+                                        <i class="ti ti-user-check"></i> {{ activePlan.plan.maxOrganizers }}
+                                        organizador(es)
+                                    </li>
+                                    <li *ngIf="activePlan.plan.maxParticipants > 0">
+                                        <i class="ti ti-user-plus"></i> Hasta {{ activePlan.plan.maxParticipants }}
+                                        participantes
+                                    </li>
+                                    <li *ngIf="activePlan.plan.maxStaff > 0">
+                                        <i class="ti ti-briefcase"></i> Hasta {{ activePlan.plan.maxStaff }} personal de
+                                        apoyo
+                                    </li>
+                                    <li>
+                                        <i class="ti ti-calendar"></i> Duración: {{ activePlan.plan.durationDays }} días
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sin plan activo -->
+                    <div class="section-card" *ngIf="!loadingActivePlan && !activePlan">
+                        <div class="section-card__header">
+                            <h2 class="section-card__title">
+                                <i class="ti ti-layout-grid-add"></i>
+                                Planes disponibles
+                            </h2>
+                        </div>
+
+                        <!-- Loading planes -->
+                        <div class="loading-row" *ngIf="loadingPlans">
+                            <div class="spinner"></div>
+                            <span>Cargando planes...</span>
+                        </div>
+
+                        <!-- Error planes -->
+                        <div class="error-row" *ngIf="!loadingPlans && plansError">
+                            <i class="ti ti-alert-circle"></i>
+                            <span>No se pudieron cargar los planes.</span>
+                        </div>
+
+                        <!-- Grid de planes -->
+                        <div class="plans-grid" *ngIf="!loadingPlans && !plansError">
+                            <div class="plan-card" *ngFor="let plan of availablePlans">
+                                <div class="plan-card__header">
+                                    <div class="plan-card__icon">
+                                        <i class="ti ti-diamond"></i>
+                                    </div>
+                                    <div>
+                                        <p class="plan-card__name">{{ plan.name }}</p>
+                                        <p class="plan-card__price">
+                                            {{ formatPrice(plan.price) }} <span>/mes</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="plan-card__desc">{{ plan.description }}</p>
+                                <ul class="plan-card__features">
+                                    <li *ngIf="plan.maxAttendees > 0">
+                                        <i class="ti ti-users"></i> Hasta {{ plan.maxAttendees }} asistentes
+                                    </li>
+                                    <li *ngIf="plan.maxOrganizers > 0">
+                                        <i class="ti ti-user-check"></i> {{ plan.maxOrganizers }} organizador(es)
+                                    </li>
+                                    <li *ngIf="plan.maxParticipants > 0">
+                                        <i class="ti ti-user-plus"></i> Hasta {{ plan.maxParticipants }} participantes
+                                    </li>
+                                    <li *ngIf="plan.maxJudges > 0">
+                                        <i class="ti ti-gavel"></i> Hasta {{ plan.maxJudges }} jueces
+                                    </li>
+                                    <li *ngIf="plan.maxStaff > 0">
+                                        <i class="ti ti-briefcase"></i> Hasta {{ plan.maxStaff }} personal de apoyo
+                                    </li>
+                                    <li>
+                                        <i class="ti ti-calendar"></i> Duración: {{ plan.durationDays }} días
+                                    </li>
+                                </ul>
+                                <button class="plan-card__btn">
+                                    Adquirir plan
+                                    <i class="ti ti-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!--  Acciones rápidas  -->
+                <div class="section">
+                    <div class="section-card">
+                        <div class="section-card__header">
+                            <h2 class="section-card__title">
+                                <i class="ti ti-bolt"></i>
+                                Acciones rápidas
+                            </h2>
+                        </div>
+
+                        <div class="actions-grid">
+
+                            <div class="action-item" [class.action-item--disabled]="!activePlan">
+                                <div class="action-item__icon action-item__icon--purple">
+                                    <i class="ti ti-calendar-event"></i>
+                                </div>
+                                <div class="action-item__body">
+                                    <p class="action-item__title">Mis eventos</p>
+                                    <p class="action-item__desc" *ngIf="activePlan">Crea y gestiona tus eventos.</p>
+                                    <p class="action-item__desc" *ngIf="!activePlan">Necesitas un plan activo.</p>
+                                </div>
+                                <i class="ti ti-chevron-right action-item__arrow" *ngIf="activePlan"></i>
+                                <i class="ti ti-lock action-item__arrow action-item__arrow--lock"
+                                    *ngIf="!activePlan"></i>
+                            </div>
+
+                            <div class="action-item">
+                                <div class="action-item__icon action-item__icon--orange">
+                                    <i class="ti ti-mail"></i>
+                                </div>
+                                <div class="action-item__body">
+                                    <p class="action-item__title">Invitaciones</p>
+                                    <p class="action-item__desc">Revisa tus invitaciones pendientes.</p>
+                                </div>
+                                <i class="ti ti-chevron-right action-item__arrow"></i>
+                            </div>
+
+                            <div class="action-item">
+                                <div class="action-item__icon action-item__icon--teal">
+                                    <i class="ti ti-user-circle"></i>
+                                </div>
+                                <div class="action-item__body">
+                                    <p class="action-item__title">Mi perfil</p>
+                                    <p class="action-item__desc">Actualiza tu información personal.</p>
+                                </div>
+                                <i class="ti ti-chevron-right action-item__arrow"></i>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+</div>
