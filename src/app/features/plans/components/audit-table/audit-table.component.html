@@ -1,0 +1,72 @@
+<div class="audit-section">
+
+  <h3 class="audit-section__title">
+    <i class="ti ti-history"></i>
+    Bitácora de auditoría
+  </h3>
+
+  <!-- Loading -->
+  <div class="state-box" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando auditoría...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="state-box state-box--error" *ngIf="!isLoading && error">
+    <i class="ti ti-alert-circle"></i>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Sin registros -->
+  <div class="state-box" *ngIf="!isLoading && !error && audits.length === 0">
+    <i class="ti ti-clipboard-off"></i>
+    <p>No hay registros de auditoría.</p>
+  </div>
+
+  <!-- Filtros y tabla -->
+  <ng-container *ngIf="!isLoading && !error && audits.length > 0">
+
+    <!-- Filtros -->
+    <app-audit-filters (filtersChanged)="onFiltersChanged($event)">
+    </app-audit-filters>
+
+    <!-- Sin resultados tras filtrar -->
+    <div class="state-box" *ngIf="filteredAudits.length === 0">
+      <i class="ti ti-search-off"></i>
+      <p>No hay registros que coincidan con los filtros.</p>
+    </div>
+
+    <!-- Tabla -->
+    <div class="audit-table-wrapper" *ngIf="filteredAudits.length > 0">
+      <table class="audit-table">
+        <thead>
+          <tr>
+            <th>Plan</th> 
+            <th>Acción</th>
+            <th>Usuario</th>
+            <th>Descripción</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let audit of filteredAudits">
+            <td class="audit-table__plan">{{ audit.plan.name }}</td> 
+            <td>
+              <span class="audit-badge" [ngClass]="getActionClass(audit.action)">
+                {{ getActionLabel(audit.action) }}
+              </span>
+            </td>
+            <td class="audit-table__user">
+              <i class="ti ti-user"></i>
+              {{ audit.userId }}
+            </td>
+            <td class="audit-table__desc">{{ audit.changeDescription }}</td>
+            <td class="audit-table__date">{{ formatDate(audit.auditDate) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </ng-container>
+
+</div>

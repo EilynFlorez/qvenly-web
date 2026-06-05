@@ -70,7 +70,8 @@ export class LoginComponent implements OnInit {
           this.authService.saveUserInfo(
             response.data.name,
             response.data.email,
-            response.data.role
+            response.data.role,
+            response.data.userId
           );
           // Redirigir según el rol
           const role = response.data.role;
@@ -95,6 +96,6 @@ export class LoginComponent implements OnInit {
   }
 
   onGoogleLogin(): void {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
-  }
+  window.location.href = 'http://localhost:9000/oauth2/authorization/google';
+}
 }

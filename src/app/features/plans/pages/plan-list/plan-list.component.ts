@@ -147,27 +147,22 @@ export class PlanListComponent implements OnInit {
   /**
    * Confirma y ejecuta la eliminación lógica del plan (HU41).
    */
-  confirmDelete(): void {
-    if (!this.deleteReason.trim()) {
-      this.deleteReasonError = 'El motivo de eliminación es obligatorio.';
-      return;
-    }
-    if (!this.planToDelete) return;
+  confirmDelete(reason: string): void {
+  if (!this.planToDelete) return;
 
-    this.isDeleting = true;
-    this.planService.deletePlan(this.planToDelete.idPlan, this.deleteReason).subscribe({
-      next: () => {
-        this.isDeleting = false;
-        this.closeDeleteModal();
-        this.loadPlans();
-        this.successMessage = 'El plan fue eliminado exitosamente.';
-      },
-      error: (err) => {
-        this.isDeleting = false;
-        this.deleteReasonError = err.error?.message || 'No se pudo eliminar el plan.';
-      }
-    });
-  }
+  this.isDeleting = true;
+  this.planService.deletePlan(this.planToDelete.idPlan, reason).subscribe({
+    next: () => {
+      this.isDeleting = false;
+      this.closeDeleteModal();
+      this.loadPlans();
+      this.successMessage = 'El plan fue eliminado exitosamente.';
+    },
+    error: (err) => {
+      this.isDeleting = false;
+    }
+  });
+}
 
   /**
    * Formatea el precio en pesos colombianos.

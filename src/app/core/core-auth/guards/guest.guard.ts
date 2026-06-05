@@ -10,6 +10,13 @@ export const guestGuard: CanActivateFn = () => {
     return true;
   }
 
-  router.navigate(['/']);
+  const role = authService.getRole();
+
+  if (role === 'ADMIN') {
+    router.navigate(['/dashboard']);
+  } else {
+    router.navigate(['/dashboard-user']);
+  }
+
   return false;
 };

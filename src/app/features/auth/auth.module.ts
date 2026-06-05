@@ -9,6 +9,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { ConfirmEmailComponent } from './pages/confirm-email/confirm-email.component';
+import { GoogleCallbackComponent } from './pages/google-callback/google-callback.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { ConfirmEmailComponent } from './pages/confirm-email/confirm-email.compo
     RegisterComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    ConfirmEmailComponent
+    ConfirmEmailComponent,
+    GoogleCallbackComponent
   ],
   imports: [
     CommonModule,

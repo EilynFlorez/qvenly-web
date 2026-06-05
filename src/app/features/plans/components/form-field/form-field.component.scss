@@ -1,0 +1,61 @@
+// ── Variables ─────────────────────────────────────────────────
+$accent:    #00B8A9;
+$text:      #1A2332;
+$border:    rgba(0, 184, 169, 0.1);
+$white:     #ffffff;
+$danger:    #ef4444;
+
+// ── Escala tipográfica ────────────────────────────────────────
+$fs-md:  14px;
+$fs-sm:  12px;
+
+// ── Contenedor del campo ──────────────────────────────────────
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  // Ocupa el ancho completo del grid si se necesita
+  &--full { grid-column: 1 / -1; }
+
+  // ── Label ───────────────────────────────────────────────────
+  label {
+    font-size: $fs-sm;
+    font-weight: 500;
+    color: $text;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    i { color: $accent; font-size: 14px; }
+  }
+
+  // ── Inputs, selects y textareas ─────────────────────────────
+  input, select, textarea {
+    padding: 10px 14px;
+    border: 1px solid $border;
+    border-radius: 10px;
+    font-size: $fs-md;
+    color: $text;
+    background: $white;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: $accent; }
+
+    // Estado de error
+    &.input--error { border-color: $danger; }
+  }
+
+  textarea { resize: vertical; }
+}
+
+// ── Indicador de campo obligatorio ────────────────────────────
+.required { color: $danger; }
+
+// ── Mensaje de error ──────────────────────────────────────────
+.field-error {
+  font-size: $fs-sm;
+  color: $danger;
+}

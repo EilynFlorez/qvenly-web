@@ -1,0 +1,47 @@
+<div class="modal-overlay" (click)="cancel()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <div class="modal__header">
+      <h3>
+        <i class="ti ti-alert-triangle"></i>
+        Confirmar eliminación
+      </h3>
+      <button class="modal__close" (click)="cancel()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <div class="modal__body">
+      <p>¿Estás seguro de que deseas eliminar este plan?</p>
+
+      <div class="plan-summary">
+        <p class="plan-summary__name">{{ plan.name }}</p>
+        <p class="plan-summary__meta">
+          Precio: {{ formatPrice(plan.price) }} |
+          Duración: {{ plan.durationDays }} días
+        </p>
+      </div>
+
+      <div class="form-field">
+        <label>Motivo de eliminación <span class="required">*</span></label>
+        <textarea
+          [(ngModel)]="reason"
+          placeholder="Explica por qué se elimina este plan..."
+          rows="3">
+        </textarea>
+        <span class="field-error" *ngIf="reasonError">{{ reasonError }}</span>
+      </div>
+    </div>
+
+    <div class="modal__footer">
+      <button class="btn btn-outline" (click)="cancel()">
+        Cancelar
+      </button>
+      <button class="btn btn-danger" (click)="confirm()" [disabled]="isDeleting">
+        <i class="ti ti-trash"></i>
+        {{ isDeleting ? 'Eliminando...' : 'Eliminar plan' }}
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -18,7 +18,7 @@ import { MainLayoutComponent } from './shared/layouts/main-layout/main-layout.co
     AppRoutingModule,
     HttpClientModule,
     AppRoutingModule,
-    CoreModule,     // ← registra TokenInterceptor
+    CoreModule,    
     SharedModule
   ],
   providers: [],

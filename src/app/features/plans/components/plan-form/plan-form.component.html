@@ -1,0 +1,123 @@
+<form [formGroup]="planForm" (ngSubmit)="onSubmit()" class="form-card">
+
+  <div class="alert alert--error" *ngIf="errorMessage">
+    <i class="ti ti-alert-circle"></i>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Información básica -->
+  <div class="form-section">
+    <h3 class="form-section__title">
+      <i class="ti ti-info-circle"></i>
+      Información básica
+    </h3>
+    <div class="form-grid">
+
+      <div class="form-field--full">
+        <app-form-field
+          label="Nombre del plan"
+          placeholder="Ej: Plan Básico"
+          [control]="planForm.get('name')"
+          [required]="true">
+        </app-form-field>
+      </div>
+
+      <div class="form-field--full">
+        <app-form-field
+          label="Descripción"
+          type="textarea"
+          placeholder="Describe las características y beneficios del plan..."
+          [control]="planForm.get('description')"
+          [required]="true">
+        </app-form-field>
+      </div>
+
+      <app-form-field
+        label="Precio (COP)"
+        type="number"
+        placeholder="Ej: 50000"
+        [control]="planForm.get('price')"
+        [required]="true">
+      </app-form-field>
+
+      <app-form-field
+        label="Duración (días)"
+        type="number"
+        placeholder="Ej: 30"
+        [control]="planForm.get('durationDays')"
+        [required]="true">
+      </app-form-field>
+
+      <app-form-field
+        label="Estado"
+        type="select"
+        [control]="planForm.get('status')"
+        [required]="true"
+        [options]="[
+          { value: 'active', label: 'Activo' },
+          { value: 'inactive', label: 'Inactivo' }
+        ]">
+      </app-form-field>
+
+    </div>
+  </div>
+
+  <!-- Límites de usuarios -->
+  <div class="form-section">
+    <h3 class="form-section__title">
+      <i class="ti ti-users"></i>
+      Límites de usuarios por rol
+    </h3>
+    <div class="form-grid">
+
+      <app-form-field
+        label="Máx. Organizadores"
+        type="number"
+        icon="ti-user-check"
+        [control]="planForm.get('maxOrganizers')">
+      </app-form-field>
+
+      <app-form-field
+        label="Máx. Asistentes"
+        type="number"
+        icon="ti-users"
+        [control]="planForm.get('maxAttendees')">
+      </app-form-field>
+
+      <app-form-field
+        label="Máx. Participantes"
+        type="number"
+        icon="ti-user-plus"
+        [control]="planForm.get('maxParticipants')">
+      </app-form-field>
+
+      <app-form-field
+        label="Máx. Jueces"
+        type="number"
+        icon="ti-gavel"
+        [control]="planForm.get('maxJudges')">
+      </app-form-field>
+
+      <app-form-field
+        label="Máx. Personal de apoyo"
+        type="number"
+        icon="ti-briefcase"
+        [control]="planForm.get('maxStaff')">
+      </app-form-field>
+
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="form-actions">
+    <button type="button" class="btn btn-outline" (click)="onCancel()">
+      <i class="ti ti-arrow-left"></i>
+      Cancelar
+    </button>
+    <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+      <i class="ti ti-check"></i>
+      {{ isSubmitting ? 'Guardando...' : submitLabel }}
+    </button>
+  </div>
+
+</form>

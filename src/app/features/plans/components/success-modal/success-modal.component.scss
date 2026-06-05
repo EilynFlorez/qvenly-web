@@ -1,0 +1,94 @@
+$accent:       #00B8A9;
+$accent-dark:  #008A7D;
+$accent-light: #f0fdfa;
+$text:         #1A2332;
+$text-soft:    #4B5563;
+$border:       rgba(0, 184, 169, 0.1);
+$white:        #ffffff;
+$fs-lg:        18px;
+$fs-md:        14px;
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal {
+  background: $white;
+  border-radius: 16px;
+  width: 100%;
+  overflow: hidden;
+
+  &--success {
+    max-width: 380px;
+    text-align: center;
+  }
+
+  &__body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    p {
+      font-size: $fs-md;
+      color: $text-soft;
+      margin: 0;
+    }
+
+    &--centered { align-items: center; }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid $border;
+
+    &--centered { justify-content: center; }
+  }
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $accent-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i { font-size: 32px; color: $accent; }
+}
+
+.success-title {
+  font-size: $fs-lg;
+  font-weight: 600;
+  color: $text;
+  margin: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: $fs-md;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+
+  &-primary {
+    background: linear-gradient(135deg, $accent, $accent-dark);
+    color: $white;
+    &:hover { opacity: 0.9; }
+  }
+}

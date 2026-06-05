@@ -24,6 +24,7 @@ export interface AuthResponse {
   email: string;
   name: string;
   role: string;
+  userId: number;
 }
 
 export interface ApiResponse<T> {

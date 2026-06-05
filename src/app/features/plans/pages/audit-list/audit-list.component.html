@@ -1,0 +1,27 @@
+<div class="page">
+    <app-topbar title="Aditoría de Planes" subtitle="Bitácora completa de acciones realizadaas sobre los planes"
+        [showExport]="false"></app-topbar>
+
+    <div class="page-content">
+        <!-- Loading -->
+        <div class="state-box" *ngIf="isLoading">
+            <div class="spinner"></div>
+            <p>Cargando registros...</p>
+        </div>
+
+        <!-- Error -->
+        <div class="state-box state-box--error" *ngIf="!isLoading && errorMessage">
+            <i class="ti ti-alert-circle"></i>
+            <p>{{ errorMessage }}</p>
+            <button class="btn btn-outline" (click)="loadAudits()">
+                <i class="ti ti-refresh"></i>
+                Reintentar
+            </button>
+        </div>
+
+        <!-- Tabla de auditoría -->
+        <app-audit-table *ngIf="!isLoading && !errorMessage" [audits]="audits" [isLoading]="isLoading"
+            [error]="errorMessage">
+        </app-audit-table>
+    </div>
+</div>

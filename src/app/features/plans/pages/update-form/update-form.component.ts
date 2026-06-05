@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlanService } from '../../../../core/core-plans/services/plan.service';
+import { PlanRequest, PlanResponse } from '../../../../core/core-plans/models/plan.model';
 
 /**
  * Página para editar un plan de servicio existente (HU40).
- * Carga los datos del plan y permite modificarlos con ReactiveForm.
  */
 @Component({
   selector: 'app-update-form',
@@ -15,8 +13,11 @@ import { PlanService } from '../../../../core/core-plans/services/plan.service';
 })
 export class UpdateFormComponent implements OnInit {
 
-  /** Formulario reactivo de edición */
-  planForm: FormGroup;
+  /** Plan existente cargado desde el backend */
+  existingPlan: PlanResponse | null = null;
+
+  /** Valores originales del plan para detectar cambios */
+  originalValues: PlanRequest | null = null;
 
   /** ID del plan a editar */
   planId!: number;
@@ -30,40 +31,27 @@ export class UpdateFormComponent implements OnInit {
   /** Mensaje de error general */
   errorMessage = '';
 
-  /** Mensaje de éxito */
+  /** Controla el modal de confirmación */
+  showConfirmModal = false;
+
+  /** Datos a guardar cuando confirme */
+  pendingData: PlanRequest | null = null;
+
+  /** Mensaje del modal de éxito */
   successMessage = '';
 
+  /** Mensaje del modal de sin cambios */
+  noChangesMessage = '';
+
   constructor(
-    private fb: FormBuilder,
     private planService: PlanService,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    this.planForm = this.fb.group({});
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.buildForm();
     this.planId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadPlan();
-  }
-
-  /**
-   * Construye el formulario con sus validaciones.
-   */
-  buildForm(): void {
-    this.planForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', [Validators.required]],
-      price: [null, [Validators.required, Validators.min(0.01)]],
-      durationDays: [null, [Validators.required, Validators.min(1)]],
-      maxOrganizers: [0, [Validators.required, Validators.min(0)]],
-      maxParticipants: [0, [Validators.required, Validators.min(0)]],
-      maxJudges: [0, [Validators.required, Validators.min(0)]],
-      maxAttendees: [0, [Validators.required, Validators.min(0)]],
-      maxStaff: [0, [Validators.required, Validators.min(0)]],
-      status: ['active', [Validators.required]]
-    });
   }
 
   /**
@@ -73,19 +61,19 @@ export class UpdateFormComponent implements OnInit {
     this.isLoading = true;
     this.planService.getPlanById(this.planId).subscribe({
       next: (res) => {
-        const plan = res.data;
-        this.planForm.patchValue({
-          name: plan.name,
-          description: plan.description,
-          price: plan.price,
-          durationDays: plan.durationDays,
-          maxOrganizers: plan.maxOrganizers,
-          maxParticipants: plan.maxParticipants,
-          maxJudges: plan.maxJudges,
-          maxAttendees: plan.maxAttendees,
-          maxStaff: plan.maxStaff,
-          status: plan.status
-        });
+        this.existingPlan = res.data;
+        this.originalValues = {
+          name: res.data.name,
+          description: res.data.description,
+          price: res.data.price,
+          durationDays: res.data.durationDays,
+          maxOrganizers: res.data.maxOrganizers,
+          maxParticipants: res.data.maxParticipants,
+          maxJudges: res.data.maxJudges,
+          maxAttendees: res.data.maxAttendees,
+          maxStaff: res.data.maxStaff,
+          status: res.data.status
+        };
         this.isLoading = false;
       },
       error: () => {
@@ -96,48 +84,66 @@ export class UpdateFormComponent implements OnInit {
   }
 
   /**
-   * Verifica si un campo tiene error y fue tocado.
+   * Verifica si hubo cambios y muestra modal de confirmación (HU40).
    */
-  hasError(field: string): boolean {
-    const control = this.planForm.get(field);
-    return !!(control && control.invalid && control.touched);
-  }
-
-  /**
-   * Retorna el mensaje de error de un campo.
-   */
-  getError(field: string): string {
-    const control = this.planForm.get(field);
-    if (!control) return '';
-    if (control.hasError('required')) return 'Este campo es obligatorio.';
-    if (control.hasError('maxlength')) return 'Máximo 100 caracteres.';
-    if (control.hasError('min')) return 'El valor debe ser mayor a 0.';
-    return '';
-  }
-
-  /**
-   * Envía el formulario para actualizar el plan (HU40).
-   */
-  onSubmit(): void {
-    if (this.planForm.invalid) {
-      this.planForm.markAllAsTouched();
+  onSubmit(data: PlanRequest): void {
+    if (!this.hasChanges(data)) {
+      this.noChangesMessage = 'No se realizó ningún cambio.';
       return;
     }
+    this.pendingData = data;
+    this.showConfirmModal = true;
+  }
 
+  /**
+   * Compara los datos del formulario con los originales.
+   */
+  hasChanges(data: PlanRequest): boolean {
+    if (!this.originalValues) return true;
+    return JSON.stringify(data) !== JSON.stringify(this.originalValues);
+  }
+
+  /**
+   * Confirma y guarda los cambios.
+   */
+  confirmSave(): void {
+    if (!this.pendingData) return;
     this.isSubmitting = true;
+    this.showConfirmModal = false;
     this.errorMessage = '';
 
-    this.planService.updatePlan(this.planId, this.planForm.value).subscribe({
+    this.planService.updatePlan(this.planId, this.pendingData).subscribe({
       next: (res) => {
         this.isSubmitting = false;
-        this.successMessage = res.message;
-        setTimeout(() => this.router.navigate(['/plans']), 1500);
+        this.successMessage = res.message || 'Los cambios fueron guardados exitosamente.';
       },
       error: (err) => {
         this.isSubmitting = false;
         this.errorMessage = err.error?.message || 'No se pudo actualizar el plan.';
       }
     });
+  }
+
+  /**
+   * Cancela la confirmación y vuelve al formulario.
+   */
+  cancelConfirm(): void {
+    this.showConfirmModal = false;
+    this.pendingData = null;
+  }
+
+  /**
+   * Acepta el mensaje de sin cambios y vuelve a la lista.
+   */
+  acceptNoChanges(): void {
+    this.router.navigate(['/plans']);
+  }
+
+  /**
+   * Acepta el éxito y vuelve a la lista.
+   */
+  acceptSuccess(): void {
+    this.router.navigate(['/plans']);
   }
 
   /**
