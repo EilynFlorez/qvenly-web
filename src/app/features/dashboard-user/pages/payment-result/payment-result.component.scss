@@ -1,0 +1,118 @@
+$teal-500:   #00B8A9;
+$teal-dark:  #008A7D;
+$teal-light: #f0fdfa;
+$red-500:    #ef4444;
+$red-light:  #fef2f2;
+$gray-900:   #1A2332;
+$gray-500:   #6B7280;
+$gray-100:   #F3F4F6;
+$white:      #ffffff;
+$font:       'DM Sans', sans-serif;
+
+.payment-result {
+  min-height: 100vh;
+  background: $gray-100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  font-family: $font;
+}
+
+.payment-result__card {
+  background: $white;
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+}
+
+.payment-result__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+
+  i { font-size: 36px; }
+
+  &--success {
+    background: $teal-light;
+    i { color: $teal-500; }
+  }
+
+  &--error {
+    background: $red-light;
+    i { color: $red-500; }
+  }
+
+  &--pending {
+    background: #fffbeb;
+    i { color: #f59e0b; }
+  }
+}
+
+.payment-result__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 0.75rem;
+}
+
+.payment-result__desc {
+  font-size: 0.9rem;
+  color: $gray-500;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+}
+
+.payment-result__ref {
+  font-size: 0.8rem;
+  color: $gray-500;
+  background: $gray-100;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin: 0 0 1.25rem;
+}
+
+.payment-result__redirect {
+  font-size: 0.8rem;
+  color: $gray-500;
+  margin: 0 0 1.5rem;
+  font-style: italic;
+}
+
+.payment-result__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: $teal-500;
+  color: $white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: $font;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  i { font-size: 1.1rem; }
+
+  &:hover { background: $teal-dark; }
+
+  &--outline {
+    background: transparent;
+    border: 1.5px solid $teal-500;
+    color: $teal-500;
+
+    &:hover {
+      background: $teal-500;
+      color: $white;
+    }
+  }
+}

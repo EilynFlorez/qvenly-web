@@ -4,10 +4,12 @@ import { RouterModule } from '@angular/router';
 
 import { DashboardUserRoutingModule } from './dashboard-user-routing.module';
 import { DashboardUserComponent } from './pages/dashboard-user/dashboard-user.component';
+import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
 
 @NgModule({
   declarations: [
-    DashboardUserComponent
+    DashboardUserComponent,
+    PaymentResultComponent
   ],
   imports: [
     CommonModule,
@@ -15,4 +17,4 @@ import { DashboardUserComponent } from './pages/dashboard-user/dashboard-user.co
     DashboardUserRoutingModule
   ]
 })
-export class DashboardUserModule { }
+export class DashboardUserModule {}
