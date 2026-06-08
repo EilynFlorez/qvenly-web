@@ -210,6 +210,11 @@
                             <span>No se pudieron cargar los planes.</span>
                         </div>
 
+                        <div *ngIf="paymentError" class="error-row">
+                            <i class="ti ti-alert-circle"></i>
+                            <span>{{ paymentError }}</span>
+                        </div>
+
                         <!-- Grid de planes -->
                         <div class="plans-grid" *ngIf="!loadingPlans && !plansError">
                             <div class="plan-card" *ngFor="let plan of availablePlans">
@@ -245,9 +250,11 @@
                                         <i class="ti ti-calendar"></i> Duración: {{ plan.durationDays }} días
                                     </li>
                                 </ul>
-                                <button class="plan-card__btn">
-                                    Adquirir plan
-                                    <i class="ti ti-arrow-right"></i>
+                                <button class="plan-card__btn" (click)="onAcquirePlan(plan)"
+                                    [disabled]="processingPayment">
+                                    <span *ngIf="!processingPayment">Adquirir plan <i
+                                            class="ti ti-arrow-right"></i></span>
+                                    <span *ngIf="processingPayment">Procesando... <i class="ti ti-loader-2"></i></span>
                                 </button>
                             </div>
                         </div>
