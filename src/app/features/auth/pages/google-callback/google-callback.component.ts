@@ -4,8 +4,11 @@ import { AuthService } from '../../../../core/core-auth/services/auth.service';
 
 /**
  * Componente de callback para OAuth2 con Google.
- * Recibe los datos del usuario como query params desde el backend
- * y guarda la sesión en localStorage.
+ *
+ * El backend ya NO manda el token en la URL (era un riesgo de seguridad).
+ * Ahora el token llega como cookie HttpOnly establecida por OAuth2SuccessHandler.
+ * Este componente solo recibe los datos no sensibles como query params:
+ * name, email, role, userId — y guarda la sesión en localStorage.
  */
 @Component({
   selector: 'app-google-callback',
@@ -25,20 +28,21 @@ export class GoogleCallbackComponent implements OnInit {
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
 
-    const token  = params['token'];
     const name   = params['name'];
     const email  = params['email'];
     const role   = params['role'];
     const userId = params['userId'];
 
-    if (!token || !role) {
+    // Validar que llegaron los datos mínimos necesarios
+    if (!role || !email) {
       this.errorMessage = 'Error al iniciar sesión con Google.';
       setTimeout(() => this.router.navigate(['/auth/login']), 3000);
       return;
     }
 
-    // Guardar sesión
-    this.authService.saveUserInfo(name, email, role, Number(userId));
+    // Guardar datos no sensibles en localStorage para personalizar la UI
+    // El token ya está en cookie HttpOnly — no necesitamos guardarlo aquí
+    this.authService.saveUserInfo(name || 'Usuario', email, role, Number(userId));
 
     // Redirigir según rol
     if (role === 'ADMIN') {

@@ -61,6 +61,14 @@ export class AuthService {
     );
   }
 
+  refreshToken(): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(
+      `${this.apiUrl}/refresh-from-cookie`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
   saveUserInfo(name: string, email: string, role: string, userId: number): void {
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
@@ -82,12 +90,15 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('role');
+    const role = localStorage.getItem('role');
+    const userId = localStorage.getItem('userId');
+    return !!role && !!userId;
   }
 
   clearSession(): void {
     localStorage.removeItem('name');
     localStorage.removeItem('email');
     localStorage.removeItem('role');
+    localStorage.removeItem('userId');
   }
 }

@@ -30,8 +30,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     const confirmed = this.route.snapshot.queryParamMap.get('confirmed');
+    const error     = this.route.snapshot.queryParamMap.get('error');
+
     if (confirmed === 'true') {
       this.successMessage = 'Cuenta confirmada exitosamente. Ya puedes iniciar sesión.';
+    }
+
+    // Error enviado por OAuth2SuccessHandler cuando hay conflicto de proveedores
+    if (error === 'email_registered_locally') {
+      this.errorMessage = 'Este correo ya está registrado con usuario y contraseña. ' +
+                          'Inicia sesión con tus credenciales.';
     }
   }
 
@@ -73,9 +81,7 @@ export class LoginComponent implements OnInit {
             response.data.role,
             response.data.userId
           );
-          // Redirigir según el rol
           const role = response.data.role;
-
           if (role === 'ADMIN') {
             this.router.navigate(['/dashboard']);
           } else if (role === 'USER') {
@@ -96,6 +102,6 @@ export class LoginComponent implements OnInit {
   }
 
   onGoogleLogin(): void {
-  window.location.href = 'http://localhost:9000/oauth2/authorization/google';
-}
+    window.location.href = 'http://localhost:9000/oauth2/authorization/google';
+  }
 }
