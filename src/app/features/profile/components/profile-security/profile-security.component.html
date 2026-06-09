@@ -1,0 +1,84 @@
+<div class="security-grid">
+  <article class="panel password-card">
+    <div class="panel-header">
+      <h2><i class="ti ti-lock-filled"></i>Cambiar Contraseña</h2>
+    </div>
+
+    <form class="security-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <label class="form-field password-field">
+        <span>Contraseña actual *</span>
+        <input [type]="showCurrentPassword ? 'text' : 'password'" formControlName="currentPassword"
+          autocomplete="current-password" placeholder="••••••••" />
+        <button type="button" aria-label="Mostrar contraseña actual"
+          (click)="showCurrentPassword = !showCurrentPassword"><i class="ti ti-eye"></i></button>
+        <small *ngIf="isPasswordInvalid('currentPassword')">Ingresa tu contraseña actual.</small>
+      </label>
+
+      <label class="form-field password-field">
+        <span>Nueva contraseña *</span>
+        <input [type]="showNewPassword ? 'text' : 'password'" formControlName="newPassword" autocomplete="new-password"
+          placeholder="Mínimo 8 caracteres" />
+        <button type="button" aria-label="Mostrar nueva contraseña" (click)="showNewPassword = !showNewPassword"><i
+            class="ti ti-eye"></i></button>
+        <small *ngIf="isPasswordInvalid('newPassword')">La nueva contraseña debe tener mínimo 8 caracteres.</small>
+      </label>
+
+      <label class="form-field password-field">
+        <span>Confirmar nueva contraseña *</span>
+        <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+          autocomplete="new-password" placeholder="Repite la contraseña" />
+        <button type="button" aria-label="Mostrar confirmación" (click)="showConfirmPassword = !showConfirmPassword"><i
+            class="ti ti-eye"></i></button>
+        <small *ngIf="isPasswordInvalid('confirmPassword') || passwordMismatch">Las contraseñas deben coincidir.</small>
+      </label>
+
+      <button class="primary-action" type="submit" [disabled]="savingPassword"><i class="ti ti-key"></i>{{
+        savingPassword ? 'Actualizando...' : 'Actualizar Contraseña' }}</button>
+      <p class="success-note" *ngIf="passwordSaved">Contraseña actualizada. Inicia sesión nuevamente.</p>
+    </form>
+  </article>
+
+  <article class="panel session-card">
+    <div class="panel-header">
+      <h2><i class="ti ti-settings-filled"></i>Sesión y Seguridad</h2>
+    </div>
+    <dl class="session-list">
+      <div>
+        <dt>Dispositivo actual</dt>
+        <dd>{{ sessionInfo.device }}</dd>
+      </div>
+      <div>
+        <dt>IP de conexión</dt>
+        <dd>{{ sessionInfo.ipAddress }}</dd>
+      </div>
+      <div>
+        <dt>Sesión iniciada</dt>
+        <dd>{{ sessionInfo.startedAt }}</dd>
+      </div>
+    </dl>
+    <button class="outline-action" type="button" (click)="logoutSession()"><i class="ti ti-door-exit"></i>Cerrar
+      Sesión</button>
+    <p class="success-note" *ngIf="logoutRequested">Sesión cerrada correctamente.</p>
+  </article>
+</div>
+
+<section class="danger-zone">
+  <h2><i class="ti ti-alert-triangle-filled"></i>Zona de Peligro</h2>
+  <p>La eliminación de tu perfil es permanente. Se removerán todos tus datos y se notificará a los eventos, actividades
+    y responsabilidades a los que estás asignado.</p>
+
+  <form class="security-form danger-form" [formGroup]="deleteForm" (ngSubmit)="requestDeleteProfile()">
+    <label class="form-field password-field">
+      <span>Contraseña actual *</span>
+      <input [type]="showDeletePassword ? 'text' : 'password'" formControlName="password"
+        autocomplete="current-password" placeholder="Confirma tu contraseña" />
+      <button type="button" aria-label="Mostrar contraseña" (click)="showDeletePassword = !showDeletePassword"><i
+          class="ti ti-eye"></i></button>
+      <small *ngIf="isDeletePasswordInvalid()">La contraseña es obligatoria para eliminar el perfil.</small>
+    </label>
+
+    <button class="danger-action" type="submit" [disabled]="deletingProfile"><i class="ti ti-trash"></i>{{
+      deletingProfile ? 'Eliminando...' : 'Eliminar mi Perfil' }}</button>
+    <p class="danger-note" *ngIf="deletionRequested">Perfil eliminado correctamente.</p>
+  </form>
+</section>

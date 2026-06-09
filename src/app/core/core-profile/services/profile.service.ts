@@ -1,7 +1,18 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { delay, Observable, of } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
+import { environment } from '../../../../environments/environment.development';
+import { AuthService } from '../../core-auth/services/auth.service';
 import {
+  ApiResponse,
+  BackendSessionSecurityInfo,
+  BackendUpdateProfileRequest,
+  BackendUserProfile,
+  ChangePasswordRequest,
+  DeleteProfileRequest,
   NotificationPreferences,
+  NotificationSettingsResponse,
+  SessionSecurityInfo,
   UpdateProfileRequest,
   UserProfile
 } from '../models/profile.model';
@@ -10,63 +21,218 @@ import {
   providedIn: 'root'
 })
 export class ProfileService {
-  private profileSnapshot: UserProfile = this.buildProfileSnapshot();
+  private readonly profileUrl = `${environment.apiUrl}/auth/profile`;
+  private readonly notificationsUrl = `${this.profileUrl}/notifications`;
+  private currentProfile: UserProfile | null = null;
 
-  private preferencesSnapshot: NotificationPreferences = {
-    systemNotifications: true,
-    accountNotifications: true,
-    planNotifications: true,
-    silentMode: false
-  };
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
-  // TODO: consumir endpoint a traves del API Gateway.
   getProfile(): Observable<UserProfile> {
-    return of({ ...this.profileSnapshot }).pipe(delay(250));
+    return this.http.get<ApiResponse<BackendUserProfile>>(
+      this.profileUrl,
+      { withCredentials: true }
+    ).pipe(
+      map((response) => this.mapProfile(this.requireData(response))),
+      tap((profile) => {
+        this.currentProfile = profile;
+        this.authService.saveUserInfo(profile.fullName, profile.email, profile.role, profile.id);
+      })
+    );
   }
 
   updateProfile(request: UpdateProfileRequest): Observable<UserProfile> {
-    this.profileSnapshot = {
-      ...this.profileSnapshot,
-      ...request,
-      fullName: `${request.name} ${request.lastName}`.trim()
-    };
+    const payload = this.buildUpdatePayload(request);
 
-    localStorage.setItem('name', this.profileSnapshot.fullName);
-
-    return of({ ...this.profileSnapshot }).pipe(delay(250));
+    return this.http.put<ApiResponse<BackendUserProfile>>(
+      this.profileUrl,
+      payload,
+      { withCredentials: true }
+    ).pipe(
+      map((response) => this.mapProfile(this.requireData(response))),
+      tap((profile) => {
+        this.currentProfile = profile;
+        this.authService.saveUserInfo(profile.fullName, profile.email, profile.role, profile.id);
+      })
+    );
   }
 
-  // TODO: consumir preferencias a traves del API Gateway.
   getNotificationPreferences(): Observable<NotificationPreferences> {
-    return of({ ...this.preferencesSnapshot }).pipe(delay(180));
+    return this.http.get<ApiResponse<NotificationSettingsResponse>>(
+      this.notificationsUrl,
+      { withCredentials: true }
+    ).pipe(
+      map((response) => this.mapNotificationSettings(this.requireData(response)))
+    );
   }
 
-  // TODO: persistir esta regla de preferencias mediante el API Gateway cuando el endpoint este disponible.
-  updateNotificationPreferences(
-    preferences: NotificationPreferences
-  ): Observable<NotificationPreferences> {
-    this.preferencesSnapshot = { ...preferences };
-    return of({ ...this.preferencesSnapshot }).pipe(delay(180));
+  updateNotificationPreferences(preferences: NotificationPreferences): Observable<NotificationPreferences> {
+    if (preferences.silentMode) {
+      return this.http.put<ApiResponse<NotificationSettingsResponse>>(
+        `${this.notificationsUrl}/silent`,
+        {},
+        { withCredentials: true }
+      ).pipe(map((response) => this.mapNotificationSettings(this.requireData(response))));
+    }
+
+    const shouldEnable = preferences.systemNotifications
+      || preferences.accountNotifications
+      || preferences.planNotifications;
+
+    const endpoint = shouldEnable ? 'activate' : 'disable';
+    return this.http.put<ApiResponse<NotificationSettingsResponse>>(
+      `${this.notificationsUrl}/${endpoint}`,
+      {},
+      { withCredentials: true }
+    ).pipe(map((response) => this.mapNotificationSettings(this.requireData(response))));
   }
 
-  private buildProfileSnapshot(): UserProfile {
-    const storedName = localStorage.getItem('name') || 'Admin Principal';
-    const storedEmail = localStorage.getItem('email') || 'admin@qvenly.com';
-    const storedRole = localStorage.getItem('role') || 'ADMIN';
-    const storedUserId = Number(localStorage.getItem('userId')) || 1;
-    const [name, ...lastNameParts] = storedName.split(' ');
-    const lastName = lastNameParts.join(' ') || 'Principal';
+  getSessionSecurityInfo(): Observable<SessionSecurityInfo> {
+    return this.http.get<ApiResponse<BackendSessionSecurityInfo>>(
+      `${this.profileUrl}/session`,
+      { withCredentials: true }
+    ).pipe(
+      map((response) => this.mapSessionInfo(this.requireData(response)))
+    );
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.put<ApiResponse<void>>(
+      `${this.profileUrl}/password`,
+      request,
+      { withCredentials: true }
+    ).pipe(
+      tap(() => this.authService.clearSession()),
+      map(() => void 0)
+    );
+  }
+
+  logoutCurrentSession(): Observable<void> {
+    return this.http.post<ApiResponse<void>>(
+      `${environment.apiUrl}/auth/logout`,
+      {},
+      { withCredentials: true }
+    ).pipe(
+      tap(() => this.authService.clearSession()),
+      map(() => void 0)
+    );
+  }
+
+  requestProfileDeletion(request: DeleteProfileRequest): Observable<void> {
+    return this.http.delete<ApiResponse<void>>(
+      this.profileUrl,
+      {
+        body: request,
+        withCredentials: true
+      }
+    ).pipe(
+      tap(() => this.authService.clearSession()),
+      map(() => void 0)
+    );
+  }
+
+  private buildUpdatePayload(request: UpdateProfileRequest): BackendUpdateProfileRequest {
+    if (!this.currentProfile) {
+      throw new Error('No hay perfil cargado para conservar los campos obligatorios.');
+    }
 
     return {
-      id: storedUserId,
-      name: name || 'Admin',
-      lastName,
-      fullName: storedName,
-      email: storedEmail,
-      phoneNumber: '+57 300 000 0000',
-      role: storedRole,
-      memberSince: 'Enero 2025',
-      lastAccess: 'Hoy, hace 2 min'
+      ...request,
+      email: this.currentProfile.email,
+      documentType: this.currentProfile.documentType,
+      documentNumber: this.currentProfile.documentNumber
     };
+  }
+
+  private mapProfile(profile: BackendUserProfile): UserProfile {
+    return {
+      id: profile.id,
+      name: profile.name,
+      lastName: profile.lastName,
+      fullName: profile.fullName || `${profile.name} ${profile.lastName}`.trim(),
+      email: profile.email,
+      phoneNumber: profile.phoneNumber || '',
+      role: profile.role,
+      roles: profile.roles || [],
+      documentType: profile.documentType || '',
+      documentNumber: profile.documentNumber || '',
+      createdAt: profile.createdAt,
+      memberSince: this.formatMonthYear(profile.createdAt),
+      lastAccess: this.formatRelativeDate(profile.lastAccess)
+    };
+  }
+
+  private mapNotificationSettings(settings: NotificationSettingsResponse): NotificationPreferences {
+    const enabled = Boolean(settings.notificationsEnabled && !settings.silentMode);
+
+    return {
+      systemNotifications: enabled,
+      accountNotifications: enabled,
+      planNotifications: enabled,
+      silentMode: Boolean(settings.notificationsEnabled && settings.silentMode)
+    };
+  }
+
+  private mapSessionInfo(session: BackendSessionSecurityInfo): SessionSecurityInfo {
+    return {
+      device: session.device || 'Dispositivo no identificado',
+      ipAddress: session.ipAddress || 'No disponible',
+      startedAt: this.formatDateTime(session.startedAt)
+    };
+  }
+
+  private requireData<T>(response: ApiResponse<T>): T {
+    if (!response.success || response.data === undefined || response.data === null) {
+      throw new Error(response.message || 'Respuesta invalida del servidor');
+    }
+    return response.data;
+  }
+
+  private formatMonthYear(value?: string): string {
+    if (!value) {
+      return 'No disponible';
+    }
+
+    return new Intl.DateTimeFormat('es-CO', {
+      month: 'long',
+      year: 'numeric'
+    }).format(new Date(value));
+  }
+
+  private formatRelativeDate(value?: string): string {
+    if (!value) {
+      return 'No disponible';
+    }
+
+    const date = new Date(value);
+    const diffMinutes = Math.max(0, Math.round((Date.now() - date.getTime()) / 60000));
+
+    if (diffMinutes < 1) {
+      return 'Ahora';
+    }
+    if (diffMinutes < 60) {
+      return `Hace ${diffMinutes} min`;
+    }
+    if (diffMinutes < 1440) {
+      return `Hace ${Math.round(diffMinutes / 60)} h`;
+    }
+
+    return this.formatDateTime(value);
+  }
+
+  private formatDateTime(value?: string): string {
+    if (!value) {
+      return 'No disponible';
+    }
+
+    return new Intl.DateTimeFormat('es-CO', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date(value));
   }
 }

@@ -1,0 +1,117 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(26, 35, 50, .46)
+}
+
+.modal {
+    width: min(560px, 100%);
+    border-radius: 18px;
+    background: #fff
+}
+
+.modal-header,
+.modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 22px 24px
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(26, 35, 50, .08)
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px
+}
+
+.icon-button {
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    background: #f3f4f6
+}
+
+.modal-body {
+    display: grid;
+    gap: 16px;
+    padding: 24px
+}
+
+.form-field {
+    position: relative;
+    display: grid;
+    gap: 8px
+}
+
+.form-field span {
+    font-weight: 700
+}
+
+.form-field input {
+    width: 100%;
+    min-height: 52px;
+    border: 2px solid rgba(0, 184, 169, .18);
+    border-radius: 11px;
+    padding: 0 16px;
+    font: inherit;
+    outline: 0
+}
+
+.form-field input[readonly] {
+    background: #f9fafb;
+    color: #9ca3af
+}
+
+.form-field small {
+    color: #ef4444;
+    font-size: 12px
+}
+
+.modal-actions {
+    justify-content: flex-end;
+    padding: 8px 0 0
+}
+
+.primary-action,
+.secondary-action {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 999px;
+    padding: 0 22px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer
+}
+
+.primary-action {
+    color: #fff;
+    background: linear-gradient(135deg, #00B8A9, #008A7D)
+}
+
+.secondary-action {
+    background: #f3f4f6
+}
+
+@media(max-width:560px) {
+    .modal-actions {
+        display: grid
+    }
+
+    .primary-action,
+    .secondary-action {
+        width: 100%
+    }
+}

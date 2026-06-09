@@ -1,0 +1,26 @@
+<div class="modal-overlay">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="editProfileTitle">
+    <header class="modal-header">
+      <h2 id="editProfileTitle"><i class="ti ti-user-edit"></i>Editar Perfil</h2>
+      <button class="icon-button" type="button" aria-label="Cerrar" (click)="closeModal.emit()"><i
+          class="ti ti-x"></i></button>
+    </header>
+
+    <form class="modal-body" [formGroup]="profileForm" (ngSubmit)="submit()">
+      <label class="form-field"><span>Nombre</span><input type="text" formControlName="name"
+          placeholder="Nombre" /><small *ngIf="isInvalid('name')">Ingresa al menos 2 caracteres.</small></label>
+      <label class="form-field"><span>Apellido</span><input type="text" formControlName="lastName"
+          placeholder="Apellido" /><small *ngIf="isInvalid('lastName')">Ingresa al menos 2 caracteres.</small></label>
+      <label class="form-field"><span>Teléfono</span><input type="text" formControlName="phoneNumber"
+          placeholder="+57 300 000 0000" /><small *ngIf="isInvalid('phoneNumber')">Ingresa un teléfono
+          válido.</small></label>
+      <label class="form-field form-field--readonly"><span>Correo electrónico</span><input type="email"
+          [value]="profile.email" readonly /></label>
+      <footer class="modal-actions">
+        <button class="secondary-action" type="button" (click)="closeModal.emit()">Cancelar</button>
+        <button class="primary-action" type="submit" [disabled]="saving"><i class="ti ti-device-floppy"></i>{{ saving ?
+          'Guardando...' : 'Guardar cambios' }}</button>
+      </footer>
+    </form>
+  </section>
+</div>
