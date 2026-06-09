@@ -58,6 +58,7 @@
 .sidebar-nav {
     padding: 20px;
     flex: 1;
+    overflow-y: auto;
 }
 
 .nav-group {
@@ -108,7 +109,15 @@
     align-items: center;
     gap: 10px;
     padding: 16px 20px;
-    border-top: 1px solid rgba(0, 184, 169, 0.1)
+    border-top: 1px solid rgba(0, 184, 169, 0.1);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.2s;
+
+    &:hover,
+    &--active {
+        background: rgba(0, 184, 169, 0.06);
+    }
 }
 
 .user-profile {
@@ -200,3 +209,9 @@ main {
 }
 
 
+
+.user-arrow {
+    margin-left: auto;
+    color: #9ca3af;
+    font-size: 16px;
+}

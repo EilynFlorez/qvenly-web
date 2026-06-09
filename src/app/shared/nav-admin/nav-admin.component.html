@@ -1,49 +1,58 @@
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">
-        <img src="assets/images/logoQvn.png" alt="">
+        <img src="assets/images/logoQvn.png" alt="Qvenly">
       </div>
       <span class="logo-name">Qvenly</span>
     </div>
 
     <nav class="sidebar-nav">
       <p class="nav-group">Principal</p>
-      <a class="nav-item active" routerLink="/dashboard" routerLinkActive="active">
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <i class="ti ti-layout-dashboard"></i>
         Dashboard
       </a>
+      <a class="nav-item" routerLink="/profile" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <i class="ti ti-user-circle"></i>
+        Mi perfil
+      </a>
+      <a class="nav-item" routerLink="/dashboard">
+        <i class="ti ti-file-analytics"></i>
+        Reportes
+      </a>
+
       <p class="nav-group">Planes</p>
       <a class="nav-item" routerLink="/plans" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <i class="ti ti-diamond"></i>
-        Gestión de planes
+        Gestión de Planes
       </a>
+
       <p class="nav-group">Sistema</p>
-      <a class="nav-item" routerLink="#" routerLinkActive="active">
+      <a class="nav-item" routerLink="/profile" fragment="notifications" routerLinkActive="active">
         <i class="ti ti-bell"></i>
         Notificaciones
       </a>
       <a class="nav-item" routerLink="/plans/audit" routerLinkActive="active">
-        <i class="ti ti-shield-check"></i>
+        <i class="ti ti-clipboard-list"></i>
         Auditoría
       </a>
     </nav>
 
-    <div class="sidebar-user">
-      <div class="user-profile">AD</div>
+    <a class="sidebar-user" routerLink="/profile" routerLinkActive="sidebar-user--active">
+      <div class="user-profile">AP</div>
       <div class="user-info">
-        <p class="user-name">Admin</p>
-        <p class="user-email">admin&#64;qvenly.com</p>
+        <p class="user-name">Admin Principal</p>
+        <p class="user-email">Administrador</p>
       </div>
-    </div>
+      <i class="ti ti-chevron-right user-arrow"></i>
+    </a>
   </aside>
 
-  <!-- MAIN -->
   <main>
     <div class="main-content">
-      <ng-content></ng-content>  
+      <ng-content></ng-content>
     </div>
   </main>
 

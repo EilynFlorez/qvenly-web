@@ -1,0 +1,179 @@
+<section class="profile-page">
+  <header class="profile-topbar">
+    <h1>Mi Perfil</h1>
+    <span class="live-badge">
+      <span></span>
+      En vivo
+    </span>
+  </header>
+
+  <div class="profile-content" *ngIf="!loading && profile as currentProfile; else loadingState">
+    <section class="profile-hero">
+      <div class="hero-avatar">{{ initials }}</div>
+      <div class="hero-copy">
+        <h2>{{ currentProfile.fullName }}</h2>
+        <p>{{ currentProfile.email }}</p>
+        <span>{{ roleLabel }}</span>
+      </div>
+      <div class="hero-shape hero-shape--one"></div>
+      <div class="hero-shape hero-shape--two"></div>
+    </section>
+
+    <div class="profile-grid">
+      <article class="panel profile-card">
+        <div class="panel-header">
+          <h2>
+            <i class="ti ti-user-filled"></i>
+            Mi Perfil
+          </h2>
+        </div>
+
+        <dl class="profile-list">
+          <div>
+            <dt>Nombre completo</dt>
+            <dd>{{ currentProfile.fullName }}</dd>
+          </div>
+          <div>
+            <dt>Correo electrónico</dt>
+            <dd>{{ currentProfile.email }}</dd>
+          </div>
+          <div>
+            <dt>Teléfono</dt>
+            <dd>{{ currentProfile.phoneNumber }}</dd>
+          </div>
+          <div>
+            <dt>Rol</dt>
+            <dd>{{ roleLabel }}</dd>
+          </div>
+          <div>
+            <dt>Miembro desde</dt>
+            <dd>{{ currentProfile.memberSince }}</dd>
+          </div>
+          <div>
+            <dt>Último acceso</dt>
+            <dd>{{ currentProfile.lastAccess }}</dd>
+          </div>
+        </dl>
+
+        <button class="primary-action" type="button" (click)="openEditModal()">
+          <i class="ti ti-pencil"></i>
+          Editar Perfil
+        </button>
+      </article>
+
+      <article class="panel notification-card" id="notifications">
+        <div class="panel-header">
+          <h2>
+            <i class="ti ti-bell-filled"></i>
+            Preferencias de Notificaciones
+          </h2>
+        </div>
+
+        <div class="preference-list">
+          <div class="preference-row">
+            <div>
+              <h3>Notificaciones del sistema</h3>
+              <p>Alertas de planes, vencimientos y actividad</p>
+            </div>
+            <button class="switch" type="button" role="switch" [attr.aria-checked]="preferences.systemNotifications"
+              [class.switch--on]="preferences.systemNotifications" (click)="toggleSystemNotifications()">
+              <span></span>
+            </button>
+          </div>
+
+          <div class="preference-row">
+            <div>
+              <h3>Notificaciones de cuenta</h3>
+              <p>Cambios en perfil, contraseña y accesos</p>
+            </div>
+            <button class="switch" type="button" role="switch" [attr.aria-checked]="preferences.accountNotifications"
+              [class.switch--on]="preferences.accountNotifications" (click)="toggleAccountNotifications()">
+              <span></span>
+            </button>
+          </div>
+
+          <div class="preference-row">
+            <div>
+              <h3>Notificaciones de planes</h3>
+              <p>Vencimientos, renovaciones y asignaciones</p>
+            </div>
+            <button class="switch" type="button" role="switch" [attr.aria-checked]="preferences.planNotifications"
+              [class.switch--on]="preferences.planNotifications" (click)="togglePlanNotifications()">
+              <span></span>
+            </button>
+          </div>
+
+          <div class="preference-row preference-row--silent">
+            <div>
+              <h3>
+                <i class="ti ti-bell-off"></i>
+                Silenciar todas
+              </h3>
+              <p>Las notificaciones se envían sin alerta sonora ni emergente</p>
+            </div>
+            <button class="switch" type="button" role="switch" [attr.aria-checked]="preferences.silentMode"
+              [class.switch--on]="preferences.silentMode" (click)="toggleSilentMode()">
+              <span></span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<ng-template #loadingState>
+  <div class="profile-loading">
+    <div class="spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+</ng-template>
+
+<div class="modal-overlay" *ngIf="editOpen">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="editProfileTitle">
+    <header class="modal-header">
+      <h2 id="editProfileTitle">
+        <i class="ti ti-user-edit"></i>
+        Editar Perfil
+      </h2>
+      <button class="icon-button" type="button" aria-label="Cerrar" (click)="closeEditModal()">
+        <i class="ti ti-x"></i>
+      </button>
+    </header>
+
+    <form class="modal-body" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <label class="form-field">
+        <span>Nombre</span>
+        <input type="text" formControlName="name" placeholder="Nombre" />
+        <small *ngIf="isInvalid('name')">Ingresa al menos 2 caracteres.</small>
+      </label>
+
+      <label class="form-field">
+        <span>Apellido</span>
+        <input type="text" formControlName="lastName" placeholder="Apellido" />
+        <small *ngIf="isInvalid('lastName')">Ingresa al menos 2 caracteres.</small>
+      </label>
+
+      <label class="form-field">
+        <span>Teléfono</span>
+        <input type="text" formControlName="phoneNumber" placeholder="+57 300 000 0000" />
+        <small *ngIf="isInvalid('phoneNumber')">Ingresa un teléfono válido.</small>
+      </label>
+
+      <label class="form-field form-field--readonly" *ngIf="profile as currentProfile">
+        <span>Correo electrónico</span>
+        <input type="email" [value]="currentProfile.email" readonly />
+      </label>
+
+      <footer class="modal-actions">
+        <button class="secondary-action" type="button" (click)="closeEditModal()">
+          Cancelar
+        </button>
+        <button class="primary-action primary-action--compact" type="submit" [disabled]="savingProfile">
+          <i class="ti ti-device-floppy"></i>
+          {{ savingProfile ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

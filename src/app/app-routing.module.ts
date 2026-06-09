@@ -34,6 +34,18 @@ const routes: Routes = [
   },
 
   {
+    path: 'profile',
+    component: AdminLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./features/profile/profile.module').then(m => m.ProfileModule)
+      }
+    ]
+  },
+  {
     path: 'auth',
     loadChildren: () =>
       import('./features/auth/auth.module').then(m => m.AuthModule)
