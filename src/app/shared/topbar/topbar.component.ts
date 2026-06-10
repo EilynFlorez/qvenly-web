@@ -1,10 +1,9 @@
 import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/core-auth/services/auth.service';
 import { ProfileService } from '../../core/core-auth/services/profile.service';
 import { NotificationInbox } from '../../core/core-auth/models/profile.model';
-import { HttpClient } from '@angular/common/http';
-import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-topbar',
@@ -13,21 +12,27 @@ import { Component, Input } from '@angular/core';
 })
 export class TopbarComponent implements OnInit {
 
-export class TopbarComponent {
   @Input() title: string = '';
   @Input() subtitle: string = '';
   @Input() showExport: boolean = false;
 
+  // ─── Usuario ───────────────────────────────────────────────────────────
   userInitials = '';
+
+  // ─── Notificaciones ────────────────────────────────────────────────────
   notifications: NotificationInbox[] = [];
   unreadCount = 0;
   showNotifications = false;
   loadingNotifs = false;
 
+  // ─── Export modal ──────────────────────────────────────────────────────
+  showExportModal = false;
+
   constructor(
     private authService: AuthService,
     private profileService: ProfileService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +45,7 @@ export class TopbarComponent {
     this.loadNotifications();
   }
 
+  // ─── Notificaciones ────────────────────────────────────────────────────
   loadNotifications(): void {
     this.loadingNotifs = true;
     this.profileService.getInbox().subscribe({
@@ -90,10 +96,9 @@ export class TopbarComponent {
   @HostListener('document:click')
   onDocumentClick(): void {
     this.showNotifications = false;
-  showExportModal: boolean = false;
+  }
 
-  constructor(private http: HttpClient) { }
-
+  // ─── Export modal ──────────────────────────────────────────────────────
   openModal(): void {
     this.showExportModal = true;
   }

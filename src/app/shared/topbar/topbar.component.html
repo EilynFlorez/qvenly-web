@@ -5,7 +5,9 @@
   </div>
 
   <div class="topbar-right">
-    <button class="btn-export" *ngIf="showExport">
+
+    <!-- Botón exportar -->
+    <button class="btn-export" *ngIf="showExport" (click)="openModal()">
       <i class="ti ti-download"></i>
       Exportar
     </button>
@@ -57,16 +59,12 @@
     <button class="topbar-avatar" (click)="goToProfile()" title="Mi perfil">
       {{ userInitials }}
     </button>
+
   </div>
 </header>
-  <button class="btn-export" *ngIf="showExport" (click)="openModal()">
-    <i class="ti ti-download"></i>
-    Exportar
-  </button>
-</header>
 
+<!-- Modal de exportación -->
 <div class="modal-overlay" *ngIf="showExportModal" (click)="closeModal()">
-
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2 class="modal-title">Exportar reporte</h2>
@@ -75,11 +73,9 @@
       </button>
     </div>
 
-     <p class="modal-sub">Selecciona el formato en el que deseas exportar el reporte</p>
+    <p class="modal-sub">Selecciona el formato en el que deseas exportar el reporte</p>
 
     <div class="export-options">
-
-      <!-- EXCEL -->
       <div class="export-card" (click)="exportExcel()">
         <div class="export-icon excel">
           <i class="ti ti-file-spreadsheet"></i>
@@ -88,7 +84,6 @@
         <p class="export-desc">Exportar en formato .xlsx</p>
       </div>
 
-      <!-- PDF -->
       <div class="export-card" (click)="exportPdf()">
         <div class="export-icon pdf">
           <i class="ti ti-file-type-pdf"></i>
@@ -96,8 +91,6 @@
         <p class="export-label">PDF</p>
         <p class="export-desc">Exportar en formato .pdf</p>
       </div>
-
     </div>
-
   </div>
 </div>
