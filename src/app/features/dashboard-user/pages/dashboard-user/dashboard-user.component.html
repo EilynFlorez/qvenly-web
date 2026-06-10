@@ -99,6 +99,9 @@
       <div class="plan-detail__features">
         <p class="plan-detail__features-title">Incluye</p>
         <ul>
+          <li *ngIf="activePlan.plan.maxEvents > 0">
+            <i class="ti ti-calendar-event"></i> Hasta {{ activePlan.plan.maxEvents }} eventos
+          </li>
           <li *ngIf="activePlan.plan.maxAttendees > 0">
             <i class="ti ti-users"></i> Hasta {{ activePlan.plan.maxAttendees }} asistentes
           </li>
@@ -157,6 +160,9 @@
         </div>
         <p class="plan-card__desc">{{ plan.description }}</p>
         <ul class="plan-card__features">
+          <li *ngIf="plan.maxEvents > 0">
+            <i class="ti ti-calendar-event"></i> Hasta {{ plan.maxEvents }} eventos
+          </li>
           <li *ngIf="plan.maxAttendees > 0">
             <i class="ti ti-users"></i> Hasta {{ plan.maxAttendees }} asistentes
           </li>

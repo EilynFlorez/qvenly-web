@@ -101,6 +101,16 @@
     </h2>
     <div class="features-grid">
 
+      <div class="feature-card" *ngIf="activePlan.plan.maxEvents > 0">
+        <div class="feature-card__icon feature-card__icon--teal">
+          <i class="ti ti-calendar-event"></i>
+        </div>
+        <div class="feature-card__body">
+          <span class="feature-card__value">{{ activePlan.plan.maxEvents }}</span>
+          <span class="feature-card__label">Eventos</span>
+        </div>
+      </div>
+
       <div class="feature-card" *ngIf="activePlan.plan.maxAttendees > 0">
         <div class="feature-card__icon feature-card__icon--teal">
           <i class="ti ti-users"></i>

@@ -63,6 +63,10 @@
 
       <!-- Features -->
       <ul class="plan-card__features">
+        <li *ngIf="plan.maxEvents > 0">
+          <i class="ti ti-calendar-event"></i>
+          <span>Hasta <strong>{{ plan.maxEvents }}</strong> eventos</span>
+        </li>
         <li *ngIf="plan.maxAttendees > 0">
           <i class="ti ti-users"></i>
           <span>Hasta <strong>{{ plan.maxAttendees }}</strong> asistentes</span>
