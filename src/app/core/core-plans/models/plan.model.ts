@@ -11,6 +11,8 @@ export interface PlanRequest {
   price: number;
   /** Duración del plan en días */
   durationDays: number;
+  /** Cantidad máxima de eventos permitidos */
+  maxEvents: number;
   /** Cantidad máxima de organizadores permitidos */
   maxOrganizers: number;
   /** Cantidad máxima de participantes permitidos */
@@ -39,6 +41,8 @@ export interface PlanResponse {
   price: number;
   /** Duración del plan en días */
   durationDays: number;
+  /** Cantidad máxima de eventos permitidos */
+  maxEvents: number;
   /** Cantidad máxima de organizadores permitidos */
   maxOrganizers: number;
   /** Cantidad máxima de participantes permitidos */

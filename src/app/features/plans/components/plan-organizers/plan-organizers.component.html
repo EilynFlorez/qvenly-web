@@ -1,0 +1,60 @@
+<div class="organizers-section">
+
+  <h3 class="organizers-section__title">
+    <i class="ti ti-users-group"></i>
+    Organizadores con este plan
+  </h3>
+
+  <!-- Loading -->
+  <div class="state-box" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando organizadores...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="state-box state-box--error" *ngIf="!isLoading && errorMessage">
+    <i class="ti ti-alert-circle"></i>
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Sin organizadores -->
+  <div class="state-box" *ngIf="!isLoading && !errorMessage && organizers.length === 0">
+    <i class="ti ti-user-off"></i>
+    <p>Ningún organizador tiene asignado este plan.</p>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-wrapper" *ngIf="!isLoading && !errorMessage && organizers.length > 0">
+    <table class="organizers-table">
+      <thead>
+        <tr>
+          <th>Organizador</th>
+          <th>Correo</th>
+          <th>Inicio</th>
+          <th>Vencimiento</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let org of organizers">
+          <td class="organizers-table__name">
+            <i class="ti ti-user"></i>
+            {{ org.fullName }}
+          </td>
+          <td class="organizers-table__email">{{ org.email }}</td>
+          <td>{{ formatDate(org.startDate) }}</td>
+          <td>{{ formatDate(org.endDate) }}</td>
+          <td>
+            <span class="badge"
+              [class.badge--active]="org.status === 'active'"
+              [class.badge--expired]="org.status === 'expired'"
+              [class.badge--cancelled]="org.status === 'cancelled'">
+              {{ getStatusLabel(org.status) }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

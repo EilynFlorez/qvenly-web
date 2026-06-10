@@ -54,6 +54,7 @@ export class PlanFormComponent implements OnInit {
       description:    ['', [Validators.required]],
       price:          [null, [Validators.required, Validators.min(0.01)]],
       durationDays:   [null, [Validators.required, Validators.min(1)]],
+      maxEvents: [0, [Validators.required, Validators.min(0)]],
       maxOrganizers:  [0, [Validators.required, Validators.min(0)]],
       maxParticipants:[0, [Validators.required, Validators.min(0)]],
       maxJudges:      [0, [Validators.required, Validators.min(0)]],

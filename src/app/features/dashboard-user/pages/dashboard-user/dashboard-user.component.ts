@@ -110,7 +110,7 @@ export class DashboardUserComponent implements OnInit {
     if (price === 0) return 'Gratis';
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
-      currency: 'COP',
+      currency: 'COP', 
       minimumFractionDigits: 0
     }).format(price);
   }

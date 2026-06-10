@@ -37,6 +37,9 @@
     <app-plan-detail-card *ngIf="!isLoadingPlan && plan" [plan]="plan">
     </app-plan-detail-card>
 
+    <app-plan-organizers *ngIf="!isLoadingPlan && plan" [planId]="plan.idPlan">
+    </app-plan-organizers>
+
     <!-- Auditoría -->
     <app-audit-table *ngIf="!isLoadingPlan && plan" [audits]="audits" [isLoading]="isLoadingAudit" [error]="errorAudit">
     </app-audit-table>

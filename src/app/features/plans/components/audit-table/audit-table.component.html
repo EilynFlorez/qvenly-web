@@ -58,7 +58,12 @@
             </td>
             <td class="audit-table__user">
               <i class="ti ti-user"></i>
-              {{ audit.userId }}
+              <span *ngIf="audit.userName">
+                {{ audit.userName }} ({{ audit.userEmail }})
+              </span>
+              <span *ngIf="!audit.userName">
+                ID: {{ audit.userId }}
+              </span>
             </td>
             <td class="audit-table__desc">{{ audit.changeDescription }}</td>
             <td class="audit-table__date">{{ formatDate(audit.auditDate) }}</td>

@@ -1,0 +1,132 @@
+// ── Variables ─────────────────────────────────────────────────
+$accent:       #00B8A9;
+$accent-dark:  #008A7D;
+$accent-light: #f0fdfa;
+$text:         #1A2332;
+$text-soft:    #4B5563;
+$border:       rgba(0, 184, 169, 0.1);
+$bg:           #F3F4F6;
+$white:        #ffffff;
+$danger:       #ef4444;
+
+// ── Escala tipográfica ────────────────────────────────────────
+$fs-lg: 18px;
+$fs-md: 14px;
+$fs-sm: 12px;
+
+// ── Sección ───────────────────────────────────────────────────
+.organizers-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__title {
+    font-size: $fs-lg;
+    font-weight: 600;
+    color: $text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { color: $accent; }
+  }
+}
+
+// ── Estados ───────────────────────────────────────────────────
+.state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  background: $white;
+  border-radius: 16px;
+  color: $text-soft;
+  font-size: $fs-md;
+  text-align: center;
+
+  i { font-size: 36px; }
+
+  &--error { color: $danger; i { color: $danger; } }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $border;
+  border-top-color: $accent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Tabla ─────────────────────────────────────────────────────
+.table-wrapper {
+  background: $white;
+  border-radius: 16px;
+  border: 1px solid $border;
+  overflow: hidden;
+  max-height: 400px;  
+  overflow-y: auto; 
+}
+
+.organizers-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: $accent-light;
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: $fs-sm;
+      font-weight: 600;
+      color: $accent-dark;
+    }
+  }
+
+  tbody tr {
+    border-top: 1px solid $border;
+    transition: background 0.15s;
+
+    &:hover { background: $bg; }
+
+    td {
+      padding: 12px 16px;
+      font-size: $fs-md;
+      color: $text-soft;
+      vertical-align: middle;
+    }
+  }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: $text !important;
+    font-weight: 500;
+
+    i { color: $accent; }
+  }
+
+  &__email {
+    color: $text-soft !important;
+  }
+}
+
+// ── Badge ─────────────────────────────────────────────────────
+.badge {
+  font-size: $fs-sm;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+
+  &--active    { background: $accent-light; color: $accent-dark; }
+  &--expired   { background: #fef2f2; color: $danger; }
+  &--cancelled { background: #f3f4f6; color: $text-soft; }
+}
