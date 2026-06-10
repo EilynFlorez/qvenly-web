@@ -1,10 +1,61 @@
 <header class="topbar">
   <div class="topbar-left">
     <h1 class="topbar-title">{{ title }}</h1>
-    <p class="topbar-sub">{{ subtitle }}</p>
+    <p class="topbar-sub" *ngIf="subtitle">{{ subtitle }}</p>
   </div>
-  <button class="btn-export" *ngIf="showExport">
-    <i class="ti ti-download"></i>
-    Exportar
-  </button>
+
+  <div class="topbar-right">
+    <button class="btn-export" *ngIf="showExport">
+      <i class="ti ti-download"></i>
+      Exportar
+    </button>
+
+    <!-- Campana de notificaciones -->
+    <div class="notif-wrapper" (click)="$event.stopPropagation()">
+      <button class="notif-btn" (click)="toggleNotifications($event)">
+        <i class="ti ti-bell"></i>
+        <span class="notif-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      </button>
+
+      <div class="notif-dropdown" *ngIf="showNotifications">
+        <div class="notif-header">
+          <span class="notif-header__title">Notificaciones</span>
+          <button class="notif-header__action" *ngIf="unreadCount > 0"
+            (click)="markAllAsRead($event)">Marcar todas</button>
+        </div>
+
+        <div class="notif-empty" *ngIf="notifications.length === 0 && !loadingNotifs">
+          <i class="ti ti-bell-off"></i>
+          <span>Sin notificaciones</span>
+        </div>
+
+        <div class="notif-list" *ngIf="notifications.length > 0">
+          <div class="notif-item" *ngFor="let n of notifications"
+            [class.notif-item--unread]="!n.read">
+            <div class="notif-item__dot" *ngIf="!n.read"></div>
+            <div class="notif-item__body">
+              <p class="notif-item__title">{{ n.title }}</p>
+              <p class="notif-item__msg">{{ n.message }}</p>
+              <span class="notif-item__time">{{ n.createdAt | date:'dd/MM HH:mm' }}</span>
+            </div>
+            <button class="notif-item__read" *ngIf="!n.read"
+              (click)="markAsRead(n.id, $event)" title="Marcar como leída">
+              <i class="ti ti-check"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="notif-footer" *ngIf="notifications.length > 0">
+          <a routerLink="/dashboard/notifications" (click)="showNotifications = false">
+            Ver todas las notificaciones
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avatar del admin -->
+    <button class="topbar-avatar" (click)="goToProfile()" title="Mi perfil">
+      {{ userInitials }}
+    </button>
+  </div>
 </header>
