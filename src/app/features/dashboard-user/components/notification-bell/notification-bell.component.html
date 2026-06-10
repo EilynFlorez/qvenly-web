@@ -1,0 +1,39 @@
+<div class="notif-wrapper">
+  <button class="notif-btn" (click)="toggleNotifications($event)">
+    <i class="ti ti-bell"></i>
+    <span class="notif-badge" *ngIf="unreadCount > 0">
+      {{ unreadCount > 9 ? '9+' : unreadCount }}
+    </span>
+  </button>
+
+  <div class="notif-dropdown" *ngIf="showNotifications" (click)="$event.stopPropagation()">
+    <div class="notif-dropdown__header">
+      <span>Notificaciones</span>
+      <button class="notif-mark-all" *ngIf="unreadCount > 0" (click)="markAllAsRead($event)">
+        Marcar todas como leídas
+      </button>
+    </div>
+
+    <div class="notif-empty" *ngIf="notifications.length === 0">
+      <i class="ti ti-bell-off"></i>
+      <p>Sin notificaciones</p>
+    </div>
+
+    <div class="notif-item" *ngFor="let n of notifications" [class.notif-item--unread]="!n.read">
+      <div class="notif-item__dot" *ngIf="!n.read"></div>
+      <div class="notif-item__body">
+        <p class="notif-item__title">{{ n.title }}</p>
+        <p class="notif-item__msg">{{ n.message }}</p>
+        <p class="notif-item__time">{{ n.createdAt | date:'dd/MM/yy HH:mm' }}</p>
+      </div>
+      <button class="notif-item__read" *ngIf="!n.read" (click)="markAsRead(n.id, $event)">
+        <i class="ti ti-check"></i>
+      </button>
+    </div>
+
+    <a class="notif-dropdown__footer" routerLink="/dashboard-user/notifications"
+      (click)="showNotifications = false">
+      Ver todas →
+    </a>
+  </div>
+</div>

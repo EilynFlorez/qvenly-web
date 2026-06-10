@@ -1,0 +1,167 @@
+@use './styles/dashboard-variables' as *;
+
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: $gray-100;
+  font-family: $font;
+}
+
+// ─── Sidebar ───────────────────────────────────────────────────────────────
+.sidebar {
+  width: 230px;
+  height: 100vh;
+  position: sticky;
+  flex-shrink: 0;
+  border-right: 1px solid $teal-border;
+  display: flex;
+  flex-direction: column;
+  background-color: $white;
+  top: 0;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid $teal-border;
+}
+
+.logo-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img { width: 100%; height: 100%; }
+}
+
+.logo-name { font-size: 20px; font-weight: 700; color: $teal; }
+
+.sidebar-nav { padding: 20px; flex: 1; overflow-y: auto; }
+
+.nav-group {
+  font-size: 10px;
+  font-weight: 600;
+  color: $gray-400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 8px;
+  margin: 16px 0 6px;
+  &:first-child { margin-top: 0; }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: $gray-500;
+  text-decoration: none;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+  cursor: pointer;
+  i { font-size: 18px; }
+  &:hover { background-color: $teal-light; color: $teal; }
+  &.active { background: $teal-light; color: $teal; font-weight: 500; }
+  &--danger:hover { background-color: $red-bg; color: $red; }
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid $teal-border;
+}
+
+.user-profile {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $teal, $teal-dark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: $white;
+  flex-shrink: 0;
+}
+
+.user-name  { font-size: 11px; color: $gray-900; font-weight: 500; margin: 0; }
+.user-email { font-size: 11px; color: $gray-400; margin: 0; }
+
+// ─── Main ──────────────────────────────────────────────────────────────────
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+// ─── Topbar ────────────────────────────────────────────────────────────────
+.topbar {
+  background: $white;
+  border-bottom: 1px solid $teal-border;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: $gray-900;
+  margin: 0;
+  &--accent { color: $teal; }
+}
+
+.topbar-sub { font-size: 12px; color: $gray-400; margin: 2px 0 0; }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $teal, $teal-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: $white;
+  cursor: pointer;
+  &:hover { opacity: 0.85; }
+}
+
+// ─── Page body ─────────────────────────────────────────────────────────────
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+}
