@@ -26,6 +26,10 @@
 
   <!-- Características -->
   <ul class="plan-card__features">
+    <li *ngIf="plan.maxEvents > 0">
+      <i class="ti ti-calendar-event"></i>
+      Máx. Eventos: {{ plan.maxEvents }}
+    </li>
     <li *ngIf="plan.maxOrganizers > 0">
       <i class="ti ti-user-check"></i>
       Máx. Organizadores: {{ plan.maxOrganizers }}

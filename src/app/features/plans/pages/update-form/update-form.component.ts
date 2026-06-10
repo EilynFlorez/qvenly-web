@@ -67,6 +67,7 @@ export class UpdateFormComponent implements OnInit {
           description: res.data.description,
           price: res.data.price,
           durationDays: res.data.durationDays,
+          maxEvents: res.data.maxEvents,
           maxOrganizers: res.data.maxOrganizers,
           maxParticipants: res.data.maxParticipants,
           maxJudges: res.data.maxJudges,
