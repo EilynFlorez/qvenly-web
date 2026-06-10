@@ -1,0 +1,158 @@
+@use '../../auth-shared' as *;
+
+.auth-page   { @extend %auth-page; }
+.auth-card   { @include card; }
+.auth-logo   { @extend %auth-logo; }
+
+.auth-title {
+  font-size: $fs-title;
+  font-weight: 700;
+  color: $gray-900;
+  text-align: center;
+  margin: 0 0 0.375rem;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
+
+.auth-subtitle {
+  font-size: $fs-subtitle;
+  color: $gray-400;
+  text-align: center;
+  margin: 0 0 1.25rem;
+}
+
+// Estado de carga
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $gray-200;
+  border-top-color: $teal-500;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: $fs-small;
+  color: $gray-400;
+  margin: 0;
+}
+
+// Tarjeta de usuario de Google
+.google-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $gray-50;
+  border: 1.5px solid $gray-200;
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1.25rem;
+
+  &__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $teal-400, $teal-600);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__data {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: $fs-base;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__email {
+    font-size: $fs-small;
+    color: $gray-400;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__icon {
+    font-size: 1.25rem;
+    color: #4285F4;
+    flex-shrink: 0;
+  }
+}
+
+// Alerta
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  i { font-size: 1rem; flex-shrink: 0; }
+
+  &--error { @include alert($red-50, $red-200, $red-600); }
+}
+
+// Formulario
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-label {
+  font-size: $fs-small;
+  font-weight: 600;
+  color: $gray-700;
+  letter-spacing: 0.1px;
+}
+
+.form-input {
+  @include input-base;
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: $fs-small;
+  color: $red-600;
+
+  i { font-size: 0.8rem; flex-shrink: 0; }
+}
+
+// Botón
+.btn-primary {
+  @include btn-primary;
+  margin-top: 0.5rem;
+}

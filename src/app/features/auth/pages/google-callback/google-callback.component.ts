@@ -5,10 +5,12 @@ import { AuthService } from '../../../../core/core-auth/services/auth.service';
 /**
  * Componente de callback para OAuth2 con Google.
  *
- * El backend ya NO manda el token en la URL (era un riesgo de seguridad).
- * Ahora el token llega como cookie HttpOnly establecida por OAuth2SuccessHandler.
- * Este componente solo recibe los datos no sensibles como query params:
- * name, email, role, userId — y guarda la sesión en localStorage.
+ * Lee los query params enviados por OAuth2SuccessHandler:
+ * - name, email, role, userId — datos no sensibles para la UI
+ * - needsProfile — indica si el usuario debe completar su perfil
+ *
+ * Si needsProfile=true redirige a /auth/complete-profile
+ * Si no, redirige al dashboard según el rol
  */
 @Component({
   selector: 'app-google-callback',
@@ -28,21 +30,26 @@ export class GoogleCallbackComponent implements OnInit {
   ngOnInit(): void {
     const params = this.route.snapshot.queryParams;
 
-    const name   = params['name'];
-    const email  = params['email'];
-    const role   = params['role'];
-    const userId = params['userId'];
+    const name         = params['name'];
+    const email        = params['email'];
+    const role         = params['role'];
+    const userId       = params['userId'];
+    const needsProfile = params['needsProfile'] === 'true';
 
-    // Validar que llegaron los datos mínimos necesarios
     if (!role || !email) {
       this.errorMessage = 'Error al iniciar sesión con Google.';
       setTimeout(() => this.router.navigate(['/auth/login']), 3000);
       return;
     }
 
-    // Guardar datos no sensibles en localStorage para personalizar la UI
-    // El token ya está en cookie HttpOnly — no necesitamos guardarlo aquí
+    // Guardar datos no sensibles en localStorage
     this.authService.saveUserInfo(name || 'Usuario', email, role, Number(userId));
+
+    // Si el perfil está incompleto, redirigir al formulario
+    if (needsProfile) {
+      this.router.navigate(['/auth/complete-profile']);
+      return;
+    }
 
     // Redirigir según rol
     if (role === 'ADMIN') {

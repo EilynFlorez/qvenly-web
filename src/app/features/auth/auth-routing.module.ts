@@ -6,6 +6,7 @@ import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { ConfirmEmailComponent } from './pages/confirm-email/confirm-email.component';
 import { GoogleCallbackComponent } from './pages/google-callback/google-callback.component';
+import { CompleteProfileComponent } from './pages/complete-profile/complete-profile.component';
 import { guestGuard } from '../../core/core-auth/guards/guest.guard';
 
 const routes: Routes = [
@@ -35,6 +36,10 @@ const routes: Routes = [
   {
     path: 'google-callback',
     component: GoogleCallbackComponent
+  },
+  {
+    path: 'complete-profile',
+    component: CompleteProfileComponent
   },
   {
     path: '',

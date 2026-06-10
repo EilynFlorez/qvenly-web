@@ -1,0 +1,102 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <img src="assets/images/logoQvenly.png" alt="Qvenly logo">
+      <span>Qvenly</span>
+    </div>
+
+    <!-- Cargando perfil -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Cargando tu perfil...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+
+      <!-- Título -->
+      <h2 class="auth-title">Completa tu perfil</h2>
+      <p class="auth-subtitle">Para continuar necesitamos algunos datos adicionales</p>
+
+      <!-- Info del usuario de Google (solo lectura) -->
+      <div class="google-info">
+        <div class="google-info__avatar">
+          {{ displayName.charAt(0).toUpperCase() }}
+        </div>
+        <div class="google-info__data">
+          <p class="google-info__name">{{ displayName }}</p>
+          <p class="google-info__email">{{ displayEmail }}</p>
+        </div>
+        <i class="ti ti-brand-google google-info__icon"></i>
+      </div>
+
+      <!-- Alerta error -->
+      <div *ngIf="errorMessage" class="alert alert--error">
+        <i class="ti ti-alert-circle"></i>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Formulario -->
+      <div class="auth-form">
+
+        <!-- Apellido -->
+        <div class="form-field">
+          <label class="form-label">Apellido</label>
+          <input type="text" placeholder="Pérez" [(ngModel)]="form.lastName" name="lastName"
+            (blur)="touch('lastName')" class="form-input"
+            [class.form-input--error]="fieldState('lastName') === 'error'"
+            [class.form-input--success]="fieldState('lastName') === 'success'" />
+          <span *ngIf="getLastNameError()" class="form-error">
+            <i class="ti ti-alert-circle"></i>
+            {{ getLastNameError() }}
+          </span>
+        </div>
+
+        <!-- Tipo de Identificación -->
+        <div class="form-field">
+          <label class="form-label">Tipo de Identificación</label>
+          <select [(ngModel)]="form.documentType" name="documentType" class="form-input">
+            <option value="CC">Cédula de Ciudadanía</option>
+            <option value="CE">Cédula de Extranjería</option>
+            <option value="PASSPORT">Pasaporte</option>
+            <option value="TI">Tarjeta de Identidad</option>
+          </select>
+        </div>
+
+        <!-- Número de Identificación -->
+        <div class="form-field">
+          <label class="form-label">Número de Identificación</label>
+          <input type="text" placeholder="123456789" [(ngModel)]="form.documentNumber" name="documentNumber"
+            (blur)="touch('documentNumber')" class="form-input"
+            [class.form-input--error]="fieldState('documentNumber') === 'error'"
+            [class.form-input--success]="fieldState('documentNumber') === 'success'" />
+          <span *ngIf="getDocumentError()" class="form-error">
+            <i class="ti ti-alert-circle"></i>
+            {{ getDocumentError() }}
+          </span>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="form-field">
+          <label class="form-label">Número de Teléfono</label>
+          <input type="tel" placeholder="+573001234567" [(ngModel)]="form.phoneNumber" name="phoneNumber"
+            (blur)="touch('phoneNumber')" class="form-input"
+            [class.form-input--error]="fieldState('phoneNumber') === 'error'"
+            [class.form-input--success]="fieldState('phoneNumber') === 'success'" />
+          <span *ngIf="getPhoneError()" class="form-error">
+            <i class="ti ti-alert-circle"></i>
+            {{ getPhoneError() }}
+          </span>
+        </div>
+
+        <button class="btn-primary" (click)="onSubmit()" [disabled]="isLoading">
+          {{ isLoading ? 'Guardando...' : 'Continuar al dashboard' }}
+        </button>
+
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>
