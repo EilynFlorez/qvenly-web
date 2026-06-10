@@ -1,0 +1,174 @@
+<!-- Loading -->
+<div class="loading-state" *ngIf="loading">
+  <div class="spinner"></div>
+  <span>Cargando tu plan...</span>
+</div>
+
+<!-- Error -->
+<div class="feedback-card feedback-card--error" *ngIf="!loading && error">
+  <i class="ti ti-alert-circle"></i>
+  <p>No pudimos cargar tu plan. Intenta de nuevo más tarde.</p>
+</div>
+
+<!-- Sin plan activo -->
+<div class="empty-state" *ngIf="!loading && !error && !activePlan">
+  <div class="empty-state__icon">
+    <i class="ti ti-diamond-off"></i>
+  </div>
+  <h2 class="empty-state__title">Sin plan activo</h2>
+  <p class="empty-state__desc">
+    Aún no tienes un plan activo. Explora los planes disponibles y elige el que mejor se adapte a tus necesidades.
+  </p>
+  <a class="btn btn--primary" routerLink="/dashboard-user/planes">
+    <i class="ti ti-layout-grid-add"></i> Ver planes disponibles
+  </a>
+</div>
+
+<!-- Plan activo -->
+<ng-container *ngIf="!loading && !error && activePlan">
+
+  <!-- Encabezado del plan -->
+  <div class="plan-header">
+    <div class="plan-header__info">
+      <div class="plan-header__icon">
+        <i class="ti ti-diamond"></i>
+      </div>
+      <div>
+        <h1 class="plan-header__name">{{ activePlan.plan.name }}</h1>
+        <p class="plan-header__desc">{{ activePlan.plan.description }}</p>
+      </div>
+    </div>
+    <div class="plan-header__meta">
+      <span class="badge badge--active">
+        <i class="ti ti-circle-check"></i> Activo
+      </span>
+      <span class="plan-header__price">{{ formatPrice(activePlan.plan.price) }}<span>/mes</span></span>
+    </div>
+  </div>
+
+  <!-- Grid principal: vigencia + progreso -->
+  <div class="info-grid">
+
+    <!-- Fechas de vigencia -->
+    <div class="info-card">
+      <p class="info-card__label">Vigencia del plan</p>
+      <div class="dates-row">
+        <div class="date-item">
+          <i class="ti ti-calendar"></i>
+          <div>
+            <span class="date-item__tag">Inicio</span>
+            <span class="date-item__val">{{ activePlan.startDate | date:'dd MMM yyyy' }}</span>
+          </div>
+        </div>
+        <div class="dates-separator">→</div>
+        <div class="date-item">
+          <i class="ti ti-calendar-off"></i>
+          <div>
+            <span class="date-item__tag">Vencimiento</span>
+            <span class="date-item__val">{{ activePlan.endDate | date:'dd MMM yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="renewal-badge" *ngIf="activePlan.renewal">
+        <i class="ti ti-refresh"></i> Plan renovado
+      </div>
+    </div>
+
+    <!-- Días restantes -->
+    <div class="info-card">
+      <p class="info-card__label">Tiempo restante</p>
+      <div class="progress-section">
+        <div class="progress-days">
+          <span class="progress-days__value">{{ getDaysRemaining() }}</span>
+          <span class="progress-days__unit">días restantes</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar__fill" [style.width.%]="getProgressPercent()"></div>
+        </div>
+        <div class="progress-meta">
+          <span>0 días</span>
+          <span>{{ activePlan.plan.durationDays }} días totales</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Grid de características -->
+  <div class="features-section">
+    <h2 class="features-section__title">
+      <i class="ti ti-list-check"></i> Incluido en tu plan
+    </h2>
+    <div class="features-grid">
+
+      <div class="feature-card" *ngIf="activePlan.plan.maxAttendees > 0">
+        <div class="feature-card__icon feature-card__icon--teal">
+          <i class="ti ti-users"></i>
+        </div>
+        <div class="feature-card__body">
+          <span class="feature-card__value">{{ activePlan.plan.maxAttendees }}</span>
+          <span class="feature-card__label">Asistentes</span>
+        </div>
+      </div>
+
+      <div class="feature-card" *ngIf="activePlan.plan.maxOrganizers > 0">
+        <div class="feature-card__icon feature-card__icon--blue">
+          <i class="ti ti-user-check"></i>
+        </div>
+        <div class="feature-card__body">
+          <span class="feature-card__value">{{ activePlan.plan.maxOrganizers }}</span>
+          <span class="feature-card__label">Organizador(es)</span>
+        </div>
+      </div>
+
+      <div class="feature-card" *ngIf="activePlan.plan.maxParticipants > 0">
+        <div class="feature-card__icon feature-card__icon--purple">
+          <i class="ti ti-user-plus"></i>
+        </div>
+        <div class="feature-card__body">
+          <span class="feature-card__value">{{ activePlan.plan.maxParticipants }}</span>
+          <span class="feature-card__label">Participantes</span>
+        </div>
+      </div>
+
+      <div class="feature-card" *ngIf="activePlan.plan.maxJudges > 0">
+        <div class="feature-card__icon feature-card__icon--orange">
+          <i class="ti ti-gavel"></i>
+        </div>
+        <div class="feature-card__body">
+          <span class="feature-card__value">{{ activePlan.plan.maxJudges }}</span>
+          <span class="feature-card__label">Jueces</span>
+        </div>
+      </div>
+
+      <div class="feature-card" *ngIf="activePlan.plan.maxStaff > 0">
+        <div class="feature-card__icon feature-card__icon--green">
+          <i class="ti ti-briefcase"></i>
+        </div>
+        <div class="feature-card__body">
+          <span class="feature-card__value">{{ activePlan.plan.maxStaff }}</span>
+          <span class="feature-card__label">Personal de apoyo</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-card__icon feature-card__icon--teal">
+          <i class="ti ti-calendar"></i>
+        </div>
+        <div class="feature-card__body">
+          <span class="feature-card__value">{{ activePlan.plan.durationDays }}</span>
+          <span class="feature-card__label">Días de vigencia</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="actions-row">
+    <a class="btn btn--outline" routerLink="/dashboard-user/planes">
+      <i class="ti ti-layout-grid-add"></i> Ver otros planes
+    </a>
+  </div>
+
+</ng-container>

@@ -1,0 +1,64 @@
+<!-- Header de la página -->
+<div class="page-header">
+  <div class="page-header__left">
+    <h1 class="page-header__title">
+      <i class="ti ti-bell"></i> Notificaciones
+    </h1>
+    <span class="unread-badge" *ngIf="!loading && unreadCount > 0">
+      {{ unreadCount }} sin leer
+    </span>
+  </div>
+  <button class="btn btn--outline" *ngIf="!loading && unreadCount > 0"
+    (click)="markAllAsRead()" [disabled]="markingAll">
+    <i class="ti ti-checks"></i>
+    {{ markingAll ? 'Marcando...' : 'Marcar todas como leídas' }}
+  </button>
+</div>
+
+<!-- Loading -->
+<div class="loading-state" *ngIf="loading">
+  <div class="spinner"></div>
+  <span>Cargando notificaciones...</span>
+</div>
+
+<!-- Error -->
+<div class="feedback-card feedback-card--error" *ngIf="!loading && error">
+  <i class="ti ti-alert-circle"></i>
+  <span>No pudimos cargar tus notificaciones.</span>
+  <button class="btn btn--ghost" (click)="loadNotifications()">Reintentar</button>
+</div>
+
+<!-- Empty state -->
+<div class="empty-state" *ngIf="!loading && !error && notifications.length === 0">
+  <div class="empty-state__icon">
+    <i class="ti ti-bell-off"></i>
+  </div>
+  <p class="empty-state__title">Sin notificaciones</p>
+  <p class="empty-state__desc">Aquí aparecerán tus notificaciones cuando las recibas.</p>
+</div>
+
+<!-- Lista de notificaciones -->
+<div class="notif-list" *ngIf="!loading && !error && notifications.length > 0">
+  <div class="notif-item" *ngFor="let n of notifications"
+    [class.notif-item--unread]="!n.read">
+
+    <div class="notif-item__dot" *ngIf="!n.read"></div>
+
+    <div class="notif-item__content">
+      <div class="notif-item__meta">
+        <span class="type-badge type-badge--{{ getBadgeType(n.type) }}">
+          {{ formatType(n.type) }}
+        </span>
+        <span class="notif-item__time">{{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <p class="notif-item__title">{{ n.title }}</p>
+      <p class="notif-item__msg">{{ n.message }}</p>
+    </div>
+
+    <button class="read-btn" *ngIf="!n.read" (click)="markAsRead(n.id)"
+      title="Marcar como leída">
+      <i class="ti ti-check"></i>
+    </button>
+
+  </div>
+</div>
