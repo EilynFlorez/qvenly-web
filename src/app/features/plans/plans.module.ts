@@ -18,6 +18,7 @@ import { PlanDetailCardComponent } from './components/plan-detail-card/plan-deta
 import { AuditTableComponent } from './components/audit-table/audit-table.component';
 import { AuditFiltersComponent } from './components/audit-filters/audit-filters.component';
 import { AuditListComponent } from './pages/audit-list/audit-list.component';
+import { PlanOrganizersComponent } from './components/plan-organizers/plan-organizers.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { AuditListComponent } from './pages/audit-list/audit-list.component';
     PlanDetailCardComponent,
     AuditTableComponent,
     AuditFiltersComponent,
-    AuditListComponent
+    AuditListComponent,
+    PlanOrganizersComponent
   ],
   imports: [
     CommonModule,

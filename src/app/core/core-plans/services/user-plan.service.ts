@@ -17,7 +17,7 @@ export class UserPlanService {
   /** URL base del endpoint de planes asignados */
   private apiUrl = `${environment.apiUrl}/api/user-plans`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Asigna un plan a un organizador específico (HU42).
@@ -50,5 +50,15 @@ export class UserPlanService {
   getActivePlanByUser(userId: number): Observable<ApiResponse<UserPlanResponse>> {
     return this.http.get<ApiResponse<UserPlanResponse>>(
       `${this.apiUrl}/user/${userId}/active`, { withCredentials: true });
+  }
+
+  /**
+ * Obtiene los organizadores que tienen asignado un plan (RF25.2).
+ * @param planId ID del plan
+ * @returns Observable con la lista de asignaciones del plan
+ */
+  getOrganizersByPlan(planId: number): Observable<ApiResponse<UserPlanResponse[]>> {
+    return this.http.get<ApiResponse<UserPlanResponse[]>>(
+      `${this.apiUrl}/plan/${planId}`);
   }
 }
