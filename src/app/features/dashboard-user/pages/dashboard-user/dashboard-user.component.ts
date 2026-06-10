@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/core-auth/services/auth.service';
 import { UserPlanService } from '../../../../core/core-plans/services/user-plan.service';
 import { PlanService } from '../../../../core/core-plans/services/plan.service';
@@ -17,8 +16,6 @@ export class DashboardUserComponent implements OnInit {
 
   // ─── Info del usuario ─────────────────────────────────────────────────
   userName = '';
-  userEmail = '';
-  userInitials = '';
   userId: number | null = null;
 
   // ─── Plan activo ──────────────────────────────────────────────────────
@@ -38,24 +35,18 @@ export class DashboardUserComponent implements OnInit {
     private authService: AuthService,
     private userPlanService: UserPlanService,
     private planService: PlanService,
-    private paymentService: PaymentService,
-    private router: Router
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
-    this.userName    = this.authService.getUserName() || '';
-    this.userEmail   = localStorage.getItem('email') || '';
-    this.userId      = this.authService.getUserId();
-    this.userInitials = this.userName
-      .split(' ')
-      .map(n => n.charAt(0).toUpperCase())
-      .slice(0, 2)
-      .join('');
+    this.userName = this.authService.getUserName() || '';
+    this.userId   = this.authService.getUserId();
 
     this.loadActivePlan();
     this.loadAvailablePlans();
   }
 
+  // ─── Plan ─────────────────────────────────────────────────────────────
   loadActivePlan(): void {
     if (!this.userId) { this.loadingActivePlan = false; return; }
     this.userPlanService.getActivePlanByUser(this.userId).subscribe({
@@ -77,10 +68,9 @@ export class DashboardUserComponent implements OnInit {
     });
   }
 
-  // ─── Iniciar pago de un plan ──────────────────────────────────────────
+  // ─── Pago ─────────────────────────────────────────────────────────────
   onAcquirePlan(plan: PlanResponse): void {
     if (!this.userId) return;
-
     this.processingPayment = true;
     this.paymentError = '';
 
@@ -92,7 +82,6 @@ export class DashboardUserComponent implements OnInit {
     }).subscribe({
       next: (response) => {
         if (response.success) {
-          // Redirigir al checkout de MercadoPago
           window.location.href = response.data.checkoutUrl;
         } else {
           this.paymentError = response.message;
@@ -100,7 +89,7 @@ export class DashboardUserComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.paymentError = err.error?.message || 'Error al procesar el pago. Intenta de nuevo.';
+        this.paymentError = err.error?.message || 'Error al procesar el pago.';
         this.processingPayment = false;
       }
     });
@@ -122,12 +111,5 @@ export class DashboardUserComponent implements OnInit {
       / (1000 * 60 * 60 * 24)
     );
     return Math.max(0, diff);
-  }
-
-  onLogout(): void {
-    this.authService.logout().subscribe({
-      next: () => { this.authService.clearSession(); this.router.navigate(['/auth/login']); },
-      error: () => { this.authService.clearSession(); this.router.navigate(['/auth/login']); }
-    });
   }
 }
