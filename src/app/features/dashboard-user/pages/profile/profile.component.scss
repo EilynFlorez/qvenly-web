@@ -1,0 +1,370 @@
+@use '../../styles/dashboard-variables' as *;
+
+$green:    #10b981;
+$green-bg: rgba(16, 185, 129, 0.08);
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 28px;
+  font-family: $font;
+  max-width: 720px;
+}
+
+// ─── Loading ───────────────────────────────────────────────────────────────
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: $gray-400;
+  font-size: 14px;
+  padding: 3rem 0;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid $gray-200;
+  border-top-color: $teal;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ─── Header ────────────────────────────────────────────────────────────────
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: $white;
+  border: 1px solid $teal-border;
+  border-radius: 16px;
+  padding: 22px 26px;
+
+  &__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $teal, $teal-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $white;
+    font-size: 26px;
+    font-weight: 700;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__name {
+    font-size: 20px;
+    font-weight: 700;
+    color: $gray-900;
+    margin: 0;
+  }
+
+  &__email {
+    font-size: 13px;
+    color: $gray-400;
+    margin: 0;
+  }
+
+  &__badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  i { font-size: 12px; }
+
+  &--role     { background: $teal-light; color: $teal-dark; }
+  &--active   { background: $green-bg; color: darken($green, 10%); }
+  &--inactive { background: $gray-100; color: $gray-400; }
+  &--google   { background: rgba(239, 68, 68, 0.08); color: #c0392b; }
+}
+
+// ─── Tabs ──────────────────────────────────────────────────────────────────
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid $gray-200;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-400;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: $font;
+  transition: color 0.2s, border-color 0.2s;
+  i { font-size: 16px; }
+
+  &:hover:not(.tab-btn--active) { color: $gray-900; }
+
+  &--active {
+    color: $teal;
+    border-bottom-color: $teal;
+  }
+}
+
+// ─── Form card ─────────────────────────────────────────────────────────────
+.form-card {
+  background: $white;
+  border: 1px solid $teal-border;
+  border-radius: 14px;
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: $gray-500;
+    background: $gray-100;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin: 0;
+    i { font-size: 15px; color: $teal; flex-shrink: 0; }
+  }
+}
+
+// ─── Form grid (2 columnas para datos) ─────────────────────────────────────
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 440px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: $gray-900;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid $gray-200;
+  border-radius: 9px;
+  font-size: 14px;
+  color: $gray-900;
+  font-family: $font;
+  background: $white;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    border-color: $teal;
+    box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.1);
+  }
+
+  &::placeholder { color: $gray-400; }
+}
+
+select.form-input { cursor: pointer; }
+
+// ─── Feedback ──────────────────────────────────────────────────────────────
+.form-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  i { font-size: 16px; flex-shrink: 0; }
+
+  &--success {
+    background: $green-bg;
+    color: darken($green, 15%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  &--error {
+    background: $red-bg;
+    color: $red;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+}
+
+// ─── Input con toggle de visibilidad ──────────────────────────────────────
+.input-password {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .form-input {
+    width: 100%;
+    padding-right: 2.75rem;
+  }
+
+  &__toggle {
+    position: absolute;
+    right: 0.875rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $gray-400;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+    i { font-size: 17px; }
+    &:hover { color: $teal; }
+  }
+}
+
+// ─── Estados de validación del input ──────────────────────────────────────
+.form-input--error {
+  border-color: $red !important;
+  &:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important; }
+}
+
+.form-input--success {
+  border-color: #10b981 !important;
+  &:focus { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important; }
+}
+
+// ─── Hint en el label ──────────────────────────────────────────────────────
+.form-label__hint {
+  font-weight: 400;
+  color: $gray-400;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+// ─── Mensajes inline por campo ─────────────────────────────────────────────
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: $red;
+  i { font-size: 13px; flex-shrink: 0; }
+}
+
+.field-success {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #16a34a;
+  i { font-size: 13px; flex-shrink: 0; }
+}
+
+// ─── Barra de fortaleza ────────────────────────────────────────────────────
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+
+  &__bars {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+  }
+
+  &__label {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 48px;
+    text-align: right;
+    &.label--weak   { color: $red; }
+    &.label--medium { color: #d97706; }
+    &.label--strong { color: #16a34a; }
+  }
+}
+
+.bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: $gray-200;
+  transition: background 0.3s;
+
+  &.active {
+    &.weak   { background: $red; }
+    &.medium { background: #f59e0b; }
+    &.strong { background: #22c55e; }
+  }
+}
+
+// ─── Acciones ──────────────────────────────────────────────────────────────
+.form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: $font;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 0.2s, opacity 0.2s;
+  i { font-size: 16px; }
+
+  &--primary {
+    background: $teal;
+    color: $white;
+    &:hover:not(:disabled) { background: $teal-dark; }
+    &:disabled { opacity: 0.55; cursor: not-allowed; }
+  }
+}

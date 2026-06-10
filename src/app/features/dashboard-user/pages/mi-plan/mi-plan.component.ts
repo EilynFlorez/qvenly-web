@@ -1,0 +1,60 @@
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../../../core/core-auth/services/auth.service';
+import { UserPlanService } from '../../../../core/core-plans/services/user-plan.service';
+import { UserPlanResponse } from '../../../../core/core-plans/models/plan.model';
+
+@Component({
+  selector: 'app-mi-plan',
+  templateUrl: './mi-plan.component.html',
+  styleUrls: ['./mi-plan.component.scss']
+})
+export class MiPlanComponent implements OnInit {
+
+  Math = Math;
+
+  activePlan: UserPlanResponse | null = null;
+  loading = true;
+  error = false;
+
+  constructor(
+    private authService: AuthService,
+    private userPlanService: UserPlanService
+  ) {}
+
+  ngOnInit(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) { this.loading = false; return; }
+
+    this.userPlanService.getActivePlanByUser(userId).subscribe({
+      next: (response) => {
+        if (response.success) this.activePlan = response.data;
+        this.loading = false;
+      },
+      error: () => { this.error = true; this.loading = false; }
+    });
+  }
+
+  getDaysRemaining(): number {
+    if (!this.activePlan?.endDate) return 0;
+    const diff = Math.ceil(
+      (new Date(this.activePlan.endDate).getTime() - new Date().getTime())
+      / (1000 * 60 * 60 * 24)
+    );
+    return Math.max(0, diff);
+  }
+
+  getProgressPercent(): number {
+    if (!this.activePlan) return 0;
+    const total = this.activePlan.plan.durationDays || 30;
+    return Math.min((this.getDaysRemaining() / total) * 100, 100);
+  }
+
+  formatPrice(price: number): string {
+    if (price === 0) return 'Gratis';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(price);
+  }
+}

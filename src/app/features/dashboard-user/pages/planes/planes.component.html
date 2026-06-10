@@ -1,0 +1,108 @@
+<div class="planes-container">
+
+  <!-- Header -->
+  <div class="planes-header">
+    <div>
+      <h2 class="planes-title">
+        <i class="ti ti-layout-grid-add"></i>
+        Planes disponibles
+      </h2>
+      <p class="planes-sub">Elige el plan que mejor se adapte a tus necesidades</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Cargando planes...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-row" *ngIf="!loading && error">
+    <i class="ti ti-alert-circle"></i>
+    <span>No se pudieron cargar los planes. Intenta de nuevo.</span>
+    <button class="btn-retry" (click)="loadPlans()">Reintentar</button>
+  </div>
+
+  <!-- Error de pago -->
+  <div class="error-row" *ngIf="paymentError">
+    <i class="ti ti-alert-circle"></i>
+    <span>{{ paymentError }}</span>
+  </div>
+
+  <!-- Grid de planes -->
+  <div class="plans-grid" *ngIf="!loading && !error">
+
+    <div class="plan-card" *ngFor="let plan of plans"
+         [class.plan-card--featured]="plan.price === getMaxPrice()">
+
+      <!-- Badge destacado -->
+      <div class="plan-card__badge" *ngIf="plan.price === getMaxPrice()">
+        <i class="ti ti-star-filled"></i> Más completo
+      </div>
+
+      <!-- Header -->
+      <div class="plan-card__header">
+        <div class="plan-card__icon">
+          <i class="ti ti-diamond"></i>
+        </div>
+        <div>
+          <p class="plan-card__name">{{ plan.name }}</p>
+          <p class="plan-card__price">
+            {{ formatPrice(plan.price) }}
+            <span *ngIf="plan.price > 0">/mes</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <p class="plan-card__desc">{{ plan.description }}</p>
+
+      <!-- Separador -->
+      <div class="plan-card__divider"></div>
+
+      <!-- Features -->
+      <ul class="plan-card__features">
+        <li *ngIf="plan.maxAttendees > 0">
+          <i class="ti ti-users"></i>
+          <span>Hasta <strong>{{ plan.maxAttendees }}</strong> asistentes</span>
+        </li>
+        <li *ngIf="plan.maxOrganizers > 0">
+          <i class="ti ti-user-check"></i>
+          <span><strong>{{ plan.maxOrganizers }}</strong> organizador(es)</span>
+        </li>
+        <li *ngIf="plan.maxParticipants > 0">
+          <i class="ti ti-user-plus"></i>
+          <span>Hasta <strong>{{ plan.maxParticipants }}</strong> participantes</span>
+        </li>
+        <li *ngIf="plan.maxJudges > 0">
+          <i class="ti ti-gavel"></i>
+          <span>Hasta <strong>{{ plan.maxJudges }}</strong> jueces</span>
+        </li>
+        <li *ngIf="plan.maxStaff > 0">
+          <i class="ti ti-briefcase"></i>
+          <span>Hasta <strong>{{ plan.maxStaff }}</strong> personal de apoyo</span>
+        </li>
+        <li>
+          <i class="ti ti-calendar"></i>
+          <span><strong>{{ plan.durationDays }}</strong> días de duración</span>
+        </li>
+      </ul>
+
+      <!-- Botón -->
+      <button class="plan-card__btn"
+              [class.plan-card__btn--featured]="plan.price === getMaxPrice()"
+              (click)="onAcquirePlan(plan)"
+              [disabled]="processingPayment">
+        <span *ngIf="!isProcessing(plan.idPlan)">
+          Adquirir plan <i class="ti ti-arrow-right"></i>
+        </span>
+        <span *ngIf="isProcessing(plan.idPlan)">
+          Procesando... <i class="ti ti-loader-2 spin"></i>
+        </span>
+      </button>
+
+    </div>
+  </div>
+
+</div>

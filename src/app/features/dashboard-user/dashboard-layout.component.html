@@ -1,0 +1,82 @@
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <img src="assets/images/logoQvn.png" alt="Qvenly">
+      </div>
+      <span class="logo-name">Qvenly</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="nav-group">Principal</p>
+      <a class="nav-item" routerLink="/dashboard-user" routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}">
+        <i class="ti ti-layout-dashboard"></i> Dashboard
+      </a>
+
+      <p class="nav-group">Mi Plan</p>
+      <a class="nav-item" routerLink="/dashboard-user/plan" routerLinkActive="active">
+        <i class="ti ti-diamond"></i> Mi plan activo
+      </a>
+      <a class="nav-item" routerLink="/dashboard-user/planes" routerLinkActive="active">
+        <i class="ti ti-layout-grid-add"></i> Ver planes
+      </a>
+
+      <p class="nav-group">Mis Actividades</p>
+      <a class="nav-item" routerLink="/dashboard-user/eventos" routerLinkActive="active">
+        <i class="ti ti-calendar-event"></i> Mis eventos
+      </a>
+      <a class="nav-item" routerLink="/dashboard-user/invitaciones" routerLinkActive="active">
+        <i class="ti ti-mail"></i> Invitaciones
+      </a>
+
+      <p class="nav-group">Cuenta</p>
+      <a class="nav-item" routerLink="/dashboard-user/profile" routerLinkActive="active">
+        <i class="ti ti-user-circle"></i> Mi perfil
+      </a>
+      <a class="nav-item nav-item--danger" (click)="onLogout()">
+        <i class="ti ti-logout"></i> Cerrar sesión
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-profile">{{ userInitials }}</div>
+      <div class="user-info">
+        <p class="user-name">{{ userName }}</p>
+        <p class="user-email">{{ userEmail }}</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="main-content">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <h1 class="topbar-title">
+            Bienvenido, <span class="topbar-title--accent">{{ userName }}</span>
+          </h1>
+          <p class="topbar-sub">Gestiona tu plan y tus eventos desde aquí</p>
+        </div>
+
+        <div class="topbar-right">
+          <app-notification-bell></app-notification-bell>
+          <div class="topbar-avatar" routerLink="/dashboard-user/profile">
+            {{ userInitials }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenido de la página hija -->
+      <div class="page-body">
+        <router-outlet></router-outlet>
+      </div>
+
+    </div>
+  </main>
+
+</div>
