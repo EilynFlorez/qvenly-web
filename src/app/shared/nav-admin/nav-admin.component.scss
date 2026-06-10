@@ -199,4 +199,15 @@ main {
     }
 }
 
+.nav-item--danger {
+    background: none;
+    width: 100%;
+    text-align: left;
+    border: none;
+    color: #ef4444;
 
+    &:hover {
+        background-color: rgba(239, 68, 68, 0.06);
+        color: #ef4444;
+    }
+}
