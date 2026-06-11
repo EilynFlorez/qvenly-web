@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router';
 import { DashboardUserRoutingModule } from './dashboard-user-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { DashboardLayoutComponent } from './dashboard-layout.component';
-import { NotificationBellComponent } from './components/notification-bell/notification-bell.component';
 import { DashboardUserComponent } from './pages/dashboard-user/dashboard-user.component';
 import { MiPlanComponent } from './pages/mi-plan/mi-plan.component';
 import { MisEventosComponent } from './pages/mis-eventos/mis-eventos.component';
@@ -17,7 +16,6 @@ import { PlanesComponent } from './pages/planes/planes.component';
 @NgModule({
   declarations: [
     DashboardLayoutComponent,
-    NotificationBellComponent,
     DashboardUserComponent,
     MiPlanComponent,
     MisEventosComponent,

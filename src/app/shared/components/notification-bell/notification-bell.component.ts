@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { ProfileService } from '../../../../core/core-auth/services/profile.service';
-import { NotificationInbox } from '../../../../core/core-auth/models/profile.model';
+import { ProfileService } from '../../../core/core-auth/services/profile.service';
+import { NotificationInbox } from '../../../core/core-auth/models/profile.model';
 
 @Component({
   selector: 'app-notification-bell',
