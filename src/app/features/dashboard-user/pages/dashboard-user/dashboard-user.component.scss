@@ -159,7 +159,7 @@
 }
 
 .spinner {
-  width: 18px; height: 18px; border: 2px solid $gray-200;
+  width: 20px; height: 20px; border: 2px solid $gray-200;
   border-top-color: $teal; border-radius: 50%;
   animation: spin 0.8s linear infinite; flex-shrink: 0;
 }
@@ -178,7 +178,7 @@
 }
 
 .plan-card {
-  border: 1px solid $teal-border; border-radius: 12px; padding: 1.25rem;
+  border: 1px solid $teal-border; border-radius: $radius-md; padding: 1.25rem;
   display: flex; flex-direction: column; gap: 0.75rem;
   transition: border-color 0.2s, box-shadow 0.2s;
   &:hover { border-color: $teal; box-shadow: 0 4px 16px rgba(0,184,169,0.1); }
