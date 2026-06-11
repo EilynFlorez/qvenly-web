@@ -8,6 +8,7 @@ import { TopbarComponent } from './topbar/topbar.component';
 import { NavAdminComponent } from './nav-admin/nav-admin.component';
 import { SkeletonComponent } from './components/skeleton/skeleton.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { NotificationBellComponent } from './components/notification-bell/notification-bell.component';
 import { ProfileComponent } from '../features/dashboard-user/pages/profile/profile.component';
 import { NotificationsComponent } from '../features/dashboard-user/pages/notifications/notifications.component';
 
@@ -19,6 +20,7 @@ import { NotificationsComponent } from '../features/dashboard-user/pages/notific
     NavAdminComponent,
     SkeletonComponent,
     AdminLayoutComponent,
+    NotificationBellComponent,
     ProfileComponent,
     NotificationsComponent
   ],
@@ -34,6 +36,7 @@ import { NotificationsComponent } from '../features/dashboard-user/pages/notific
     NavComponent,
     FooterComponent,
     AdminLayoutComponent,
+    NotificationBellComponent,
     ProfileComponent,
     NotificationsComponent
   ]

@@ -1,15 +1,4 @@
-$teal:        #00B8A9;
-$teal-dark:   #008A7D;
-$teal-light:  rgba(0, 184, 169, 0.08);
-$teal-border: rgba(0, 184, 169, 0.12);
-$gray-900:    #1A2332;
-$gray-500:    #6B7280;
-$gray-400:    #9ca3af;
-$gray-100:    #F3F4F6;
-$white:       #ffffff;
-$red:         #ef4444;
-$red-bg:      rgba(239, 68, 68, 0.06);
-$font:        'DM Sans', sans-serif;
+@use '../../styles/dashboard-variables' as *;
 
 .planes-container {
   padding: 24px 28px;
@@ -30,11 +19,11 @@ $font:        'DM Sans', sans-serif;
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 18px;
+  font-size: $fs-section;
   font-weight: 600;
   color: $gray-900;
   margin: 0 0 4px;
-  i { font-size: 20px; color: $teal; }
+  i { font-size: 18px; color: $teal; }
 }
 
 .planes-sub {

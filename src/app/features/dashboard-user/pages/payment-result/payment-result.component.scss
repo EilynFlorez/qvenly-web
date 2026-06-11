@@ -1,7 +1,7 @@
-$teal-500:   #00B8A9;
+$teal:       #00B8A9;
 $teal-dark:  #008A7D;
 $teal-light: #f0fdfa;
-$red-500:    #ef4444;
+$red:        #ef4444;
 $red-light:  #fef2f2;
 $gray-900:   #1A2332;
 $gray-500:   #6B7280;
@@ -42,12 +42,12 @@ $font:       'DM Sans', sans-serif;
 
   &--success {
     background: $teal-light;
-    i { color: $teal-500; }
+    i { color: $teal; }
   }
 
   &--error {
     background: $red-light;
-    i { color: $red-500; }
+    i { color: $red; }
   }
 
   &--pending {
@@ -91,7 +91,7 @@ $font:       'DM Sans', sans-serif;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.75rem;
-  background: $teal-500;
+  background: $teal;
   color: $white;
   border: none;
   border-radius: 10px;
@@ -107,11 +107,11 @@ $font:       'DM Sans', sans-serif;
 
   &--outline {
     background: transparent;
-    border: 1.5px solid $teal-500;
-    color: $teal-500;
+    border: 1.5px solid $teal;
+    color: $teal;
 
     &:hover {
-      background: $teal-500;
+      background: $teal;
       color: $white;
     }
   }

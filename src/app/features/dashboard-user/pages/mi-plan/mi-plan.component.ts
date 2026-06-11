@@ -30,7 +30,7 @@ export class MiPlanComponent implements OnInit {
         if (response.success) this.activePlan = response.data;
         this.loading = false;
       },
-      error: () => { this.error = true; this.loading = false; }
+      error: (err) => { if (err?.status !== 404) this.error = true; this.loading = false; }
     });
   }
 
