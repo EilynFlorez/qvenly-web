@@ -96,9 +96,14 @@
 
   <!-- Grid de características -->
   <div class="features-section">
-    <h2 class="features-section__title">
-      <i class="ti ti-list-check"></i> Incluido en tu plan
-    </h2>
+    <div class="features-section__header">
+      <h2 class="features-section__title">
+        <i class="ti ti-list-check"></i> Incluido en tu plan
+      </h2>
+      <a class="btn-create-event" routerLink="/dashboard-user/events/new">
+        <i class="ti ti-plus"></i> Crear evento
+      </a>
+    </div>
     <div class="features-grid">
 
       <div class="feature-card" *ngIf="activePlan.plan.maxEvents > 0">
