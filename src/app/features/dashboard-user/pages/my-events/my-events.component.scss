@@ -1,0 +1,319 @@
+@use '../../styles/dashboard-variables' as *;
+
+:host {
+  display: block;
+}
+
+.events-container {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: $font;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.events-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+.events-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: $fs-section;
+  font-weight: 600;
+  color: $gray-900;
+  margin: 0 0 4px;
+  i { font-size: 18px; color: $teal; }
+}
+
+.events-sub {
+  font-size: $fs-body;
+  color: $gray-400;
+  margin: 0;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  font-size: $fs-body;
+  font-family: $font;
+  color: $gray-900;
+  background: $white;
+  cursor: pointer;
+  outline: none;
+  &:focus { border-color: $teal; box-shadow: 0 0 0 3px $teal-light; }
+}
+
+.btn-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: $teal;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $fs-body;
+  font-family: $font;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  i { font-size: 15px; }
+  &:hover { background: $teal-dark; }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: $teal;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $fs-body;
+  font-family: $font;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+  i { font-size: 15px; }
+  &:hover { background: $teal-dark; }
+}
+
+// ── Loading / Error ───────────────────────────────────────────────────────────
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: $gray-400;
+  font-size: $fs-body;
+  padding: 40px 0;
+  justify-content: center;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid $gray-100;
+  border-top-color: $teal;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: $fs-body;
+  color: $red;
+  padding: 14px 18px;
+  background: $red-bg;
+  border-radius: $radius-sm;
+  i { font-size: 18px; }
+}
+
+.btn-retry {
+  margin-left: auto;
+  padding: 6px 14px;
+  border: 1px solid $red;
+  background: none;
+  color: $red;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: $font;
+  &:hover { background: $red-bg; }
+}
+
+// ── Sin plan ──────────────────────────────────────────────────────────────────
+.no-plan-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  gap: 14px;
+
+  &__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: $teal-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i { font-size: 34px; color: $teal; }
+  }
+
+  &__title { font-size: $fs-title; font-weight: 700; color: $gray-900; margin: 0; }
+  &__desc { font-size: $fs-body; color: $gray-400; margin: 0; max-width: 400px; line-height: 1.6; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  gap: 14px;
+
+  &__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    background: $teal-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i { font-size: 34px; color: $teal; }
+  }
+
+  &__title { font-size: $fs-title; font-weight: 700; color: $gray-900; margin: 0; }
+  &__desc { font-size: $fs-body; color: $gray-400; margin: 0; max-width: 400px; line-height: 1.6; }
+}
+
+// ── Events grid ───────────────────────────────────────────────────────────────
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+// ── Event card ────────────────────────────────────────────────────────────────
+.event-card {
+  background: $white;
+  border: 1.5px solid $teal-border;
+  border-radius: $radius-lg;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: $shadow-card-hover;
+    border-color: $teal;
+    transform: translateY(-2px);
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__body { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+
+  &__title {
+    font-size: $fs-section;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  &__type {
+    font-size: $fs-body;
+    color: $gray-500;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    i { font-size: 14px; color: $teal; }
+  }
+
+  &__dates {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: $fs-body;
+    color: $gray-500;
+    flex-wrap: wrap;
+    i { font-size: 13px; color: $teal; }
+  }
+
+  &__location {
+    font-size: $fs-body;
+    color: $gray-500;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    i { font-size: 14px; color: $gray-400; }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid $gray-100;
+  }
+
+  &__arrow { font-size: 16px; color: $gray-400; }
+}
+
+.dates-sep { color: $gray-400; font-size: $fs-meta; }
+
+// ── Chips / Badges ────────────────────────────────────────────────────────────
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $fs-meta;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+
+  &--draft      { background: $gray-100;   color: $gray-400;  }
+  &--published  { background: $blue-bg;    color: $blue;      }
+  &--inprogress { background: $green-bg;   color: $green;     }
+  &--finished   { background: $teal-light; color: $teal-dark; }
+  &--cancelled  { background: $red-bg;     color: $red;       }
+}
+
+.owner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $fs-meta;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  background: $orange-bg;
+  color: $orange;
+  i { font-size: 11px; }
+}
+
+.plan-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $fs-meta;
+  color: $gray-400;
+  i { font-size: 12px; color: $teal; }
+}

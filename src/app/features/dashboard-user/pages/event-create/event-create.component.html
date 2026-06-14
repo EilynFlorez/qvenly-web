@@ -1,0 +1,119 @@
+<div class="create-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <button class="btn-back" (click)="onCancel()">
+      <i class="ti ti-arrow-left"></i> Volver
+    </button>
+    <div>
+      <h1 class="page-header__title">
+        <i class="ti ti-calendar-plus"></i> Crear nuevo evento
+      </h1>
+      <p class="page-header__sub">Completa los detalles para crear tu evento</p>
+    </div>
+  </div>
+
+  <!-- Alerta sin plan -->
+  <div class="alert alert--warning" *ngIf="noPlanError">
+    <i class="ti ti-diamond-off"></i>
+    <div>
+      <strong>Sin plan activo</strong>
+      <p>Necesitas un plan activo para crear eventos.
+        <a routerLink="/dashboard-user/planes">Ver planes disponibles →</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Alerta límite superado -->
+  <div class="alert alert--error" *ngIf="limitError && submitError">
+    <i class="ti ti-alert-circle"></i>
+    <span>{{ submitError }}</span>
+  </div>
+
+  <!-- Alerta error genérico -->
+  <div class="alert alert--error" *ngIf="!limitError && !noPlanError && submitError">
+    <i class="ti ti-alert-circle"></i>
+    <span>{{ submitError }}</span>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-card" [formGroup]="form">
+
+    <!-- Título -->
+    <div class="form-row">
+      <label class="form-label">Nombre del evento <span class="required">*</span></label>
+      <input type="text" class="form-input" formControlName="title"
+        placeholder="Ej: Conferencia de tecnología 2026"
+        [class.form-input--error]="f['title'].invalid && f['title'].touched" />
+      <span class="form-error" *ngIf="f['title'].touched && f['title'].errors?.['required']">
+        <i class="ti ti-alert-circle"></i> El nombre es requerido
+      </span>
+      <span class="form-error" *ngIf="f['title'].touched && f['title'].errors?.['maxlength']">
+        <i class="ti ti-alert-circle"></i> Máximo 150 caracteres
+      </span>
+    </div>
+
+    <!-- Tipo de evento -->
+    <div class="form-row">
+      <label class="form-label">Tipo de evento <span class="required">*</span></label>
+      <select class="form-input" formControlName="eventType">
+        <option *ngFor="let t of eventTypes" [value]="t.value">{{ t.label }}</option>
+      </select>
+    </div>
+
+    <!-- Descripción -->
+    <div class="form-row">
+      <label class="form-label">Descripción <span class="optional">(opcional)</span></label>
+      <textarea class="form-input form-textarea" formControlName="description" rows="3"
+        placeholder="Describe brevemente el evento..."></textarea>
+      <span class="form-error" *ngIf="f['description'].touched && f['description'].errors?.['maxlength']">
+        <i class="ti ti-alert-circle"></i> Máximo 500 caracteres
+      </span>
+    </div>
+
+    <!-- Ubicación -->
+    <div class="form-row">
+      <label class="form-label">Ubicación <span class="optional">(opcional)</span></label>
+      <input type="text" class="form-input" formControlName="location"
+        placeholder="Ej: Auditorio Central, Bogotá" />
+    </div>
+
+    <!-- Fechas en dos columnas -->
+    <div class="form-dates">
+      <div class="form-row">
+        <label class="form-label">Fecha y hora de inicio <span class="required">*</span></label>
+        <input type="datetime-local" class="form-input" formControlName="startDatetime"
+          [class.form-input--error]="f['startDatetime'].invalid && f['startDatetime'].touched" />
+        <span class="form-error" *ngIf="f['startDatetime'].touched && f['startDatetime'].errors?.['required']">
+          <i class="ti ti-alert-circle"></i> La fecha de inicio es requerida
+        </span>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Fecha y hora de fin <span class="required">*</span></label>
+        <input type="datetime-local" class="form-input" formControlName="endDatetime"
+          [class.form-input--error]="(f['endDatetime'].invalid && f['endDatetime'].touched) || (form.errors?.['endBeforeStart'] && f['endDatetime'].touched)" />
+        <span class="form-error" *ngIf="f['endDatetime'].touched && f['endDatetime'].errors?.['required']">
+          <i class="ti ti-alert-circle"></i> La fecha de fin es requerida
+        </span>
+        <span class="form-error" *ngIf="form.errors?.['endBeforeStart'] && f['endDatetime'].touched">
+          <i class="ti ti-alert-circle"></i> La fecha de fin debe ser posterior a la de inicio
+        </span>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="submitting">
+        Cancelar
+      </button>
+      <button type="button" class="btn-submit" (click)="onSubmit()" [disabled]="submitting">
+        <i class="ti ti-calendar-plus" *ngIf="!submitting"></i>
+        <i class="ti ti-loader-2 spin" *ngIf="submitting"></i>
+        {{ submitting ? 'Creando evento...' : 'Crear evento' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>

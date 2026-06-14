@@ -1,0 +1,91 @@
+<div class="invitations-container">
+
+  <!-- Header -->
+  <div class="invitations-header">
+    <div>
+      <h1 class="invitations-title">
+        <i class="ti ti-mail"></i> Invitaciones
+      </h1>
+      <p class="invitations-sub">Gestiona tus invitaciones pendientes</p>
+    </div>
+    <button class="btn-refresh" (click)="loadInvitations()" [disabled]="loading">
+      <i class="ti ti-refresh"></i> Actualizar
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Cargando invitaciones...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="alert-error" *ngIf="!loading && error">
+    <i class="ti ti-alert-circle"></i>
+    <span>{{ error }}</span>
+    <button class="btn-retry" (click)="loadInvitations()">Reintentar</button>
+  </div>
+
+  <!-- Éxito -->
+  <div class="alert-success" *ngIf="successMessage">
+    <i class="ti ti-circle-check"></i>
+    <span>{{ successMessage }}</span>
+  </div>
+
+  <!-- Sin invitaciones -->
+  <div class="empty-state" *ngIf="!loading && !error && invitations.length === 0">
+    <div class="empty-state__icon">
+      <i class="ti ti-mail-off"></i>
+    </div>
+    <h2 class="empty-state__title">No tienes invitaciones pendientes</h2>
+    <p class="empty-state__desc">
+      Cuando alguien te invite a un evento, aparecerá aquí para que puedas aceptar o rechazar.
+    </p>
+  </div>
+
+  <!-- Lista de invitaciones -->
+  <div class="invitation-grid" *ngIf="!loading && !error && invitations.length > 0">
+    <div class="invitation-card" *ngFor="let inv of invitations">
+
+      <div class="invitation-card__header">
+        <div class="event-ref">
+          <i class="ti ti-calendar-event"></i>
+          <span>Evento <strong>#{{ inv.eventId }}</strong></span>
+        </div>
+        <span class="role-chip" [ngClass]="getRoleClass(inv.eventRole)">
+          {{ getRoleLabel(inv.eventRole) }}
+        </span>
+      </div>
+
+      <div class="invitation-card__body">
+        <p class="inv-detail">
+          <i class="ti ti-user"></i>
+          Enviada por <strong>{{ inv.invitedByEmail }}</strong>
+        </p>
+        <div class="inv-dates">
+          <span>
+            <i class="ti ti-send"></i> Enviada: {{ inv.sentAt | date:'dd/MM/yyyy' }}
+          </span>
+          <span>
+            <i class="ti ti-clock"></i> Vence: {{ inv.expiresAt | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="invitation-card__actions">
+        <button class="btn-accept"
+          [disabled]="accepting === inv.id"
+          (click)="onAccept(inv)">
+          <i class="ti ti-check" *ngIf="accepting !== inv.id"></i>
+          <i class="ti ti-loader-2 spin" *ngIf="accepting === inv.id"></i>
+          {{ accepting === inv.id ? 'Aceptando...' : 'Aceptar' }}
+        </button>
+        <button class="btn-decline" disabled title="Función próximamente disponible">
+          <i class="ti ti-x"></i> Rechazar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

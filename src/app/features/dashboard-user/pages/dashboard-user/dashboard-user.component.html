@@ -202,7 +202,7 @@
     </div>
     <div class="actions-grid">
       <div class="action-item" [class.action-item--disabled]="!activePlan"
-        [routerLink]="activePlan ? '/dashboard-user/eventos' : null">
+        [routerLink]="activePlan ? '/dashboard-user/events' : null">
         <div class="action-item__icon action-item__icon--purple">
           <i class="ti ti-calendar-event"></i>
         </div>
@@ -215,7 +215,7 @@
         <i class="ti ti-lock action-item__arrow action-item__arrow--lock" *ngIf="!activePlan"></i>
       </div>
 
-      <div class="action-item" routerLink="/dashboard-user/invitaciones">
+      <div class="action-item" routerLink="/dashboard-user/invitations">
         <div class="action-item__icon action-item__icon--orange">
           <i class="ti ti-mail"></i>
         </div>
