@@ -1,0 +1,816 @@
+<div class="detail-container">
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Cargando evento...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-row" *ngIf="!loading && error">
+    <i class="ti ti-alert-circle"></i>
+    <span>No se pudo cargar el evento.</span>
+    <button class="btn-retry" (click)="goBack()">← Volver</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && event">
+
+    <!-- ── Page header ─────────────────────────────────────────────────────── -->
+    <div class="page-header">
+      <div class="page-header__top">
+        <button class="btn-back" (click)="goBack()">
+          <i class="ti ti-arrow-left"></i> Volver
+        </button>
+        <div class="page-header__badges">
+          <span class="status-chip" [ngClass]="getStatusClass(event.status)">
+            {{ getStatusLabel(event.status) }}
+          </span>
+          <span class="type-chip">{{ event.eventType }}</span>
+        </div>
+      </div>
+
+      <div class="page-header__main">
+        <h1 class="event-title">{{ event.title }}</h1>
+        <p class="event-dates">
+          <i class="ti ti-calendar"></i>
+          {{ event.startDatetime | date:'dd/MM/yyyy HH:mm' }} →
+          {{ event.endDatetime | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
+
+      <!-- Acciones del organizador -->
+      <div class="action-bar" *ngIf="isOrganizer">
+        <div class="action-bar__left">
+          <button class="btn-action btn-action--primary"
+            *ngIf="event.status === 'DRAFT'" (click)="publishEvent()" [disabled]="processing">
+            <i class="ti ti-send"></i> Publicar
+          </button>
+          <button class="btn-action btn-action--primary"
+            *ngIf="event.status === 'PUBLISHED'" (click)="startEvent()" [disabled]="processing">
+            <i class="ti ti-player-play"></i> Iniciar evento
+          </button>
+          <button class="btn-action btn-action--primary"
+            *ngIf="event.status === 'IN_PROGRESS'" (click)="finishEvent()" [disabled]="processing">
+            <i class="ti ti-flag-check"></i> Finalizar
+          </button>
+          <button class="btn-action btn-action--outline"
+            *ngIf="canEdit" (click)="editEvent()">
+            <i class="ti ti-edit"></i> Editar
+          </button>
+          <button class="btn-action btn-action--danger"
+            *ngIf="event.status !== 'FINISHED' && event.status !== 'CANCELLED'"
+            (click)="showCancelEventModal = true" [disabled]="processing">
+            <i class="ti ti-x"></i> Cancelar evento
+          </button>
+        </div>
+        <p class="action-error" *ngIf="actionError">
+          <i class="ti ti-alert-circle"></i> {{ actionError }}
+        </p>
+      </div>
+
+      <!-- Botón abandonar (no organizadores) -->
+      <div class="action-bar" *ngIf="!isOrganizer && canLeave && event.status !== 'FINISHED' && event.status !== 'CANCELLED'">
+        <button class="btn-action btn-action--danger" (click)="showLeaveModal = true" [disabled]="processing">
+          <i class="ti ti-door-exit"></i> Abandonar evento
+        </button>
+        <p class="action-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
+      </div>
+    </div>
+
+    <!-- ── Tab bar ─────────────────────────────────────────────────────────── -->
+    <div class="tab-bar">
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'general'" (click)="setTab('general')">
+        <i class="ti ti-info-circle"></i> General
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'members'" (click)="setTab('members')">
+        <i class="ti ti-users"></i> Miembros
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'invitations'"
+              *ngIf="isOrganizer" (click)="setTab('invitations')">
+        <i class="ti ti-mail"></i> Invitaciones
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'activities'"
+              (click)="setTab('activities')">
+        <i class="ti ti-calendar-event"></i> Actividades
+        <span class="tab-count" *ngIf="activities.length > 0">{{ activities.length }}</span>
+      </button>
+      <button class="tab-btn tab-btn--disabled" *ngIf="isOrganizer" disabled>
+        <i class="ti ti-cash"></i> Presupuesto
+        <span class="tab-badge">Próximo</span>
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'audit'"
+              *ngIf="isOrganizer" (click)="setTab('audit')">
+        <i class="ti ti-list-check"></i> Auditoría
+      </button>
+    </div>
+
+    <!-- ── Tab content ─────────────────────────────────────────────────────── -->
+    <div class="tab-content">
+
+      <!-- General: info + límites -->
+      <ng-container *ngIf="activeTab === 'general'">
+
+        <div class="detail-card">
+          <h2 class="detail-card__title">
+            <i class="ti ti-info-circle"></i> Información general
+          </h2>
+          <div class="info-grid">
+            <div class="info-item" *ngIf="event.description">
+              <span class="info-item__label">Descripción</span>
+              <span class="info-item__value">{{ event.description }}</span>
+            </div>
+            <div class="info-item" *ngIf="event.location">
+              <span class="info-item__label"><i class="ti ti-map-pin"></i> Ubicación</span>
+              <span class="info-item__value">{{ event.location }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label"><i class="ti ti-user"></i> Organizador</span>
+              <span class="info-item__value">{{ event.ownerEmail }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label"><i class="ti ti-diamond"></i> Plan</span>
+              <span class="info-item__value">{{ event.planLimits.planName }}</span>
+            </div>
+            <div class="info-item" *ngIf="event.cancelReason">
+              <span class="info-item__label"><i class="ti ti-alert-triangle"></i> Motivo cancelación</span>
+              <span class="info-item__value info-item__value--muted">{{ event.cancelReason }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card" *ngIf="isOrganizer && limits">
+          <h2 class="detail-card__title">
+            <i class="ti ti-chart-bar"></i> Uso del plan
+            <span class="detail-card__subtitle">{{ limits.planName }}</span>
+          </h2>
+          <div class="limits-grid">
+            <div class="limit-item">
+              <div class="limit-item__header">
+                <span class="limit-item__label">Organizadores</span>
+                <span class="limit-item__count">{{ limits.organizers.current }} / {{ limits.organizers.max }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.organizers.full"
+                  [style.width.%]="getPercent(limits.organizers.current, limits.organizers.max)"></div>
+              </div>
+              <span class="limit-item__remaining">{{ limits.organizers.remaining }} disponibles</span>
+            </div>
+
+            <div class="limit-item">
+              <div class="limit-item__header">
+                <span class="limit-item__label">Participantes</span>
+                <span class="limit-item__count">{{ limits.participants.current }} / {{ limits.participants.max }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.participants.full"
+                  [style.width.%]="getPercent(limits.participants.current, limits.participants.max)"></div>
+              </div>
+              <span class="limit-item__remaining">{{ limits.participants.remaining }} disponibles</span>
+            </div>
+
+            <div class="limit-item">
+              <div class="limit-item__header">
+                <span class="limit-item__label">Jueces</span>
+                <span class="limit-item__count">{{ limits.judges.current }} / {{ limits.judges.max }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.judges.full"
+                  [style.width.%]="getPercent(limits.judges.current, limits.judges.max)"></div>
+              </div>
+              <span class="limit-item__remaining">{{ limits.judges.remaining }} disponibles</span>
+            </div>
+
+            <div class="limit-item">
+              <div class="limit-item__header">
+                <span class="limit-item__label">Asistentes</span>
+                <span class="limit-item__count">{{ limits.attendees.current }} / {{ limits.attendees.max }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.attendees.full"
+                  [style.width.%]="getPercent(limits.attendees.current, limits.attendees.max)"></div>
+              </div>
+              <span class="limit-item__remaining">{{ limits.attendees.remaining }} disponibles</span>
+            </div>
+
+            <div class="limit-item">
+              <div class="limit-item__header">
+                <span class="limit-item__label">Personal de apoyo</span>
+                <span class="limit-item__count">{{ limits.staff.current }} / {{ limits.staff.max }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.staff.full"
+                  [style.width.%]="getPercent(limits.staff.current, limits.staff.max)"></div>
+              </div>
+              <span class="limit-item__remaining">{{ limits.staff.remaining }} disponibles</span>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- Miembros -->
+      <ng-container *ngIf="activeTab === 'members'">
+
+        <div class="detail-card">
+          <div class="detail-card__header">
+            <h2 class="detail-card__title">
+              <i class="ti ti-users"></i> Miembros
+            </h2>
+            <button class="btn-invite" *ngIf="isOrganizer && canEdit" (click)="openInviteModal()">
+              <i class="ti ti-user-plus"></i> Invitar
+            </button>
+          </div>
+
+          <div class="empty-members" *ngIf="members.length === 0">
+            <i class="ti ti-users-minus"></i>
+            <p>No hay miembros activos en este evento.</p>
+          </div>
+
+          <ng-container *ngFor="let role of ROLES">
+            <div class="role-group" *ngIf="getMembersByRole(role).length > 0">
+              <h3 class="role-group__title">{{ getRoleLabel(role) }}</h3>
+              <div class="member-list">
+                <div class="member-item" *ngFor="let m of getMembersByRole(role)">
+                  <div class="member-item__avatar">{{ m.userEmail.charAt(0).toUpperCase() }}</div>
+                  <div class="member-item__info">
+                    <p class="member-item__email">
+                      {{ m.userEmail }}
+                      <span class="me-badge" *ngIf="isMe(m.userEmail)">Tú</span>
+                    </p>
+                    <p class="member-item__joined">Desde {{ m.joinedAt | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                  <div class="member-item__actions" *ngIf="isOrganizer && !isMe(m.userEmail) && !isOnlyOrganizer(m)">
+                    <button class="btn-member-action" (click)="openChangeRole(m)" title="Cambiar rol">
+                      <i class="ti ti-arrows-exchange"></i>
+                    </button>
+                    <button class="btn-member-action btn-member-action--danger" (click)="openRemoveMember(m)" title="Eliminar">
+                      <i class="ti ti-user-minus"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+      </ng-container>
+
+      <!-- Invitaciones (solo organizador) -->
+      <ng-container *ngIf="activeTab === 'invitations' && isOrganizer">
+
+        <div class="detail-card">
+          <div class="detail-card__header">
+            <h2 class="detail-card__title">
+              <i class="ti ti-mail"></i> Invitaciones
+            </h2>
+            <button class="btn-outline-sm" (click)="loadInvitations()">
+              <i class="ti ti-refresh"></i> Actualizar
+            </button>
+          </div>
+
+          <div class="empty-members" *ngIf="invitations.length === 0">
+            <i class="ti ti-mail-off"></i>
+            <p>No hay invitaciones enviadas.</p>
+          </div>
+
+          <div class="invitation-list" *ngIf="invitations.length > 0">
+            <div class="invitation-item" *ngFor="let inv of invitations">
+              <div class="invitation-item__info">
+                <p class="invitation-item__email">{{ inv.invitedEmail }}</p>
+                <p class="invitation-item__meta">
+                  Rol: <strong>{{ getRoleLabel(inv.eventRole) }}</strong> ·
+                  Enviada {{ inv.sentAt | date:'dd/MM/yy' }} ·
+                  Vence {{ inv.expiresAt | date:'dd/MM/yy' }}
+                </p>
+              </div>
+              <div class="invitation-item__right">
+                <span class="invite-status-chip" [ngClass]="getInviteStatusClass(inv.status)">
+                  {{ inv.status }}
+                </span>
+                <button class="btn-cancel-invite" *ngIf="inv.status === 'PENDING'"
+                  (click)="openCancelInvite(inv)">
+                  <i class="ti ti-x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- Auditoría (solo organizador) -->
+      <ng-container *ngIf="activeTab === 'audit' && isOrganizer">
+
+        <div class="detail-card" *ngIf="auditLog.length > 0">
+          <h2 class="detail-card__title">
+            <i class="ti ti-history"></i> Historial de actividad
+          </h2>
+          <div class="timeline">
+            <div class="timeline-item" *ngFor="let log of sortedAuditLog">
+              <div class="timeline-item__dot">
+                <i class="ti {{ getAuditIcon(log.actionType) }}"></i>
+              </div>
+              <div class="timeline-item__body">
+                <p class="timeline-item__action">{{ log.actionType.replace('_', ' ') }}</p>
+                <p class="timeline-item__by">{{ log.performedByEmail }}</p>
+                <p class="timeline-item__date">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</p>
+                <p class="timeline-item__detail" *ngIf="log.changeDetail">{{ log.changeDetail }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-members" *ngIf="auditLog.length === 0">
+          <i class="ti ti-list-check"></i>
+          <p>No hay registros de auditoría disponibles.</p>
+        </div>
+
+      </ng-container>
+
+      <!-- Actividades -->
+      <ng-container *ngIf="activeTab === 'activities'">
+        <div class="activities-section">
+
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="ti ti-calendar-event"></i> Actividades del evento
+            </h3>
+            <button class="btn-primary" *ngIf="isOrganizer" (click)="openCreateActivity()">
+              <i class="ti ti-plus"></i> Nueva actividad
+            </button>
+          </div>
+
+          <div class="loading-row" *ngIf="activitiesLoading">
+            <div class="spinner"></div>
+            <span>Cargando actividades...</span>
+          </div>
+
+          <div class="error-row" *ngIf="!activitiesLoading && activitiesError">
+            <i class="ti ti-alert-circle"></i>
+            <span>No se pudieron cargar las actividades.</span>
+            <button class="btn-retry" (click)="loadActivities()">Reintentar</button>
+          </div>
+
+          <div class="empty-state" *ngIf="!activitiesLoading && !activitiesError && activities.length === 0">
+            <i class="ti ti-calendar-off"></i>
+            <p>No hay actividades programadas aún.</p>
+            <button class="btn-primary" *ngIf="isOrganizer" (click)="openCreateActivity()">
+              <i class="ti ti-plus"></i> Crear primera actividad
+            </button>
+          </div>
+
+          <div class="activities-list" *ngIf="!activitiesLoading && activities.length > 0">
+            <div class="activity-card" *ngFor="let activity of activities">
+              <div class="activity-card__header">
+                <div class="activity-card__info">
+                  <span class="status-badge" [ngClass]="getActivityStatusClass(activity.status)">
+                    {{ getActivityStatusLabel(activity.status) }}
+                  </span>
+                  <span class="assigned-badge" *ngIf="myActivityAssignments.has(activity.id)">
+                    <i class="ti ti-user-check"></i> Asignado a ti
+                  </span>
+                  <h4 class="activity-card__title">{{ activity.title }}</h4>
+                </div>
+                <div class="activity-card__actions" *ngIf="isOrganizer">
+                  <button class="btn-icon" title="Ver detalles" (click)="openActivityDetail(activity)">
+                    <i class="ti ti-eye"></i>
+                  </button>
+                  <button class="btn-icon" title="Editar"
+                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                          (click)="openEditActivity(activity)">
+                    <i class="ti ti-edit"></i>
+                  </button>
+                  <button class="btn-icon" title="Asignar miembro"
+                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                          (click)="openAssignMember(activity.id)">
+                    <i class="ti ti-user-plus"></i>
+                  </button>
+                  <button class="btn-icon btn-icon--success" title="Iniciar"
+                          *ngIf="activity.status === 'PENDING'"
+                          (click)="startActivity(activity.id)" [disabled]="processing">
+                    <i class="ti ti-player-play"></i>
+                  </button>
+                  <button class="btn-icon btn-icon--success" title="Finalizar"
+                          *ngIf="activity.status === 'IN_PROGRESS'"
+                          (click)="finishActivity(activity.id)" [disabled]="processing">
+                    <i class="ti ti-flag-check"></i>
+                  </button>
+                  <button class="btn-icon btn-icon--danger" title="Cancelar"
+                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                          (click)="openCancelActivity(activity.id)">
+                    <i class="ti ti-x"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="activity-card__body">
+                <div class="activity-card__meta">
+                  <span *ngIf="activity.location">
+                    <i class="ti ti-map-pin"></i> {{ activity.location }}
+                  </span>
+                  <span>
+                    <i class="ti ti-calendar"></i>
+                    {{ activity.startDatetime | date:'dd/MM/yyyy HH:mm' }}
+                    → {{ activity.endDatetime | date:'HH:mm' }}
+                  </span>
+                </div>
+                <p class="activity-card__desc" *ngIf="activity.description">
+                  {{ activity.description }}
+                </p>
+                <div class="enrollment-badge" *ngIf="activity.enrollmentEnabled">
+                  <i class="ti ti-users"></i>
+                  Inscripción abierta
+                  <span *ngIf="activity.maxEnrollment">
+                    — {{ activity.currentEnrollments }}/{{ activity.maxEnrollment }} inscritos
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </ng-container>
+
+    </div>
+
+  </ng-container>
+
+  <!-- ═══════════════════════ MODALES ═══════════════════════════════════════ -->
+
+  <!-- Modal: Cancelar evento -->
+  <div class="modal-overlay" *ngIf="showCancelEventModal" (click)="showCancelEventModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Cancelar evento</h3>
+        <button class="modal-close" (click)="showCancelEventModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Esta acción no puede deshacerse. Ingresa el motivo de la cancelación:</p>
+        <textarea class="form-textarea" [(ngModel)]="cancelEventReason" rows="3" placeholder="Motivo..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showCancelEventModal = false">Cerrar</button>
+        <button class="btn-modal-danger" [disabled]="!cancelEventReason.trim() || processing"
+          (click)="submitCancelEvent()">
+          {{ processing ? 'Procesando...' : 'Confirmar cancelación' }}
+        </button>
+      </div>
+      <p class="modal-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
+    </div>
+  </div>
+
+  <!-- Modal: Invitar miembro -->
+  <div class="modal-overlay" *ngIf="showInviteModal" (click)="showInviteModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Invitar miembro</h3>
+        <button class="modal-close" (click)="showInviteModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-form-row">
+          <label class="modal-label">Email</label>
+          <input type="email" class="form-input" [(ngModel)]="inviteEmail" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="modal-form-row">
+          <label class="modal-label">Rol</label>
+          <select class="form-input" [(ngModel)]="inviteRole">
+            <option value="ORGANIZER">Organizador</option>
+            <option value="STAFF">Personal de apoyo</option>
+            <option value="JUDGE">Juez</option>
+            <option value="PARTICIPANT">Participante</option>
+            <option value="ATTENDEE">Asistente</option>
+          </select>
+        </div>
+        <p class="modal-error" *ngIf="inviteError"><i class="ti ti-alert-circle"></i> {{ inviteError }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showInviteModal = false">Cancelar</button>
+        <button class="btn-modal-primary" [disabled]="!inviteEmail.trim() || processing"
+          (click)="submitInvite()">
+          <i class="ti ti-send"></i> {{ processing ? 'Enviando...' : 'Enviar invitación' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Eliminar miembro -->
+  <div class="modal-overlay" *ngIf="showRemoveMemberModal" (click)="showRemoveMemberModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Eliminar miembro</h3>
+        <button class="modal-close" (click)="showRemoveMemberModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">¿Eliminar a <strong>{{ removeMemberEmail }}</strong>? Ingresa el motivo:</p>
+        <textarea class="form-textarea" [(ngModel)]="removeReason" rows="3" placeholder="Motivo..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showRemoveMemberModal = false">Cancelar</button>
+        <button class="btn-modal-danger" [disabled]="!removeReason.trim() || processing"
+          (click)="submitRemoveMember()">
+          {{ processing ? 'Procesando...' : 'Eliminar miembro' }}
+        </button>
+      </div>
+      <p class="modal-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
+    </div>
+  </div>
+
+  <!-- Modal: Cambiar rol -->
+  <div class="modal-overlay" *ngIf="showChangeRoleModal" (click)="showChangeRoleModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Cambiar rol</h3>
+        <button class="modal-close" (click)="showChangeRoleModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Cambiar el rol de <strong>{{ changeRoleMemberEmail }}</strong>:</p>
+        <select class="form-input" [(ngModel)]="newRole">
+          <option value="ORGANIZER">Organizador</option>
+          <option value="STAFF">Personal de apoyo</option>
+          <option value="JUDGE">Juez</option>
+          <option value="PARTICIPANT">Participante</option>
+          <option value="ATTENDEE">Asistente</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showChangeRoleModal = false">Cancelar</button>
+        <button class="btn-modal-primary" [disabled]="processing" (click)="submitChangeRole()">
+          {{ processing ? 'Guardando...' : 'Guardar cambio' }}
+        </button>
+      </div>
+      <p class="modal-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
+    </div>
+  </div>
+
+  <!-- Modal: Cancelar invitación -->
+  <div class="modal-overlay" *ngIf="showCancelInviteModal" (click)="showCancelInviteModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Cancelar invitación</h3>
+        <button class="modal-close" (click)="showCancelInviteModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Ingresa el motivo de la cancelación:</p>
+        <textarea class="form-textarea" [(ngModel)]="cancelInviteReason" rows="3" placeholder="Motivo..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showCancelInviteModal = false">Cerrar</button>
+        <button class="btn-modal-danger" [disabled]="!cancelInviteReason.trim() || processing"
+          (click)="submitCancelInvite()">
+          {{ processing ? 'Procesando...' : 'Cancelar invitación' }}
+        </button>
+      </div>
+      <p class="modal-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
+    </div>
+  </div>
+
+  <!-- Modal: Abandonar evento -->
+  <div class="modal-overlay" *ngIf="showLeaveModal" (click)="showLeaveModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Abandonar evento</h3>
+        <button class="modal-close" (click)="showLeaveModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">¿Estás seguro de que quieres abandonar este evento? Ingresa el motivo:</p>
+        <textarea class="form-textarea" [(ngModel)]="leaveReason" rows="3" placeholder="Motivo..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showLeaveModal = false">Cancelar</button>
+        <button class="btn-modal-danger" [disabled]="!leaveReason.trim() || processing"
+          (click)="submitLeave()">
+          {{ processing ? 'Procesando...' : 'Abandonar evento' }}
+        </button>
+      </div>
+      <p class="modal-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
+    </div>
+  </div>
+
+  <!-- Modal: Crear actividad -->
+  <div class="modal-overlay" *ngIf="showCreateActivityModal" (click)="showCreateActivityModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-calendar-plus"></i> Nueva actividad</h3>
+        <button class="modal-close" (click)="showCreateActivityModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Título <span class="required">*</span></label>
+          <input type="text" class="form-input" [(ngModel)]="activityForm.title"
+                 placeholder="Nombre de la actividad" maxlength="150">
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea class="form-textarea" [(ngModel)]="activityForm.description"
+                    rows="3" placeholder="Descripción opcional"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Ubicación</label>
+          <input type="text" class="form-input" [(ngModel)]="activityForm.location"
+                 placeholder="Sala, lugar...">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Inicio <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input" [(ngModel)]="activityForm.startDatetime">
+          </div>
+          <div class="form-group">
+            <label>Fin <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input" [(ngModel)]="activityForm.endDatetime">
+          </div>
+        </div>
+        <div class="form-group form-group--checkbox">
+          <input type="checkbox" id="enrollmentEnabled" [(ngModel)]="activityForm.enrollmentEnabled">
+          <label for="enrollmentEnabled">Permitir inscripción libre de asistentes</label>
+        </div>
+        <div class="form-group" *ngIf="activityForm.enrollmentEnabled">
+          <label>Límite de inscripciones (opcional)</label>
+          <input type="number" class="form-input" [(ngModel)]="activityForm.maxEnrollment"
+                 min="1" placeholder="Sin límite">
+        </div>
+        <p class="modal-error" *ngIf="activityFormError">
+          <i class="ti ti-alert-circle"></i> {{ activityFormError }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showCreateActivityModal = false">Cancelar</button>
+        <button class="btn-modal-primary" (click)="submitCreateActivity()"
+                [disabled]="processing || !activityForm.title.trim()">
+          <i class="ti ti-check"></i>
+          {{ processing ? 'Creando...' : 'Crear actividad' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar actividad -->
+  <div class="modal-overlay" *ngIf="showEditActivityModal" (click)="showEditActivityModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-edit"></i> Editar actividad</h3>
+        <button class="modal-close" (click)="showEditActivityModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Título <span class="required">*</span></label>
+          <input type="text" class="form-input" [(ngModel)]="activityForm.title" maxlength="150">
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea class="form-textarea" [(ngModel)]="activityForm.description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Ubicación</label>
+          <input type="text" class="form-input" [(ngModel)]="activityForm.location">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Inicio <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input" [(ngModel)]="activityForm.startDatetime">
+          </div>
+          <div class="form-group">
+            <label>Fin <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input" [(ngModel)]="activityForm.endDatetime">
+          </div>
+        </div>
+        <div class="form-group form-group--checkbox">
+          <input type="checkbox" id="enrollmentEnabledEdit" [(ngModel)]="activityForm.enrollmentEnabled">
+          <label for="enrollmentEnabledEdit">Permitir inscripción libre</label>
+        </div>
+        <div class="form-group" *ngIf="activityForm.enrollmentEnabled">
+          <label>Límite de inscripciones</label>
+          <input type="number" class="form-input" [(ngModel)]="activityForm.maxEnrollment" min="1">
+        </div>
+        <p class="modal-error" *ngIf="activityFormError">
+          <i class="ti ti-alert-circle"></i> {{ activityFormError }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showEditActivityModal = false">Cancelar</button>
+        <button class="btn-modal-primary" (click)="submitEditActivity()" [disabled]="processing">
+          <i class="ti ti-check"></i>
+          {{ processing ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Cancelar actividad -->
+  <div class="modal-overlay" *ngIf="showCancelActivityModal" (click)="showCancelActivityModal = false">
+    <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-x"></i> Cancelar actividad</h3>
+        <button class="modal-close" (click)="showCancelActivityModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-warning">Esta acción no se puede deshacer.</p>
+        <div class="form-group">
+          <label>Motivo <span class="required">*</span></label>
+          <textarea class="form-textarea" [(ngModel)]="cancelActivityReason"
+                    rows="3" placeholder="Explica el motivo..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showCancelActivityModal = false">Volver</button>
+        <button class="btn-modal-danger" (click)="submitCancelActivity()"
+                [disabled]="processing || !cancelActivityReason.trim()">
+          {{ processing ? 'Procesando...' : 'Cancelar actividad' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Asignar miembro a actividad -->
+  <div class="modal-overlay" *ngIf="showAssignMemberModal" (click)="showAssignMemberModal = false">
+    <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-user-plus"></i> Asignar a actividad</h3>
+        <button class="modal-close" (click)="showAssignMemberModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Solo puedes asignar miembros que ya pertenecen al evento.</p>
+        <div class="form-group">
+          <label>Email del miembro <span class="required">*</span></label>
+          <input type="email" class="form-input" [(ngModel)]="assignMemberEmail"
+                 placeholder="correo@ejemplo.com">
+        </div>
+        <div class="form-group">
+          <label>Rol en la actividad <span class="required">*</span></label>
+          <select class="form-input" [(ngModel)]="assignMemberRole">
+            <option value="PARTICIPANT">Participante</option>
+            <option value="JUDGE">Jurado</option>
+            <option value="STAFF">Personal de apoyo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Función específica (opcional)</label>
+          <input type="text" class="form-input" [(ngModel)]="assignMemberFunction"
+                 placeholder="Ej: Evaluador principal...">
+        </div>
+        <p class="modal-error" *ngIf="assignMemberError">
+          <i class="ti ti-alert-circle"></i> {{ assignMemberError }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showAssignMemberModal = false">Cancelar</button>
+        <button class="btn-modal-primary" (click)="submitAssignMember()"
+                [disabled]="processing || !assignMemberEmail.trim()">
+          <i class="ti ti-check"></i>
+          {{ processing ? 'Asignando...' : 'Asignar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Detalle de actividad -->
+  <div class="modal-overlay" *ngIf="showActivityDetailModal" (click)="showActivityDetailModal = false">
+    <div class="modal-card modal-card--lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          <i class="ti ti-calendar-event"></i> {{ selectedActivity?.title }}
+        </h3>
+        <button class="modal-close" (click)="showActivityDetailModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedActivity">
+        <div class="activity-detail-meta">
+          <span class="status-badge" [ngClass]="getActivityStatusClass(selectedActivity.status)">
+            {{ getActivityStatusLabel(selectedActivity.status) }}
+          </span>
+          <span *ngIf="selectedActivity.location">
+            <i class="ti ti-map-pin"></i> {{ selectedActivity.location }}
+          </span>
+          <span>
+            <i class="ti ti-calendar"></i>
+            {{ selectedActivity.startDatetime | date:'dd/MM/yyyy HH:mm' }}
+            → {{ selectedActivity.endDatetime | date:'HH:mm' }}
+          </span>
+        </div>
+        <p *ngIf="selectedActivity.description" class="activity-detail-desc">
+          {{ selectedActivity.description }}
+        </p>
+        <div class="activity-detail-members">
+          <h4><i class="ti ti-users"></i> Miembros asignados</h4>
+          <div class="loading-row" *ngIf="activityMembersLoading">
+            <div class="spinner"></div>
+            <span>Cargando...</span>
+          </div>
+          <div class="empty-state-sm" *ngIf="!activityMembersLoading && activityMembers.length === 0">
+            No hay miembros asignados aún.
+          </div>
+          <div class="member-row" *ngFor="let m of activityMembers">
+            <span class="member-email">{{ m.userEmail }}</span>
+            <span class="role-badge">{{ getActivityRoleLabel(m.eventRole) }}</span>
+            <span class="confirmation-badge"
+                  [class.confirmed]="m.confirmationStatus === 'CONFIRMED'">
+              {{ m.confirmationStatus === 'CONFIRMED' ? 'Confirmado' :
+                 m.confirmationStatus === 'CANCELLED' ? 'Cancelado' : 'Pendiente' }}
+            </span>
+            <span class="member-function" *ngIf="m.functionDescription">
+              {{ m.functionDescription }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

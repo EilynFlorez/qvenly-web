@@ -1,0 +1,149 @@
+@use '../../styles/dashboard-variables' as *;
+
+:host { display: block; }
+
+.invitations-container {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: $font;
+}
+
+.invitations-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.invitations-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: $fs-section; font-weight: 600; color: $gray-900; margin: 0 0 4px;
+  i { font-size: 18px; color: $teal; }
+}
+.invitations-sub { font-size: $fs-body; color: $gray-400; margin: 0; }
+
+.btn-refresh {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border: 1px solid $gray-200; border-radius: $radius-sm;
+  background: $white; color: $gray-500; font-size: $fs-body; font-family: $font;
+  cursor: pointer; transition: all 0.2s;
+  i { font-size: 14px; }
+  &:hover:not(:disabled) { border-color: $teal; color: $teal; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.loading-row {
+  display: flex; align-items: center; gap: 12px;
+  color: $gray-400; font-size: $fs-body; padding: 40px 0; justify-content: center;
+}
+.spinner {
+  width: 20px; height: 20px; border: 2px solid $gray-100;
+  border-top-color: $teal; border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Alerts ───────────────────────────────────────────────────────────────────
+.alert-error {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; background: $red-bg; color: $red;
+  border-radius: $radius-sm; font-size: $fs-body;
+  i { font-size: 18px; }
+}
+.btn-retry {
+  margin-left: auto; padding: 6px 12px; border: 1px solid $red;
+  background: none; color: $red; border-radius: 8px; font-size: 12px;
+  cursor: pointer; font-family: $font;
+  &:hover { background: $red-bg; }
+}
+.alert-success {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; background: $green-bg; color: $green;
+  border-radius: $radius-sm; font-size: $fs-body;
+  i { font-size: 18px; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 4rem 2rem; gap: 14px;
+
+  &__icon {
+    width: 72px; height: 72px; border-radius: 20px; background: $teal-light;
+    display: flex; align-items: center; justify-content: center;
+    i { font-size: 34px; color: $teal; }
+  }
+  &__title { font-size: $fs-title; font-weight: 700; color: $gray-900; margin: 0; }
+  &__desc { font-size: $fs-body; color: $gray-400; margin: 0; max-width: 400px; line-height: 1.6; }
+}
+
+// ── Invitation grid ───────────────────────────────────────────────────────────
+.invitation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.invitation-card {
+  background: $white; border: 1.5px solid $teal-border;
+  border-radius: $radius-lg; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  &:hover { box-shadow: $shadow-card; border-color: rgba(0, 184, 169, 0.3); }
+
+  &__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  &__body   { display: flex; flex-direction: column; gap: 8px; }
+  &__actions { display: flex; gap: 10px; padding-top: 12px; border-top: 1px solid $gray-100; }
+}
+
+.event-ref {
+  display: flex; align-items: center; gap: 6px;
+  font-size: $fs-body; color: $gray-500;
+  i { font-size: 15px; color: $teal; }
+}
+
+.inv-detail {
+  display: flex; align-items: center; gap: 5px;
+  font-size: $fs-body; color: $gray-500; margin: 0;
+  i { font-size: 14px; color: $gray-400; }
+  strong { color: $gray-900; }
+}
+.inv-dates {
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: $fs-meta; color: $gray-400;
+  span { display: flex; align-items: center; gap: 5px; }
+  i { font-size: 12px; }
+}
+
+// ── Role chips ────────────────────────────────────────────────────────────────
+.role-chip {
+  font-size: $fs-meta; font-weight: 600; padding: 3px 10px; border-radius: $radius-pill;
+  &--organizer  { background: $purple-bg; color: $purple; }
+  &--staff      { background: $blue-bg;   color: $blue;   }
+  &--judge      { background: $orange-bg; color: $orange; }
+  &--participant { background: $teal-light; color: $teal-dark; }
+  &--attendee   { background: $gray-100;  color: $gray-500; }
+}
+
+// ── Action buttons ────────────────────────────────────────────────────────────
+.btn-accept {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 9px; background: $teal; color: $white; border: none;
+  border-radius: $radius-sm; font-size: $fs-body; font-family: $font;
+  font-weight: 600; cursor: pointer; transition: background 0.2s;
+  i { font-size: 15px; }
+  &:hover:not(:disabled) { background: $teal-dark; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+.btn-decline {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 9px; background: transparent; border: 1px solid $gray-200;
+  color: $gray-400; border-radius: $radius-sm; font-size: $fs-body;
+  font-family: $font; font-weight: 600; cursor: not-allowed;
+  i { font-size: 15px; }
+}
+
+.spin { animation: spin 0.8s linear infinite; display: inline-block; }

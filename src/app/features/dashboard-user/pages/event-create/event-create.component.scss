@@ -1,0 +1,181 @@
+@use '../../styles/dashboard-variables' as *;
+
+:host { display: block; }
+
+.create-container {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: $font;
+  max-width: 760px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  background: $white;
+  color: $gray-500;
+  font-size: $fs-body;
+  font-family: $font;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-top: 4px;
+  transition: border-color 0.2s, color 0.2s;
+  i { font-size: 15px; }
+  &:hover { border-color: $teal; color: $teal; }
+}
+
+.page-header__title {
+  font-size: $fs-section;
+  font-weight: 600;
+  color: $gray-900;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  i { font-size: 18px; color: $teal; }
+}
+
+.page-header__sub { font-size: $fs-body; color: $gray-400; margin: 0; }
+
+// ── Alertas ───────────────────────────────────────────────────────────────────
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: $radius-sm;
+  font-size: $fs-body;
+  i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  &--warning {
+    background: $orange-bg;
+    color: $orange;
+    a { color: $teal; font-weight: 500; text-decoration: underline; }
+    p { margin: 2px 0 0; font-size: $fs-body; }
+  }
+
+  &--error { background: $red-bg; color: $red; }
+}
+
+// ── Form card ─────────────────────────────────────────────────────────────────
+.form-card {
+  background: $white;
+  border: 1px solid $teal-border;
+  border-radius: $radius-lg;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.form-label {
+  font-size: $fs-body;
+  font-weight: 600;
+  color: $gray-900;
+}
+
+.required { color: $red; margin-left: 2px; }
+.optional  { font-weight: 400; color: $gray-400; font-size: $fs-meta; margin-left: 4px; }
+
+.form-input {
+  padding: 10px 12px;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  font-size: $fs-body;
+  font-family: $font;
+  color: $gray-900;
+  background: $white;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: $teal;
+    box-shadow: 0 0 0 3px $teal-light;
+  }
+
+  &--error { border-color: $red; }
+}
+
+.form-textarea { resize: vertical; min-height: 80px; }
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $fs-meta;
+  color: $red;
+  i { font-size: 13px; }
+}
+
+// ── Form actions ──────────────────────────────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid $gray-100;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $gray-500;
+  font-size: $fs-body;
+  font-family: $font;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  &:hover { border-color: $gray-900; color: $gray-900; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  background: $teal;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $fs-body;
+  font-family: $font;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  i { font-size: 16px; }
+  &:hover:not(:disabled) { background: $teal-dark; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.spin { animation: spin 0.8s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }

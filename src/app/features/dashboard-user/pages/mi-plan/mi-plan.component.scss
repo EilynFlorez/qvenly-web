@@ -393,3 +393,32 @@
   gap: 12px;
   flex-wrap: wrap;
 }
+
+// ─── Features header + botón crear evento ──────────────────────────────────
+.features-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.features-section__header .features-section__title {
+  margin-bottom: 0;
+}
+
+.btn-create-event {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: $teal;
+  color: $white;
+  font-size: $fs-body;
+  font-weight: 500;
+  font-family: $font;
+  border-radius: $radius-sm;
+  text-decoration: none;
+  transition: background 0.2s;
+  i { font-size: 15px; }
+  &:hover { background: $teal-dark; }
+}
