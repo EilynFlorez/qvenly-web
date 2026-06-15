@@ -55,7 +55,7 @@
       <p class="notif-item__msg">{{ n.message }}</p>
     </div>
 
-    <button class="read-btn" *ngIf="!n.read" (click)="markAsRead(n.id)"
+    <button class="read-btn" *ngIf="!n.read" (click)="markAsRead(n)"
       title="Marcar como leída">
       <i class="ti ti-check"></i>
     </button>

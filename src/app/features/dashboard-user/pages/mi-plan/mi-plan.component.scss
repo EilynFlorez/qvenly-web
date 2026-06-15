@@ -40,6 +40,12 @@
   font-size: 14px;
   i { font-size: 18px; }
   &--error { background: $red-bg; color: $red; }
+  &--success { background: $teal-light; color: $teal-dark; }
+}
+
+// Animación de giro para el ícono de renovar
+.spin {
+  animation: spin 0.8s linear infinite;
 }
 
 // ─── Empty state ───────────────────────────────────────────────────────────

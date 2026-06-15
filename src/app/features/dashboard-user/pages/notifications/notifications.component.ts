@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ProfileService } from '../../../../core/core-auth/services/profile.service';
 import { NotificationInbox } from '../../../../core/core-auth/models/profile.model';
+import { UnifiedNotificationService } from '../../../../core/unified-notification.service';
 
 @Component({
   selector: 'app-notifications',
@@ -14,7 +14,7 @@ export class NotificationsComponent implements OnInit {
   error = false;
   markingAll = false;
 
-  constructor(private profileService: ProfileService) {}
+  constructor(private unifiedNotificationService: UnifiedNotificationService) {}
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -23,9 +23,9 @@ export class NotificationsComponent implements OnInit {
   loadNotifications(): void {
     this.loading = true;
     this.error = false;
-    this.profileService.getInbox().subscribe({
-      next: (res) => {
-        this.notifications = res.data;
+    this.unifiedNotificationService.getAllNotifications().subscribe({
+      next: (notifications) => {
+        this.notifications = notifications;
         this.loading = false;
       },
       error: () => { this.error = true; this.loading = false; }
@@ -36,11 +36,12 @@ export class NotificationsComponent implements OnInit {
     return this.notifications.filter(n => !n.read).length;
   }
 
-  markAsRead(id: number): void {
-    this.profileService.markAsRead(id).subscribe({
+  markAsRead(notification: NotificationInbox): void {
+    this.unifiedNotificationService.markAsRead(notification).subscribe({
       next: () => {
         this.notifications = this.notifications.map(n =>
-          n.id === id ? { ...n, read: true } : n
+          (n.id === notification.id && n.source === notification.source)
+            ? { ...n, read: true } : n
         );
       }
     });
@@ -53,10 +54,10 @@ export class NotificationsComponent implements OnInit {
 
     let completed = 0;
     unread.forEach(n => {
-      this.profileService.markAsRead(n.id).subscribe({
+      this.unifiedNotificationService.markAsRead(n).subscribe({
         next: () => {
           this.notifications = this.notifications.map(x =>
-            x.id === n.id ? { ...x, read: true } : x
+            (x.id === n.id && x.source === n.source) ? { ...x, read: true } : x
           );
           completed++;
           if (completed === unread.length) this.markingAll = false;

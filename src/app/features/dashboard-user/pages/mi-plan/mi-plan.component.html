@@ -181,4 +181,21 @@
     </a>
   </div>
 
+  <!-- Mensaje de éxito -->
+<div class="feedback-card feedback-card--success" *ngIf="successMessage">
+  <i class="ti ti-circle-check"></i>
+  <p>{{ successMessage }}</p>
+</div>
+
+<!-- Acciones -->
+<div class="actions-row">
+  <button class="btn btn--primary" (click)="renewPlan()" [disabled]="renewing">
+    <i class="ti ti-refresh" [class.spin]="renewing"></i>
+    {{ renewing ? 'Renovando...' : 'Renovar plan' }}
+  </button>
+  <a class="btn btn--outline" routerLink="/dashboard-user/planes">
+    <i class="ti ti-layout-grid-add"></i> Ver otros planes
+  </a>
+</div>
+
 </ng-container>
