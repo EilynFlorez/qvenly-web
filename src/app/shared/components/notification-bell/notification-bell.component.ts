@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { ProfileService } from '../../../core/core-auth/services/profile.service';
 import { NotificationInbox } from '../../../core/core-auth/models/profile.model';
+import { UnifiedNotificationService } from '../../../core/unified-notification.service';
 
 @Component({
   selector: 'app-notification-bell',
@@ -13,17 +13,17 @@ export class NotificationBellComponent implements OnInit {
   unreadCount = 0;
   showNotifications = false;
 
-  constructor(private profileService: ProfileService) {}
+  constructor(private unifiedNotificationService: UnifiedNotificationService) {}
 
   ngOnInit(): void {
     this.loadNotifications();
   }
 
   loadNotifications(): void {
-    this.profileService.getInbox().subscribe({
-      next: (res) => {
-        this.notifications = res.data.slice(0, 5);
-        this.unreadCount = res.data.filter(n => !n.read).length;
+    this.unifiedNotificationService.getAllNotifications().subscribe({
+      next: (notifications) => {
+        this.notifications = notifications.slice(0, 5);
+        this.unreadCount = notifications.filter(n => !n.read).length;
       },
       error: () => {}
     });
@@ -34,12 +34,13 @@ export class NotificationBellComponent implements OnInit {
     this.showNotifications = !this.showNotifications;
   }
 
-  markAsRead(id: number, event: Event): void {
+  markAsRead(notification: NotificationInbox, event: Event): void {
     event.stopPropagation();
-    this.profileService.markAsRead(id).subscribe({
+    this.unifiedNotificationService.markAsRead(notification).subscribe({
       next: () => {
         this.notifications = this.notifications.map(n =>
-          n.id === id ? { ...n, read: true } : n
+          (n.id === notification.id && n.source === notification.source)
+            ? { ...n, read: true } : n
         );
         this.unreadCount = this.notifications.filter(n => !n.read).length;
       }
@@ -49,10 +50,10 @@ export class NotificationBellComponent implements OnInit {
   markAllAsRead(event: Event): void {
     event.stopPropagation();
     this.notifications.filter(n => !n.read).forEach(n => {
-      this.profileService.markAsRead(n.id).subscribe({
+      this.unifiedNotificationService.markAsRead(n).subscribe({
         next: () => {
           this.notifications = this.notifications.map(x =>
-            x.id === n.id ? { ...x, read: true } : x
+            (x.id === n.id && x.source === n.source) ? { ...x, read: true } : x
           );
           this.unreadCount = this.notifications.filter(x => !x.read).length;
         }
