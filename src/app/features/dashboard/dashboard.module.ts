@@ -11,6 +11,7 @@ import { FiltersComponent } from './components/filters/filters.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { KpiCardsComponent } from './components/kpi-cards/kpi-cards.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { ToastComponent } from './components/toast/toast.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
     MonthlyChartComponent,
     OrganizerChartComponent,
     UsersByEventComponent,
-    FiltersComponent, 
+    FiltersComponent,
+    ToastComponent, 
   ],
   imports: [
     CommonModule,

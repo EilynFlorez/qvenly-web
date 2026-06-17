@@ -10,7 +10,14 @@
     </div>
   </div>
 
-  <div class="table-wrapper">
+  <!-- Sin datos -->
+  <div *ngIf="noData" class="no-data">
+    <i class="ti ti-table-off"></i>
+    <p>No hay eventos registrados aún</p>
+  </div>
+
+  <!-- Con datos -->
+  <div *ngIf="!noData" class="table-wrapper">
     <table>
       <thead>
         <tr>
@@ -44,25 +51,17 @@
       </thead>
       <tbody>
         <tr *ngFor="let event of events">
-          <td class="event-name">{{ event.eventName }}</td>
-          <td>
-            <span class="badge personal">{{ event.staff }}</span>
+          <td class="event-name">
+            <i class="ti ti-calendar-event"></i>
+            {{ event.eventName }}
           </td>
-          <td>
-            <span class="badge asistentes">{{ event.assistants }}</span>
-          </td>
-          <td>
-            <span class="badge jurados">{{ event.judges }}</span>
-          </td>
-          <td>
-            <span class="badge participantes">{{ event.participants }}</span>
-          </td>
-          <td>
-            <span class="total">{{ getTotal(event) }}</span>
-          </td>
+          <td><span class="badge personal">{{ event.staff }}</span></td>
+          <td><span class="badge asistentes">{{ event.assistants }}</span></td>
+          <td><span class="badge jurados">{{ event.judges }}</span></td>
+          <td><span class="badge participantes">{{ event.participants }}</span></td>
+          <td><span class="total">{{ getTotal(event) }}</span></td>
         </tr>
       </tbody>
     </table>
   </div>
-
 </div>

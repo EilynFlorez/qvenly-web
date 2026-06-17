@@ -20,7 +20,14 @@
     </div>
   </div>
 
-  <div class="chart-wrapper">
+   <!-- Sin datos -->
+  <div *ngIf="noData" class="no-data">
+    <i class="ti ti-chart-bar-off"></i>
+    <p>No hay datos de eventos disponibles</p>
+  </div>
+
+  <!-- Con datos -->
+  <div *ngIf="!noData" class="chart-wrapper">
     <canvas id="organizerChart"></canvas>
   </div>
 

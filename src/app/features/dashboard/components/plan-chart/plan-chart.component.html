@@ -14,7 +14,20 @@
     </div>
   </div>
 
-  <div class="chart-wrapper">
+  <!-- Sin datos sin filtros -->
+  <div *ngIf="noData && !hasActiveFilters" class="no-data">
+    <i class="ti ti-chart-donut-off"></i>
+    <p>No hay datos disponibles para mostrar</p>
+  </div>
+
+  <!-- Sin datos con filtros -->
+  <div *ngIf="noData && hasActiveFilters" class="no-data">
+    <i class="ti ti-filter-off"></i>
+    <p>No se encontraron resultados para los filtros seleccionados</p>
+  </div>
+
+  <!-- Con datos -->
+  <div *ngIf="!noData" class="chart-wrapper">
     <canvas id="planChart"></canvas>
   </div>
 

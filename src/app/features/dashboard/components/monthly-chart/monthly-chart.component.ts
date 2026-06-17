@@ -11,10 +11,11 @@ import { MonthlyGrowh } from '../../../../core/core-dashboard/models/dashboard';
 })
 export class MonthlyChartComponent {
 
-   loading = true;
+  loading = true;
   error = false;
   peakMonth = '';
   chart: Chart | null = null;
+  noData = false;
 
   constructor(private dashboardService: DashboardService, private filterService: FilterService) { }
 
@@ -32,7 +33,17 @@ export class MonthlyChartComponent {
       next: (data) => {
         this.peakMonth = data.peakMonth;
         this.loading = false;
-        setTimeout(() => this.buildChart(data.months), 0);
+
+
+       
+      if (!data.months || data.months.length === 0) {
+        this.noData = true;
+        return;
+      }
+
+      this.noData = false;
+      setTimeout(() => this.buildChart(data.months), 0);
+      
       },
       error: (err) => {
         console.error(err);
