@@ -1,0 +1,37 @@
+﻿<section class="category-page">
+  <header class="category-topbar">
+    <a routerLink="/help"><i class="ti ti-arrow-left"></i> Centro de Ayuda</a>
+    <span class="live-badge"><span></span> En vivo</span>
+  </header>
+
+  <main class="category-content" *ngIf="category as current">
+    <section class="category-hero">
+      <div class="category-icon"><i [class]="current.icon"></i></div>
+      <div>
+        <h1>{{ current.title }}</h1>
+        <p>{{ current.description }}</p>
+      </div>
+    </section>
+
+    <p class="warning" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <article class="category-card">
+      <h2>Guía rápida</h2>
+      <p>{{ current.content || 'Explora los contenidos asociados a esta categoría.' }}</p>
+    </article>
+
+    <section class="article-grid" *ngIf="current.articles && current.articles.length > 0">
+      <article class="article-card" *ngFor="let article of current.articles">
+        <h3>{{ article.title }}</h3>
+        <p>{{ article.description }}</p>
+      </article>
+    </section>
+
+    <article class="category-card" *ngIf="!current.articles || current.articles.length === 0">
+      <h2>Sin artículos adicionales</h2>
+      <p>Cuando el backend envíe artículos para esta categoría, aparecerán aquí.</p>
+    </article>
+  </main>
+
+  <div class="loading" *ngIf="loading">Cargando categoría...</div>
+</section>

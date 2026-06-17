@@ -1,0 +1,31 @@
+﻿<form class="support-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="support-grid">
+    <label>
+      <span>Tipo de ayuda</span>
+      <select formControlName="type">
+        <option *ngFor="let type of ticketTypes" [value]="type.value">{{ type.label }}</option>
+      </select>
+    </label>
+
+    <label>
+      <span>Prioridad</span>
+      <select formControlName="priority">
+        <option *ngFor="let priority of priorities" [value]="priority.value">{{ priority.label }}</option>
+      </select>
+    </label>
+  </div>
+
+  <label>
+    <span>Descripción</span>
+    <textarea rows="5" formControlName="description"
+      placeholder="Cuéntanos qué ocurre y qué intentaste hacer"></textarea>
+  </label>
+
+  <p class="form-message form-message--error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="form-message form-message--success" *ngIf="successMessage">{{ successMessage }}</p>
+
+  <button class="support-submit" type="submit" [disabled]="loading">
+    <i class="ti ti-send"></i>
+    {{ loading ? 'Enviando...' : 'Enviar solicitud' }}
+  </button>
+</form>

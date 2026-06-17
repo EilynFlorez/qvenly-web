@@ -1,0 +1,56 @@
+<button class="chat-launcher" type="button" aria-label="Abrir asistente Qvenly" *ngIf="!isOpen" (click)="open()">
+  <span class="chat-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+  <span>Q</span>
+</button>
+
+<button class="chat-backdrop" type="button" *ngIf="isOpen" aria-label="Cerrar asistente" (click)="close()"></button>
+
+<section class="chat-panel" *ngIf="isOpen" aria-label="Asistente Qvenly">
+  <header class="chat-header">
+    <div class="chat-brand">
+      <div class="chat-logo">Q</div>
+      <div>
+        <h2>{{ config.title }}</h2>
+        <p><span></span>{{ config.status }}</p>
+      </div>
+    </div>
+    <button class="chat-close" type="button" aria-label="Cerrar asistente" (click)="close()">
+      <i class="ti ti-x"></i>
+    </button>
+  </header>
+
+  <div #chatBody class="chat-body">
+    <div class="chat-row" *ngFor="let item of messages" [class.chat-row--user]="item.sender === 'user'">
+      <div class="chat-avatar" *ngIf="item.sender === 'bot'">Q</div>
+      <div class="chat-message" [class.chat-message--user]="item.sender === 'user'">
+        <p>{{ item.text }}</p>
+        <div class="chat-suggestions" *ngIf="item.suggestions && item.suggestions.length > 0">
+          <button type="button" *ngFor="let suggestion of item.suggestions" (click)="sendQuickAction(suggestion)">
+            {{ suggestion }}
+          </button>
+        </div>
+        <button class="support-link" type="button" *ngIf="item.redirectToSupport" (click)="requestSupport()">
+          Crear solicitud de soporte
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-quick-actions" *ngIf="messages.length === 1">
+      <button type="button" *ngFor="let action of getQuickActions()" (click)="sendQuickAction(action)">
+        {{ action }}
+      </button>
+    </div>
+
+    <p class="chat-time">Ahora</p>
+    <p class="chat-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="chat-loading" *ngIf="loading">Asistente escribiendo...</p>
+  </div>
+
+  <form class="chat-input" (ngSubmit)="sendMessage()">
+    <input #chatInput type="text" name="chatMessage" [(ngModel)]="message" [placeholder]="config.inputPlaceholder"
+      autocomplete="off">
+    <button type="submit" aria-label="Enviar mensaje" [disabled]="loading">
+      <i class="ti ti-send"></i>
+    </button>
+  </form>
+</section>

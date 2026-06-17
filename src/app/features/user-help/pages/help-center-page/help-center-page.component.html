@@ -1,0 +1,91 @@
+<section class="help-page">
+  <header class="help-topbar">
+    <div>
+      <h1>{{ home.title }}</h1>
+      <p>{{ home.subtitle }}</p>
+    </div>
+    <div class="topbar-badges">
+      <span class="live-badge"><span></span> En vivo</span>
+    </div>
+  </header>
+
+  <main class="help-content">
+    <section class="help-hero">
+      <div class="hero-icon"><i class="ti ti-help-circle"></i></div>
+      <h2>Como podemos ayudarte?</h2>
+      <p>Busca guias, categorias o escribe al asistente para resolver tus dudas.</p>
+
+      <form class="help-search" (ngSubmit)="search()">
+        <i class="ti ti-search"></i>
+        <input #helpSearchInput type="text" name="searchTerm" [(ngModel)]="searchTerm"
+          [placeholder]="home.searchPlaceholder" autocomplete="off">
+        <button type="submit" [disabled]="searchLoading">{{ searchLoading ? 'Buscando...' : 'Buscar' }}</button>
+      </form>
+    </section>
+
+    <p class="help-warning" *ngIf="homeError">{{ homeError }}</p>
+
+    <section class="result-panel" *ngIf="searchMessage || searchResults.length > 0 || suggestions.length > 0">
+      <div class="panel-heading">
+        <h2>Resultados de busqueda</h2>
+        <span *ngIf="searchResults.length > 0">{{ searchResults.length }} resultado(s)</span>
+      </div>
+
+      <p class="empty-message" *ngIf="searchMessage">{{ searchMessage }}</p>
+
+      <article class="search-result" *ngFor="let result of searchResults; trackBy: trackByTitle">
+        <div>
+          <h3>{{ result.title }}</h3>
+          <p>{{ result.description }}</p>
+        </div>
+        <a *ngIf="result.slug" [routerLink]="['/help/category', result.slug]">Ver guia</a>
+      </article>
+    </section>
+
+    <section class="help-section">
+      <div class="section-heading">
+        <div>
+          <h2>Categorias principales</h2>
+          <p>Explora los temas mas consultados por los usuarios de Qvenly.</p>
+        </div>
+        <a routerLink="/help/support/my">Mis solicitudes</a>
+      </div>
+
+      <div class="category-grid" [class.category-grid--loading]="loading">
+        <a class="category-card" *ngFor="let category of home.categories; trackBy: trackBySlug"
+          [routerLink]="['/help/category', category.slug]">
+          <span class="category-icon"><i [class]="category.icon"></i></span>
+          <h3>{{ category.title }}</h3>
+          <p>{{ category.description }}</p>
+          <span class="category-action">Ver contenido <i class="ti ti-arrow-right"></i></span>
+        </a>
+        <article class="category-card support-card">
+          <span class="category-icon"><i class="ti ti-lifebuoy"></i></span>
+          <h3>Soporte</h3>
+          <p>Si el asistente no resuelve tu caso, registra una peticion para el equipo de soporte.</p>
+          <button class="primary-action" type="button" (click)="openSupportPanel()">
+            <i class="ti ti-lifebuoy"></i>
+            Crear solicitud
+          </button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="support-drawer" *ngIf="supportPanelOpen">
+    <button class="support-overlay" type="button" aria-label="Cerrar solicitud de soporte"
+      (click)="closeSupportPanel()"></button>
+    <aside class="support-panel" aria-label="Crear solicitud de soporte">
+      <header>
+        <div>
+          <h2>Crear solicitud</h2>
+          <p>Cuéntanos que necesitas y soporte revisara tu caso.</p>
+        </div>
+        <button class="support-close" type="button" aria-label="Cerrar" (click)="closeSupportPanel()">
+          <i class="ti ti-x"></i>
+        </button>
+      </header>
+      <app-support-form (ticketCreated)="closeSupportPanel()"></app-support-form>
+    </aside>
+  </div>
+</section>

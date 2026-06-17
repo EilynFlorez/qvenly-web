@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FooterComponent } from './footer/footer.component';
 import { NavComponent } from './nav/nav.component';
 import { RouterModule} from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { TopbarComponent } from './topbar/topbar.component';
 import { NavAdminComponent } from './nav-admin/nav-admin.component';
 import { SkeletonComponent } from './components/skeleton/skeleton.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { HelpChatbotComponent } from '../features/user-help/components/help-chatbot/help-chatbot.component';
 
 
 
@@ -17,11 +19,13 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
     TopbarComponent,
     NavAdminComponent,
     SkeletonComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
+    HelpChatbotComponent
   ],
   imports: [
     CommonModule,
-    RouterModule 
+    RouterModule,
+    FormsModule 
   ],
   exports: [
     NavAdminComponent,
@@ -29,7 +33,8 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
     SkeletonComponent,
     NavComponent, 
     FooterComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
+    HelpChatbotComponent
   ]
   
 })

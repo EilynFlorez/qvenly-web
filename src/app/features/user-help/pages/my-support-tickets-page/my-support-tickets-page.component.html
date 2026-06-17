@@ -1,0 +1,54 @@
+<section class="tickets-page">
+  <header class="tickets-topbar">
+    <a routerLink="/help"><i class="ti ti-arrow-left"></i> Centro de Ayuda</a>
+    <span class="live-badge"><span></span> En vivo</span>
+  </header>
+
+  <main class="tickets-content">
+    <section class="tickets-heading">
+      <div>
+        <h1>Mis solicitudes de soporte</h1>
+        <p>Consulta el estado de tus peticiones y las respuestas del equipo Qvenly.</p>
+      </div>
+      <button type="button" (click)="loadTickets()" [disabled]="loading">
+        <i class="ti ti-refresh"></i>
+        {{ loading ? 'Cargando...' : 'Actualizar' }}
+      </button>
+    </section>
+
+    <p class="warning" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <section class="create-ticket-card">
+      <div>
+        <h2>Crear solicitud</h2>
+        <p>Describe tu caso para que el equipo de soporte pueda revisarlo.</p>
+      </div>
+      <app-support-form (ticketCreated)="onTicketCreated()"></app-support-form>
+    </section>
+
+    <section class="tickets-list" *ngIf="tickets.length > 0; else emptyState">
+      <article class="ticket-card" *ngFor="let ticket of tickets; trackBy: trackByTicket">
+        <div class="ticket-main">
+          <span class="ticket-type">{{ ticket.type }}</span>
+          <h2>{{ ticket.description }}</h2>
+          <p *ngIf="ticket.adminResponse">Respuesta: {{ ticket.adminResponse }}</p>
+          <p *ngIf="!ticket.adminResponse">Aún no hay respuesta del administrador.</p>
+        </div>
+        <div class="ticket-meta">
+          <span>{{ ticket.status }}</span>
+          <strong>{{ ticket.priority }}</strong>
+          <small>{{ ticket.createdAt }}</small>
+        </div>
+      </article>
+    </section>
+
+    <ng-template #emptyState>
+      <article class="empty-card" *ngIf="!loading">
+        <i class="ti ti-lifebuoy"></i>
+        <h2>No tienes solicitudes registradas</h2>
+        <p>Cuando crees una solicitud de soporte, podrás consultarla en esta vista.</p>
+        <a routerLink="/help">Volver al Centro de Ayuda</a>
+      </article>
+      <div class="loading" *ngIf="loading">Cargando solicitudes...</div>
+    </ng-template>
+  </main>
+</section>

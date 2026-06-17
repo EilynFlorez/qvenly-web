@@ -1,0 +1,133 @@
+﻿:host {
+  display: block;
+  min-height: 100%;
+  background: #f6fbfb;
+  color: #1A2332;
+}
+
+.category-topbar {
+  min-height: 78px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 184, 169, .1);
+}
+
+.category-topbar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #00A99A;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: #d8f9e8;
+  color: #07976e;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.live-badge span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.category-content {
+  padding: 34px 30px 80px;
+  display: grid;
+  gap: 24px;
+}
+
+.category-hero,
+.category-card,
+.article-card {
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(26, 35, 50, .06);
+}
+
+.category-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 34px;
+}
+
+.category-icon {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 20px;
+  color: #00A99A;
+  background: rgba(0, 184, 169, .12);
+  font-size: 34px;
+}
+
+.category-hero h1,
+.category-card h2,
+.article-card h3 {
+  margin: 0 0 8px;
+}
+
+.category-hero p,
+.category-card p,
+.article-card p {
+  margin: 0;
+  color: #6B7280;
+  line-height: 1.6;
+}
+
+.category-card,
+.article-card {
+  padding: 26px;
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.warning {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  color: #92400e;
+  background: #fffbeb;
+}
+
+.loading {
+  padding: 40px;
+  color: #6B7280;
+}
+
+@media(max-width: 760px) {
+
+  .category-topbar,
+  .category-content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .category-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .article-grid {
+    grid-template-columns: 1fr;
+  }
+}
