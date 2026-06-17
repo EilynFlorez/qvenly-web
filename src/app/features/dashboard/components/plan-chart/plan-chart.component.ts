@@ -17,6 +17,8 @@ export class PlanChartComponent implements OnInit {
   error = false;
   featuredPlan = '';
   chart: Chart | null = null;
+  noData = false;
+  hasActiveFilters = false;
 
   constructor(
     private dashboardService: DashboardService,
@@ -26,7 +28,8 @@ export class PlanChartComponent implements OnInit {
   ngOnInit(): void {
     this.filterService.filters$.subscribe(filters => {
       this.loading = true;
-
+      this.hasActiveFilters = !!(filters.startDate || filters.endDate || filters.plan); 
+      
       if (this.chart) {
         this.chart.destroy();
         this.chart = null;
@@ -40,7 +43,15 @@ export class PlanChartComponent implements OnInit {
         next: (data) => {
           this.featuredPlan = data.featuredPlan;
           this.loading = false;
-          setTimeout(() => this.buildChart(data.plans), 0);
+
+      // Verifica si hay datos
+      if (!data.plans || data.plans.length === 0) {
+        this.noData = true;
+        return;
+      }
+
+      this.noData = false;
+      setTimeout(() => this.buildChart(data.plans), 0);
         },
         error: (err) => {
           console.error(err);

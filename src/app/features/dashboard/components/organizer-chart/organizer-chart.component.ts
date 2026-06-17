@@ -17,6 +17,7 @@ export class OrganizerChartComponent {
   error = false;
   topOrganizer = '';
   chart: Chart | null = null;
+  noData = false;
 
   constructor(private dashboardService: DashboardService, private filterService: FilterService){}
 
@@ -34,7 +35,16 @@ export class OrganizerChartComponent {
       next: (data) => {
         this.topOrganizers = data.topOrganizer.split(', ');
         this.loading = false;
-        setTimeout(() => this.buildChart(data.organizers), 0);
+
+       
+      if (!data.organizers || data.organizers.length === 0) {
+        this.noData = true;
+        return;
+      }
+
+      this.noData = false;
+      setTimeout(() => this.buildChart(data.organizers), 0);
+
       },
 
       error: (err) => {

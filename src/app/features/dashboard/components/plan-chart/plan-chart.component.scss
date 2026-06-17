@@ -91,3 +91,23 @@
     font-family: 'DM Sans', sans-serif;
   }
 }
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 260px;
+  color: #9ca3af;
+  gap: 12px;
+
+  i {
+    font-size: 48px;
+    color: #d1d5db;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
+}

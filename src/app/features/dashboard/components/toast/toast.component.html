@@ -1,0 +1,9 @@
+<div class="toast" [class.visible]="toast.visible">
+  <div class="toast-header">
+    <div class="toast-icon">
+     <i class="ti ti-file-export"></i>
+    </div>
+  </div>
+  <p class="toast-message">{{ toast.message }}</p>
+  <div class="toast-bar" *ngIf="toast.visible"></div>
+</div>

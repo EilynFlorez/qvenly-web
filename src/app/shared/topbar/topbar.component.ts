@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/core-auth/services/auth.service';
 import { ProfileService } from '../../core/core-auth/services/profile.service';
 import { NotificationInbox } from '../../core/core-auth/models/profile.model';
+import { FilterService } from '../../core/core-dashboard/services/filter.service';
+import { DashboardFilters } from '../../core/core-dashboard/models/dashboard-filters';
 
 @Component({
   selector: 'app-topbar',
@@ -15,6 +17,14 @@ export class TopbarComponent implements OnInit {
   @Input() title: string = '';
   @Input() subtitle: string = '';
   @Input() showExport: boolean = false;
+
+  // Filtros en los reportes
+
+    currentFilters: DashboardFilters= {
+    startDate: '',
+    endDate: '',
+    plan: ''
+  };
 
   // ─── Usuario ───────────────────────────────────────────────────────────
   userInitials = '';
@@ -32,7 +42,8 @@ export class TopbarComponent implements OnInit {
     private authService: AuthService,
     private profileService: ProfileService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+     private filterService: FilterService
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +54,10 @@ export class TopbarComponent implements OnInit {
       .slice(0, 2)
       .join('') || 'AD';
     this.loadNotifications();
+
+     this.filterService.filters$.subscribe(filters => {
+    this.currentFilters = filters;
+  });
   }
 
   // ─── Notificaciones ────────────────────────────────────────────────────
@@ -108,30 +123,44 @@ export class TopbarComponent implements OnInit {
   }
 
   exportExcel(): void {
-    this.http.get('http://localhost:9000/admin/report/excel', {
-      responseType: 'blob'
-    }).subscribe(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'reporte-dashboard.xlsx';
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
-    this.closeModal();
-  }
+  let url = 'http://localhost:9000/admin/report/excel';
+  const params = this.buildParams();
+  if (params) url += '?' + params;
 
-  exportPdf(): void {
-    this.http.get('http://localhost:9000/admin/report/pdf', {
-      responseType: 'blob' as 'json'
-    }).subscribe((blob: any) => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'reporte-dashboard.pdf';
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
-    this.closeModal();
-  }
+  this.http.get(url, { responseType: 'blob' }).subscribe(blob => {
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(blob);
+    a.download = 'reporte-dashboard.xlsx';
+    a.click();
+    window.URL.revokeObjectURL(a.href);
+  });
+  this.closeModal();
+}
+
+exportPdf(): void {
+  let url = 'http://localhost:9000/admin/report/pdf';
+  const params = this.buildParams();
+  if (params) url += '?' + params;
+
+  this.http.get(url, { responseType: 'blob' as 'json' }).subscribe((blob: any) => {
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(blob);
+    a.download = 'reporte-dashboard.pdf';
+    a.click();
+    window.URL.revokeObjectURL(a.href);
+  });
+  this.closeModal();
+}
+
+// Construye los parámetros de filtro
+private buildParams(): string {
+  const params: string[] = [];
+  if (this.currentFilters.startDate) 
+    params.push(`startDate=${this.currentFilters.startDate}`);
+  if (this.currentFilters.endDate)   
+    params.push(`endDate=${this.currentFilters.endDate}`);
+  if (this.currentFilters.plan)      
+    params.push(`plan=${this.currentFilters.plan}`);
+  return params.join('&');
+}
 }

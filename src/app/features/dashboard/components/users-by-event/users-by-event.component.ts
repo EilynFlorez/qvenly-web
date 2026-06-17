@@ -13,6 +13,7 @@ export class UsersByEventComponent {
           loading = true;
           error = false;
           events: EventUserDetail[] = [];
+          noData = false;
 
           constructor(private dashboardService: DashboardService){}
 
@@ -21,6 +22,15 @@ export class UsersByEventComponent {
               next: (data) => {
                 this.events = data;
                 this.loading = false;
+
+                 this.loading = false;
+
+                if (!data || data.length === 0) {
+                  this.noData = true;
+                  return;
+                }
+
+                this.noData = false;
               },
               error: (err) =>{
                 console.error(err);

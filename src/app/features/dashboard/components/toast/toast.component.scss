@@ -1,0 +1,68 @@
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 25px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-left: 4px solid #00B8A9;
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 380px;
+
+  // Oculto por defecto
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+}
+
+.toast-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(0, 184, 169, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 20px;
+    color: #00B8A9;
+  }
+}
+
+.toast-message {
+  font-size: 13px;
+  color: #1A2332;
+  margin: 0;
+  line-height: 1.4;
+  font-family: 'DM Sans', sans-serif;
+}
+
+// Barra de progreso animada
+.toast-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #00B8A9;
+  border-radius: 0 0 14px 14px;
+  animation: progress 4s linear forwards;
+}
+
+@keyframes progress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}

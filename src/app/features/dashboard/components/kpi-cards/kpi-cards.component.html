@@ -8,7 +8,7 @@
       <i class="ti ti-users"></i>
     </div>
     <div class="kpi-text">
-      <p class="kpi-value">{{ stats.totalUsers }}</p>
+      <p class="kpi-value">{{ stats.totalUsers || 0 }}</p>
       <p class="kpi-title">Total usuarios</p>
     </div>
   </div>
@@ -18,7 +18,7 @@
       <i class="ti ti-building"></i>
     </div>
     <div class="kpi-text">
-      <p class="kpi-value">{{ stats.totalOrganizers }}</p>
+      <p class="kpi-value">{{ stats.totalOrganizers || 0}}</p>
       <p class="kpi-title">Organizadores</p>
     </div>
   </div>
@@ -28,7 +28,7 @@
       <i class="ti ti-id-badge"></i>
     </div>
     <div class="kpi-text">
-      <p class="kpi-value">{{ stats.totalStaff }}</p>
+      <p class="kpi-value">{{ stats.totalStaff || 0}}</p>
       <p class="kpi-title">Personal</p>
     </div>
   </div>
@@ -38,7 +38,7 @@
       <i class="ti ti-ticket"></i>
     </div>
     <div class="kpi-text">
-      <p class="kpi-value">{{ stats.totalAssistants }}</p>
+      <p class="kpi-value">{{ stats.totalAssistants || 0}}</p>
       <p class="kpi-title">Asistentes</p>
     </div>
   </div>
@@ -48,7 +48,7 @@
       <i class="ti ti-gavel"></i>
     </div>
     <div class="kpi-text">
-      <p class="kpi-value">{{ stats.totalJudges }}</p>
+      <p class="kpi-value">{{ stats.totalJudges || 0}}</p>
       <p class="kpi-title">Jurados</p>
     </div>
   </div>
@@ -58,7 +58,7 @@
       <i class="ti ti-trophy"></i>
     </div>
     <div class="kpi-text">
-      <p class="kpi-value">{{ stats.totalParticipants }}</p>
+      <p class="kpi-value">{{ stats.totalParticipants || 0}}</p>
       <p class="kpi-title">Participantes</p>
     </div>
   </div>
@@ -68,7 +68,7 @@
       <i class="ti ti-calendar-event"></i>
     </div>
     <div class="kpi-text">
-      <p class="kpi-value">{{ stats.totalEvents }}</p>
+      <p class="kpi-value">{{ stats.totalEvents || 0}}</p>
       <p class="kpi-title">Total eventos</p>
     </div>
   </div>

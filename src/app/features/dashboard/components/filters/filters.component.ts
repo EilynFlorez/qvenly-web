@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { DashboardFilters } from '../../../../core/core-dashboard/models/dashboard-filters';
 import { FilterService } from '../../../../core/core-dashboard/services/filter.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastService } from '../../../../core/core-dashboard/services/toast.service';
 
 @Component({
   selector: 'app-filters',
@@ -15,7 +16,7 @@ export class FiltersComponent {
    filterForm!: FormGroup;
    plans = ['Básico', 'Estándar', 'Premium'];
 
-   constructor(private fb:FormBuilder, private filterService: FilterService){}
+   constructor(private fb:FormBuilder, private filterService: FilterService,  private toastService: ToastService){}
 
    ngOnInit(): void{
     this.filterForm = this.fb.group({
@@ -28,6 +29,12 @@ export class FiltersComponent {
    applyFilters(): void{
     console.log('Filtros aplicados:', this.filterForm.value);
     this.filterService.updateFilters(this.filterForm.value);
+
+     // Muestra el toast
+    this.toastService.show(
+      'Los filtros aplicados también se reflejarán en los reportes de PDF y Excel.',
+      
+    );
    }
 
    clearFilters(): void{
