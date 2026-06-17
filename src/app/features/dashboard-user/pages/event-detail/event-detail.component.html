@@ -219,6 +219,9 @@
             <button class="btn-invite" *ngIf="isOrganizer && canEdit" (click)="openInviteModal()">
               <i class="ti ti-user-plus"></i> Invitar
             </button>
+            <button class="btn-secondary" *ngIf="isOrganizer && canEdit" (click)="openBulkInviteModal()">
+              <i class="ti ti-file-spreadsheet"></i> Invitar desde Excel
+            </button>
           </div>
 
           <div class="empty-members" *ngIf="members.length === 0">
@@ -278,7 +281,6 @@
               <div class="invitation-item__info">
                 <p class="invitation-item__email">{{ inv.invitedEmail }}</p>
                 <p class="invitation-item__meta">
-                  Rol: <strong>{{ getRoleLabel(inv.eventRole) }}</strong> ·
                   Enviada {{ inv.sentAt | date:'dd/MM/yy' }} ·
                   Vence {{ inv.expiresAt | date:'dd/MM/yy' }}
                 </p>
@@ -471,14 +473,18 @@
           <input type="email" class="form-input" [(ngModel)]="inviteEmail" placeholder="correo@ejemplo.com" />
         </div>
         <div class="modal-form-row">
-          <label class="modal-label">Rol</label>
-          <select class="form-input" [(ngModel)]="inviteRole">
-            <option value="ORGANIZER">Organizador</option>
-            <option value="STAFF">Personal de apoyo</option>
-            <option value="JUDGE">Juez</option>
-            <option value="PARTICIPANT">Participante</option>
-            <option value="ATTENDEE">Asistente</option>
+          <label class="modal-label">Vencimiento de la invitación</label>
+          <select class="form-input" [(ngModel)]="inviteExpirationOption">
+            <option value="3">3 días</option>
+            <option value="7">7 días (recomendado)</option>
+            <option value="15">15 días</option>
+            <option value="30">30 días</option>
+            <option value="custom">Fecha personalizada</option>
           </select>
+        </div>
+        <div class="modal-form-row" *ngIf="inviteExpirationOption === 'custom'">
+          <label class="modal-label">Fecha límite</label>
+          <input type="date" class="form-input" [(ngModel)]="inviteCustomExpiresAt" [min]="todayDate" />
         </div>
         <p class="modal-error" *ngIf="inviteError"><i class="ti ti-alert-circle"></i> {{ inviteError }}</p>
       </div>
@@ -487,6 +493,79 @@
         <button class="btn-modal-primary" [disabled]="!inviteEmail.trim() || processing"
           (click)="submitInvite()">
           <i class="ti ti-send"></i> {{ processing ? 'Enviando...' : 'Enviar invitación' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Invitación masiva por Excel -->
+  <div class="modal-overlay" *ngIf="showBulkInviteModal" (click)="showBulkInviteModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-file-spreadsheet"></i> Invitar desde Excel</h3>
+        <button class="modal-close" (click)="showBulkInviteModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+
+        <div *ngIf="!bulkInviteResult">
+          <p class="modal-help-text">
+            Sube un archivo Excel (.xlsx) con una columna llamada <strong>email</strong>.
+            Cada fila debe contener el correo de la persona a invitar.
+          </p>
+          <a href="assets/plantilla_invitaciones.xlsx" download class="btn-download-template">
+            <i class="ti ti-download"></i> Descargar plantilla de ejemplo
+          </a>
+
+          <div class="modal-form-row">
+            <label class="modal-label">Archivo Excel</label>
+            <input type="file" class="form-input" accept=".xlsx,.xls" (change)="onBulkFileSelected($event)" />
+          </div>
+
+          <div class="modal-form-row">
+            <label class="modal-label">Vencimiento de las invitaciones</label>
+            <select class="form-input" [(ngModel)]="bulkInviteExpirationOption">
+              <option value="3">3 días</option>
+              <option value="7">7 días (recomendado)</option>
+              <option value="15">15 días</option>
+              <option value="30">30 días</option>
+              <option value="custom">Fecha personalizada</option>
+            </select>
+          </div>
+          <div class="modal-form-row" *ngIf="bulkInviteExpirationOption === 'custom'">
+            <label class="modal-label">Fecha límite</label>
+            <input type="date" class="form-input" [(ngModel)]="bulkInviteCustomExpiresAt" [min]="todayDate" />
+          </div>
+
+          <p class="modal-error" *ngIf="bulkInviteError"><i class="ti ti-alert-circle"></i> {{ bulkInviteError }}</p>
+        </div>
+
+        <div *ngIf="bulkInviteResult">
+          <p class="bulk-result-summary">
+            <i class="ti ti-circle-check" style="color: #14b8a6;"></i>
+            {{ bulkInviteResult.sent.length }} invitaciones enviadas
+            <ng-container *ngIf="bulkInviteResult.failed.length > 0">
+              · {{ bulkInviteResult.failed.length }} fallidas
+            </ng-container>
+          </p>
+          <div class="bulk-result-list" *ngIf="bulkInviteResult.failed.length > 0">
+            <p class="bulk-result-list__title">Errores:</p>
+            <div class="bulk-result-item" *ngFor="let f of bulkInviteResult.failed">
+              <i class="ti ti-x" style="color: #ef4444;"></i>
+              <span>{{ f.email }}: {{ f.reason }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showBulkInviteModal = false">
+          {{ bulkInviteResult ? 'Cerrar' : 'Cancelar' }}
+        </button>
+        <button class="btn-modal-primary" *ngIf="!bulkInviteResult"
+          [disabled]="!bulkInviteFile || bulkInviteProcessing"
+          (click)="submitBulkInvite()">
+          <i class="ti ti-upload"></i>
+          {{ bulkInviteProcessing ? 'Procesando...' : 'Enviar invitaciones' }}
         </button>
       </div>
     </div>
@@ -756,6 +835,55 @@
                 [disabled]="processing || !assignMemberEmail.trim()">
           <i class="ti ti-check"></i>
           {{ processing ? 'Asignando...' : 'Asignar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar evento -->
+  <div class="modal-overlay" *ngIf="showEditEventModal" (click)="showEditEventModal = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-edit"></i> Editar evento</h3>
+        <button class="modal-close" (click)="showEditEventModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Título <span class="required">*</span></label>
+          <input type="text" class="form-input" [(ngModel)]="editEventForm.title" maxlength="150">
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea class="form-textarea" [(ngModel)]="editEventForm.description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Ubicación</label>
+          <input type="text" class="form-input" [(ngModel)]="editEventForm.location">
+        </div>
+        <div class="form-group">
+          <label>Tipo de evento <span class="required">*</span></label>
+          <input type="text" class="form-input" [(ngModel)]="editEventForm.eventType">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Inicio <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input" [(ngModel)]="editEventForm.startDatetime">
+          </div>
+          <div class="form-group">
+            <label>Fin <span class="required">*</span></label>
+            <input type="datetime-local" class="form-input" [(ngModel)]="editEventForm.endDatetime">
+          </div>
+        </div>
+        <p class="modal-error" *ngIf="editEventFormError">
+          <i class="ti ti-alert-circle"></i> {{ editEventFormError }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showEditEventModal = false">Cancelar</button>
+        <button class="btn-modal-primary" (click)="submitEditEvent()"
+                [disabled]="processing || !editEventForm.title.trim()">
+          <i class="ti ti-check"></i>
+          {{ processing ? 'Guardando...' : 'Guardar cambios' }}
         </button>
       </div>
     </div>
