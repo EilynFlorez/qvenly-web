@@ -1,0 +1,54 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Estado: cargando -->
+    <div class="ai-loading" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Cargando invitación...</p>
+    </div>
+
+    <!-- Estado: error -->
+    <div class="ai-error" *ngIf="!loading && error">
+      <div class="ai-error__icon"><i class="ti ti-alert-circle"></i></div>
+      <h2>No pudimos cargar esta invitación</h2>
+      <p>{{ error }}</p>
+      <a routerLink="/" class="btn-primary">Ir al inicio</a>
+    </div>
+
+    <!-- Estado: autenticado, procesando aceptación automática -->
+    <div class="ai-processing" *ngIf="!loading && !error && invitation && isAuthenticated">
+      <div class="spinner"></div>
+      <p>Procesando tu invitación...</p>
+      <p class="ai-processing__error" *ngIf="processingError">
+        <i class="ti ti-alert-circle"></i> {{ processingError }}
+      </p>
+    </div>
+
+    <!-- Estado: no autenticado, mostrar detalle + opciones -->
+    <div class="ai-detail" *ngIf="!loading && !error && invitation && !isAuthenticated">
+      <div class="ai-detail__header">
+        <i class="ti ti-calendar-event"></i>
+        <span class="ai-detail__type" *ngIf="invitation.eventType">{{ invitation.eventType }}</span>
+      </div>
+      <h2 class="ai-detail__title">{{ invitation.eventTitle }}</h2>
+      <p class="ai-detail__description" *ngIf="invitation.eventDescription">
+        {{ invitation.eventDescription }}
+      </p>
+      <div class="ai-detail__meta">
+        <span *ngIf="invitation.eventStartDatetime">
+          <i class="ti ti-calendar"></i> {{ invitation.eventStartDatetime | date:'dd/MM/yyyy HH:mm' }}
+          <ng-container *ngIf="invitation.eventEndDatetime"> → {{ invitation.eventEndDatetime | date:'dd/MM/yyyy HH:mm' }}</ng-container>
+        </span>
+        <span *ngIf="invitation.eventLocation">
+          <i class="ti ti-map-pin"></i> {{ invitation.eventLocation }}
+        </span>
+      </div>
+      <p class="ai-detail__invite-text">Has sido invitado(a) a este evento. Inicia sesión o crea una cuenta para aceptar la invitación.</p>
+      <div class="ai-detail__actions">
+        <button class="btn-primary" (click)="goToLogin()">Iniciar sesión</button>
+        <button class="btn-secondary" (click)="goToRegister()">Crear cuenta</button>
+      </div>
+    </div>
+
+  </div>
+</div>

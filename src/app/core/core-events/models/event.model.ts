@@ -5,7 +5,7 @@ export interface ApiResponse<T> {
 }
 
 export type EventStatus = 'DRAFT' | 'PUBLISHED' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
-export type EventRole = 'ORGANIZER' | 'STAFF' | 'JUDGE' | 'PARTICIPANT' | 'ATTENDEE';
+export type EventRole = 'ORGANIZER' | 'STAFF' | 'JUDGE' | 'PARTICIPANT' | 'ATTENDEE' | 'MEMBER';
 
 export interface PlanLimits {
   planName: string;
@@ -78,6 +78,7 @@ export interface LimitsUsage {
   judges: RoleUsage;
   attendees: RoleUsage;
   staff: RoleUsage;
+  members: RoleUsage;
 }
 
 export interface InvitationResponse {
@@ -92,6 +93,12 @@ export interface InvitationResponse {
   sentAt: string;
   expiresAt: string;
   respondedAt: string | null;
+  eventTitle: string;
+  eventDescription: string | null;
+  eventLocation: string | null;
+  eventType: string;
+  eventStartDatetime: string;
+  eventEndDatetime: string;
 }
 
 export interface AuditLog {

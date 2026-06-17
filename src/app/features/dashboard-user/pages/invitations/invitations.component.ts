@@ -56,7 +56,7 @@ export class InvitationsComponent implements OnInit {
   getRoleLabel(role: EventRole): string {
     const labels: Record<EventRole, string> = {
       ORGANIZER: 'Organizador', STAFF: 'Personal de apoyo',
-      JUDGE: 'Juez', PARTICIPANT: 'Participante', ATTENDEE: 'Asistente'
+      JUDGE: 'Juez', PARTICIPANT: 'Participante', ATTENDEE: 'Asistente', MEMBER: 'Miembro'
     };
     return labels[role];
   }
@@ -64,7 +64,7 @@ export class InvitationsComponent implements OnInit {
   getRoleClass(role: EventRole): string {
     const classes: Record<EventRole, string> = {
       ORGANIZER: 'role--organizer', STAFF: 'role--staff',
-      JUDGE: 'role--judge', PARTICIPANT: 'role--participant', ATTENDEE: 'role--attendee'
+      JUDGE: 'role--judge', PARTICIPANT: 'role--participant', ATTENDEE: 'role--attendee', MEMBER: 'role--member'
     };
     return classes[role];
   }

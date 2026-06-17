@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
-import { ApiResponse, InvitationResponse, EventRole } from '../models/event.model';
+import { ApiResponse, InvitationResponse } from '../models/event.model';
 
 @Injectable({ providedIn: 'root' })
 export class InvitationService {
@@ -15,10 +15,23 @@ export class InvitationService {
     return this.http.get<ApiResponse<InvitationResponse[]>>(`${this.eventsUrl}/${eventId}/invitations`, { withCredentials: true });
   }
 
-  sendInvitation(eventId: number, invitedEmail: string, eventRole: EventRole): Observable<ApiResponse<InvitationResponse>> {
+  sendInvitation(eventId: number, invitedEmail: string, expiresAt?: string): Observable<ApiResponse<InvitationResponse>> {
+    const body: Record<string, string> = { invitedEmail };
+    if (expiresAt) body['expiresAt'] = expiresAt;
     return this.http.post<ApiResponse<InvitationResponse>>(
       `${this.eventsUrl}/${eventId}/invitations`,
-      { invitedEmail, eventRole },
+      body,
+      { withCredentials: true }
+    );
+  }
+
+  sendBulkInvitations(eventId: number, file: File, expiresAt?: string): Observable<ApiResponse<{ sent: any[], failed: any[] }>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (expiresAt) formData.append('expiresAt', expiresAt);
+    return this.http.post<ApiResponse<{ sent: any[], failed: any[] }>>(
+      `${this.eventsUrl}/${eventId}/invitations/bulk`,
+      formData,
       { withCredentials: true }
     );
   }
@@ -29,6 +42,10 @@ export class InvitationService {
       { cancelReason },
       { withCredentials: true }
     );
+  }
+
+  previewInvitation(token: string): Observable<ApiResponse<InvitationResponse>> {
+    return this.http.get<ApiResponse<InvitationResponse>>(`${this.invitationsUrl}/preview/${token}`);
   }
 
   getMyPendingInvitations(): Observable<ApiResponse<InvitationResponse[]>> {

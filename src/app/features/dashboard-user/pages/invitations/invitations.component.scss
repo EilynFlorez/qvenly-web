@@ -147,3 +147,21 @@
 }
 
 .spin { animation: spin 0.8s linear infinite; display: inline-block; }
+
+// ── Type chip ─────────────────────────────────────────────────────────────────
+.type-chip {
+  font-size: $fs-meta; font-weight: 600; padding: 3px 10px; border-radius: $radius-pill;
+  background: $teal-light; color: $teal-dark;
+}
+
+// ── Event detail blocks ───────────────────────────────────────────────────────
+.inv-description {
+  font-size: $fs-meta; color: $gray-400; margin: 0 0 4px; line-height: 1.5;
+}
+
+.inv-event-details {
+  display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px;
+  font-size: $fs-meta; color: $gray-400;
+  span { display: flex; align-items: center; gap: 5px; }
+  i { font-size: 12px; }
+}

@@ -63,43 +63,52 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.touched['email'] = true;
-    this.touched['password'] = true;
+  this.touched['email'] = true;
+  this.touched['password'] = true;
 
-    if (this.getEmailError() || this.getPasswordError()) return;
+  if (this.getEmailError() || this.getPasswordError()) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+  this.isLoading = true;
+  this.errorMessage = '';
+  this.successMessage = '';
 
-    this.authService.login(this.loginData).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.authService.saveUserInfo(
-            response.data.name,
-            response.data.email,
-            response.data.role,
-            response.data.userId
-          );
-          const role = response.data.role;
-          if (role === 'ADMIN') {
-            this.router.navigate(['/dashboard']);
-          } else if (role === 'USER') {
-            this.router.navigate(['/dashboard-user']);
-          } else {
-            this.errorMessage = 'Rol no reconocido';
-          }
-        } else {
-          this.errorMessage = response.message;
+  this.authService.login(this.loginData).subscribe({
+    next: (response) => {
+      if (response.success) {
+        this.authService.saveUserInfo(
+          response.data.name,
+          response.data.email,
+          response.data.role,
+          response.data.userId
+        );
+
+        const pendingToken = localStorage.getItem('pendingInvitationToken');
+        if (pendingToken) {
+          localStorage.removeItem('pendingInvitationToken');
+          this.router.navigate(['/auth/accept-invitation'], { queryParams: { token: pendingToken } });
+          this.isLoading = false;
+          return;
         }
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Error al iniciar sesión';
-        this.isLoading = false;
+
+        const role = response.data.role;
+        if (role === 'ADMIN') {
+          this.router.navigate(['/dashboard']);
+        } else if (role === 'USER') {
+          this.router.navigate(['/dashboard-user']);
+        } else {
+          this.errorMessage = 'Rol no reconocido';
+        }
+      } else {
+        this.errorMessage = response.message;
       }
-    });
-  }
+      this.isLoading = false;
+    },
+    error: (err) => {
+      this.errorMessage = err.error?.message || 'Error al iniciar sesión';
+      this.isLoading = false;
+    }
+  });
+}
 
   onGoogleLogin(): void {
     window.location.href = 'http://localhost:9000/oauth2/authorization/google';

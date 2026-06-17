@@ -1,0 +1,109 @@
+@use '../../auth-shared' as *;
+
+:host { display: block; }
+
+.auth-page { @extend %auth-page; }
+
+.auth-card {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.btn-primary { @include btn-primary; }
+
+.btn-secondary {
+  width: 100%;
+  background: transparent;
+  color: $teal-500;
+  padding: 0.8rem;
+  border: 1.5px solid $teal-500;
+  border-radius: 0.625rem;
+  font-size: $fs-base;
+  font-family: $font-family;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  &:hover { background: $teal-50; box-shadow: 0 4px 12px rgba($teal-500, 0.15); }
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+.spinner {
+  width: 24px; height: 24px;
+  border: 2.5px solid $gray-200;
+  border-top-color: $teal-500;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.ai-loading {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 2rem 0; text-align: center;
+  p { font-size: $fs-base; color: $gray-500; margin: 0; }
+}
+
+// ── Error ─────────────────────────────────────────────────────────────────────
+.ai-error {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 1rem 0; text-align: center;
+
+  &__icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: $red-50; display: flex; align-items: center; justify-content: center;
+    i { font-size: 28px; color: $red-600; }
+  }
+  h2 { font-size: 1.1rem; font-weight: 700; color: $gray-900; margin: 0; }
+  p  { font-size: $fs-base; color: $gray-500; margin: 0; }
+  a  {
+    @include btn-primary;
+    display: inline-block; text-decoration: none; margin-top: 4px;
+    width: auto; padding: 0.75rem 2rem; border-radius: 0.625rem;
+  }
+}
+
+// ── Processing (autenticado) ──────────────────────────────────────────────────
+.ai-processing {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 2rem 0; text-align: center;
+  p { font-size: $fs-base; color: $gray-500; margin: 0; }
+
+  &__error {
+    font-size: $fs-small; color: $red-600;
+    display: flex; align-items: center; gap: 5px;
+    i { font-size: 14px; }
+  }
+}
+
+// ── Detail (no autenticado) ───────────────────────────────────────────────────
+.ai-detail {
+  display: flex; flex-direction: column; gap: 14px;
+
+  &__header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 1.25rem; color: $teal-500;
+    i { font-size: 22px; }
+  }
+  &__type {
+    font-size: $fs-small; font-weight: 600; padding: 3px 10px;
+    border-radius: 99px; background: $teal-100; color: $teal-600;
+  }
+  &__title { font-size: 1.2rem; font-weight: 700; color: $gray-900; margin: 0; }
+  &__description { font-size: $fs-base; color: $gray-500; margin: 0; line-height: 1.55; }
+  &__meta {
+    display: flex; flex-direction: column; gap: 6px;
+    font-size: $fs-small; color: $gray-500;
+    padding: 12px 14px; background: $gray-100; border-radius: 0.625rem;
+    span { display: flex; align-items: center; gap: 6px; }
+    i    { font-size: 13px; color: $teal-500; flex-shrink: 0; }
+  }
+  &__invite-text {
+    font-size: $fs-small; color: $gray-500; margin: 0;
+    padding: 10px 14px; background: $teal-50;
+    border: 1px solid $teal-100; border-radius: 0.625rem; line-height: 1.5;
+  }
+  &__actions { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+}
