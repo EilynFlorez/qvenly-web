@@ -16,21 +16,63 @@ export class MiPlanComponent implements OnInit {
   loading = true;
   error = false;
 
+  /** Indica si la renovación está en proceso */
+  renewing = false;
+
+  /** Mensaje de éxito tras renovar */
+  successMessage = '';
+
   constructor(
     private authService: AuthService,
     private userPlanService: UserPlanService
   ) {}
 
   ngOnInit(): void {
+    this.loadActivePlan();
+  }
+
+  /**
+   * Carga el plan activo del organizador.
+   */
+  loadActivePlan(): void {
     const userId = this.authService.getUserId();
     if (!userId) { this.loading = false; return; }
 
+    this.loading = true;
     this.userPlanService.getActivePlanByUser(userId).subscribe({
       next: (response) => {
         if (response.success) this.activePlan = response.data;
         this.loading = false;
       },
       error: (err) => { if (err?.status !== 404) this.error = true; this.loading = false; }
+    });
+  }
+
+  /**
+   * Renueva el plan activo del organizador.
+   * Envía el correo y nombre del usuario para la notificación.
+   */
+  renewPlan(): void {
+    if (!this.activePlan) return;
+
+    const email = this.authService.getUserEmail() ?? '';
+    const name = this.authService.getUserName() ?? '';
+
+    this.renewing = true;
+    this.successMessage = '';
+
+    this.userPlanService.renewPlan(this.activePlan.idUserPlan, email, name).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.activePlan = response.data;
+          this.successMessage = 'Tu plan fue renovado exitosamente. Revisa tu correo.';
+        }
+        this.renewing = false;
+      },
+      error: () => {
+        this.error = true;
+        this.renewing = false;
+      }
     });
   }
 

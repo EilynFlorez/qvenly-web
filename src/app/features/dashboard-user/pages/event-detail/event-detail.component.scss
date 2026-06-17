@@ -639,3 +639,51 @@
 
   i { font-size: 13px; }
 }
+
+// ── Botón secundario (outline teal) ──────────────────────────────────────────
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; background: transparent; color: $teal;
+  border: 1.5px solid $teal; border-radius: $radius-sm; font-size: $fs-body;
+  font-family: $font; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  i { font-size: 14px; }
+  &:hover { background: $teal-light; }
+}
+
+// ── Modal invitación masiva ───────────────────────────────────────────────────
+.modal-help-text {
+  font-size: $fs-body; color: $gray-500; margin: 0; line-height: 1.5;
+}
+
+.btn-download-template {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; background: $teal-light; color: $teal-dark;
+  border: 1px solid $teal-border; border-radius: $radius-sm;
+  font-size: $fs-body; font-family: $font; font-weight: 600;
+  text-decoration: none; transition: background 0.2s;
+  i { font-size: 14px; }
+  &:hover { background: rgba(0, 184, 169, 0.15); }
+}
+
+.bulk-result-summary {
+  display: flex; align-items: center; gap: 8px;
+  font-size: $fs-body; font-weight: 600; color: $gray-900; margin: 0;
+  padding: 10px 12px; background: $green-bg; border-radius: $radius-sm;
+  i { font-size: 16px; }
+}
+
+.bulk-result-list {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 4px;
+  &__title {
+    font-size: $fs-meta; font-weight: 600; color: $gray-500; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+}
+
+.bulk-result-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: $fs-body; color: $gray-500; padding: 6px 0;
+  border-bottom: 0.5px solid $gray-100;
+  &:last-child { border-bottom: none; }
+  i { font-size: 13px; flex-shrink: 0; }
+}

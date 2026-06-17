@@ -50,14 +50,24 @@
       <div class="invitation-card__header">
         <div class="event-ref">
           <i class="ti ti-calendar-event"></i>
-          <span>Evento <strong>#{{ inv.eventId }}</strong></span>
+          <span><strong>{{ inv.eventTitle }}</strong></span>
         </div>
-        <span class="role-chip" [ngClass]="getRoleClass(inv.eventRole)">
-          {{ getRoleLabel(inv.eventRole) }}
-        </span>
+        <span class="type-chip" *ngIf="inv.eventType">{{ inv.eventType }}</span>
       </div>
 
       <div class="invitation-card__body">
+        <p class="inv-description" *ngIf="inv.eventDescription">
+          {{ inv.eventDescription }}
+        </p>
+        <div class="inv-event-details">
+          <span *ngIf="inv.eventStartDatetime">
+            <i class="ti ti-calendar"></i> {{ inv.eventStartDatetime | date:'dd/MM/yyyy HH:mm' }}
+            <ng-container *ngIf="inv.eventEndDatetime"> → {{ inv.eventEndDatetime | date:'dd/MM/yyyy HH:mm' }}</ng-container>
+          </span>
+          <span *ngIf="inv.eventLocation">
+            <i class="ti ti-map-pin"></i> {{ inv.eventLocation }}
+          </span>
+        </div>
         <p class="inv-detail">
           <i class="ti ti-user"></i>
           Enviada por <strong>{{ inv.invitedByEmail }}</strong>

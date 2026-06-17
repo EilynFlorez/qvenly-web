@@ -60,4 +60,5 @@ export interface NotificationInbox {
   silent: boolean;
   status: string;
   createdAt: string;
+  source?: 'auth' | 'plans';
 }

@@ -85,6 +85,10 @@ export class AuthService {
     return localStorage.getItem('name');
   }
 
+  getUserEmail(): string | null {
+    return localStorage.getItem('email');
+  }
+
   getRole(): string | null {
     return localStorage.getItem('role');
   }

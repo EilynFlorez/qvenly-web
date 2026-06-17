@@ -78,8 +78,17 @@ export class EventDetailComponent implements OnInit {
 
   showInviteModal = false;
   inviteEmail = '';
-  inviteRole: EventRole = 'PARTICIPANT';
   inviteError = '';
+  inviteExpirationOption: '3' | '7' | '15' | '30' | 'custom' = '7';
+  inviteCustomExpiresAt = '';
+
+  showBulkInviteModal = false;
+  bulkInviteFile: File | null = null;
+  bulkInviteError = '';
+  bulkInviteResult: { sent: any[], failed: any[] } | null = null;
+  bulkInviteProcessing = false;
+  bulkInviteExpirationOption: '3' | '7' | '15' | '30' | 'custom' = '7';
+  bulkInviteCustomExpiresAt = '';
 
   showRemoveMemberModal = false;
   removeMemberId: number | null = null;
@@ -97,6 +106,10 @@ export class EventDetailComponent implements OnInit {
 
   showLeaveModal = false;
   leaveReason = '';
+
+  showEditEventModal = false;
+  editEventForm = { title: '', description: '', location: '', eventType: '', startDatetime: '', endDatetime: '' };
+  editEventFormError = '';
 
   private currentUserEmail = localStorage.getItem('email') || '';
 
@@ -189,6 +202,10 @@ export class EventDetailComponent implements OnInit {
       this.event.status !== 'FINISHED' && this.event.status !== 'CANCELLED';
   }
 
+  get todayDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
   get sortedAuditLog(): AuditLog[] {
     return [...this.auditLog].sort((a, b) =>
       new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime()
@@ -202,7 +219,7 @@ export class EventDetailComponent implements OnInit {
   getRoleLabel(role: EventRole): string {
     const labels: Record<EventRole, string> = {
       ORGANIZER: 'Organizadores', STAFF: 'Personal de apoyo',
-      JUDGE: 'Jueces', PARTICIPANT: 'Participantes', ATTENDEE: 'Asistentes'
+      JUDGE: 'Jueces', PARTICIPANT: 'Participantes', ATTENDEE: 'Asistentes', MEMBER: 'Miembros'
     };
     return labels[role];
   }
@@ -303,25 +320,104 @@ export class EventDetailComponent implements OnInit {
 
   editEvent(): void {
     if (!this.event) return;
-    this.router.navigate(['/dashboard-user/events', this.event.id, 'edit']);
+    this.editEventForm = {
+      title: this.event.title,
+      description: this.event.description || '',
+      location: this.event.location || '',
+      eventType: this.event.eventType,
+      startDatetime: this.event.startDatetime.replace(' ', 'T').substring(0, 16),
+      endDatetime: this.event.endDatetime.replace(' ', 'T').substring(0, 16)
+    };
+    this.editEventFormError = '';
+    this.showEditEventModal = true;
+  }
+
+  submitEditEvent(): void {
+    if (!this.event || !this.editEventForm.title.trim()) return;
+    this.processing = true; this.editEventFormError = '';
+    this.eventService.updateEvent(this.event.id, {
+      title: this.editEventForm.title,
+      description: this.editEventForm.description || undefined,
+      location: this.editEventForm.location || undefined,
+      eventType: this.editEventForm.eventType,
+      startDatetime: this.editEventForm.startDatetime,
+      endDatetime: this.editEventForm.endDatetime
+    }).subscribe({
+      next: (res) => { if (res.success) this.event = res.data; this.showEditEventModal = false; this.processing = false; },
+      error: (err) => { this.editEventFormError = err.error?.message || 'Error al editar.'; this.processing = false; }
+    });
   }
 
   // ── Members ──────────────────────────────────────────────────────────────────
   openInviteModal(): void {
-    this.inviteEmail = ''; this.inviteRole = 'PARTICIPANT'; this.inviteError = '';
+    this.inviteEmail = ''; this.inviteError = '';
+    this.inviteExpirationOption = '7';
+    this.inviteCustomExpiresAt = '';
     this.showInviteModal = true;
     if (this.invitations.length === 0) this.loadInvitations();
+  }
+
+  private computeExpiresAt(option: '3' | '7' | '15' | '30' | 'custom', customDate: string): string | undefined {
+    if (option === 'custom') {
+      return customDate ? new Date(customDate).toISOString() : undefined;
+    }
+    const days = Number(option);
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return date.toISOString();
   }
 
   submitInvite(): void {
     if (!this.event || !this.inviteEmail.trim()) return;
     this.processing = true; this.inviteError = '';
-    this.invitationService.sendInvitation(this.event.id, this.inviteEmail.trim(), this.inviteRole).subscribe({
+    this.invitationService.sendInvitation(
+      this.event.id,
+      this.inviteEmail.trim(),
+      this.computeExpiresAt(this.inviteExpirationOption, this.inviteCustomExpiresAt)
+    ).subscribe({
       next: () => {
         this.showInviteModal = false; this.processing = false;
         this.loadInvitations();
       },
       error: (err) => { this.inviteError = err.error?.message || 'Error al enviar invitación.'; this.processing = false; }
+    });
+  }
+
+  openBulkInviteModal(): void {
+    this.bulkInviteFile = null;
+    this.bulkInviteError = '';
+    this.bulkInviteResult = null;
+    this.bulkInviteExpirationOption = '7';
+    this.bulkInviteCustomExpiresAt = '';
+    this.showBulkInviteModal = true;
+  }
+
+  onBulkFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.bulkInviteFile = input.files[0];
+      this.bulkInviteError = '';
+    }
+  }
+
+  submitBulkInvite(): void {
+    if (!this.event || !this.bulkInviteFile) return;
+    this.bulkInviteProcessing = true;
+    this.bulkInviteError = '';
+    this.invitationService.sendBulkInvitations(
+      this.event.id,
+      this.bulkInviteFile,
+      this.computeExpiresAt(this.bulkInviteExpirationOption, this.bulkInviteCustomExpiresAt)
+    ).subscribe({
+      next: (res) => {
+        this.bulkInviteResult = res.data;
+        this.bulkInviteProcessing = false;
+        this.loadInvitations();
+      },
+      error: (err) => {
+        this.bulkInviteError = err.error?.message || 'Error al procesar el archivo.';
+        this.bulkInviteProcessing = false;
+      }
     });
   }
 
