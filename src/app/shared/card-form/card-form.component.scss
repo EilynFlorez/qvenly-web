@@ -1,0 +1,99 @@
+@use '../../features/dashboard-user/styles/dashboard-variables' as *;
+
+.card-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: $white;
+  border: 1px solid $teal-border;
+  border-radius: 16px;
+  padding: 24px 26px;
+  font-family: $font;
+  max-width: 480px;
+}
+
+.card-form-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  i {
+    font-size: 24px;
+    color: $teal;
+    margin-top: 2px;
+  }
+
+  &__title {
+    font-size: 17px;
+    font-weight: 700;
+    color: $gray-900;
+    margin: 0 0 4px;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: $gray-400;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $gray-400;
+  }
+
+  input {
+    padding: 10px 14px;
+    border: 1.5px solid $teal-border;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: $font;
+    color: $gray-900;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $teal;
+    }
+  }
+
+  &--small {
+    flex: 1;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.card-form-secure-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: $gray-400;
+
+  i {
+    font-size: 14px;
+    color: $teal;
+  }
+}
+
+.btn--full {
+  width: 100%;
+  justify-content: center;
+}

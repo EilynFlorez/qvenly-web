@@ -422,3 +422,129 @@
   i { font-size: 15px; }
   &:hover { background: $teal-dark; }
 }
+
+// ─── Historial de planes ───────────────────────────────────────────────────
+.history-section {
+  background: $white;
+  border: 1px solid $teal-border;
+  border-radius: 14px;
+  padding: 22px 24px;
+
+  .features-section__title {
+    margin-bottom: 20px;
+  }
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 6px; // para que el scrollbar no pegue contra las cards
+
+  // Scrollbar a juego con el tema teal
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: $gray-100;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $teal-border;
+    border-radius: 4px;
+    &:hover {
+      background: $teal;
+    }
+  }
+}
+
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid $teal-border;
+  border-radius: 12px;
+  transition: box-shadow 0.2s;
+  &:hover { box-shadow: 0 2px 10px rgba(0, 184, 169, 0.08); }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: $teal-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    i { font-size: 20px; color: $teal; }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  &__plan {
+    font-size: 15px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+
+  &__dates {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: $gray-400;
+    i { font-size: 15px; color: $teal; }
+  }
+
+  &__reason {
+    font-size: 13px;
+    color: $gray-400;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// ─── Badges adicionales (estados de historial) ─────────────────────────────
+.badge {
+  &--expired {
+    background: $orange-bg;
+    color: $orange;
+  }
+  &--cancelled {
+    background: $red-bg;
+    color: $red;
+  }
+}
+
+// ─── Empty state pequeño (dentro de historial) ─────────────────────────────
+.empty-state--small {
+  padding: 2rem 1rem;
+  gap: 10px;
+
+  .empty-state__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    i { font-size: 26px; }
+  }
+
+  .empty-state__desc {
+    font-size: 13px;
+  }
+}

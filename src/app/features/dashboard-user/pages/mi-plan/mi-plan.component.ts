@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/core-auth/services/auth.service';
 import { UserPlanService } from '../../../../core/core-plans/services/user-plan.service';
-import { UserPlanResponse } from '../../../../core/core-plans/models/plan.model';
+import { PlanHistoryResponse, UserPlanResponse } from '../../../../core/core-plans/models/plan.model';
+import { PlanHistoryService } from '../../../../core/core-plans/services/plan-history.service';
 
 @Component({
   selector: 'app-mi-plan',
@@ -15,6 +16,9 @@ export class MiPlanComponent implements OnInit {
   activePlan: UserPlanResponse | null = null;
   loading = true;
   error = false;
+  planHistory: PlanHistoryResponse[] = [];
+  loadingHistory = true;
+  errorHistory = false;
 
   /** Indica si la renovación está en proceso */
   renewing = false;
@@ -24,11 +28,14 @@ export class MiPlanComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private userPlanService: UserPlanService
-  ) {}
+    private userPlanService: UserPlanService,
+    private planHistoryService: PlanHistoryService
+  ) { }
 
   ngOnInit(): void {
     this.loadActivePlan();
+    this.loadPlanHistory();
+
   }
 
   /**
@@ -49,19 +56,40 @@ export class MiPlanComponent implements OnInit {
   }
 
   /**
+ * Carga el historial de planes del organizador (HU46).
+ */
+  loadPlanHistory(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) { this.loadingHistory = false; return; }
+
+    this.loadingHistory = true;
+    this.planHistoryService.getHistoryByUser(userId).subscribe({
+      next: (response) => {
+        if (response.success) this.planHistory = response.data;
+        this.loadingHistory = false;
+      },
+      error: (err) => {
+        // 404 significa que el usuario aún no tiene historial; no es un error real
+        if (err?.status !== 404) this.errorHistory = true;
+        this.loadingHistory = false;
+      }
+    });
+  }
+
+  /**
    * Renueva el plan activo del organizador.
    * Envía el correo y nombre del usuario para la notificación.
    */
+  /**
+ * Renueva el plan activo del organizador.
+ */
   renewPlan(): void {
     if (!this.activePlan) return;
-
-    const email = this.authService.getUserEmail() ?? '';
-    const name = this.authService.getUserName() ?? '';
 
     this.renewing = true;
     this.successMessage = '';
 
-    this.userPlanService.renewPlan(this.activePlan.idUserPlan, email, name).subscribe({
+    this.userPlanService.renewPlan(this.activePlan.idUserPlan).subscribe({
       next: (response) => {
         if (response.success) {
           this.activePlan = response.data;

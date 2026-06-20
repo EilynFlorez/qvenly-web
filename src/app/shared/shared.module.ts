@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FooterComponent } from './footer/footer.component';
 import { NavComponent } from './nav/nav.component';
@@ -11,6 +11,7 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
 import { NotificationBellComponent } from './components/notification-bell/notification-bell.component';
 import { ProfileComponent } from '../features/dashboard-user/pages/profile/profile.component';
 import { NotificationsComponent } from '../features/dashboard-user/pages/notifications/notifications.component';
+import { CardFormComponent } from './card-form/card-form.component';
 
 @NgModule({
   declarations: [
@@ -22,12 +23,14 @@ import { NotificationsComponent } from '../features/dashboard-user/pages/notific
     AdminLayoutComponent,
     NotificationBellComponent,
     ProfileComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    CardFormComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule
+    RouterModule,
+    ReactiveFormsModule
   ],
   exports: [
     NavAdminComponent,

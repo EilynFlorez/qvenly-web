@@ -1,0 +1,108 @@
+<div class="card-form-wrapper">
+
+  <div class="card-form-header">
+    <i class="ti ti-credit-card"></i>
+    <div>
+      <h2 class="card-form-header__title">Guardar tarjeta para renovación automática</h2>
+      <p class="card-form-header__desc">
+        Tu tarjeta se procesa de forma segura directamente con Wompi. Nunca almacenamos tu número de tarjeta.
+      </p>
+    </div>
+  </div>
+
+  <!-- Mensaje de éxito -->
+  <div class="feedback-card feedback-card--success" *ngIf="success">
+    <i class="ti ti-circle-check"></i>
+    <p>Tu tarjeta fue guardada exitosamente. Ya puedes activar la renovación automática.</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="feedback-card feedback-card--error" *ngIf="error">
+    <i class="ti ti-alert-circle"></i>
+    <p>{{ error }}</p>
+  </div>
+
+  <form class="card-form" [formGroup]="cardForm" (ngSubmit)="onSubmit()" *ngIf="!success">
+
+    <div class="form-group">
+      <label for="cardHolder">Nombre en la tarjeta</label>
+      <input
+        id="cardHolder"
+        type="text"
+        formControlName="cardHolder"
+        placeholder="Como aparece en la tarjeta"
+        autocomplete="cc-name"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="number">Número de tarjeta</label>
+      <input
+        id="number"
+        type="text"
+        formControlName="number"
+        placeholder="4242 4242 4242 4242"
+        inputmode="numeric"
+        maxlength="19"
+        autocomplete="cc-number"
+      />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group form-group--small">
+        <label for="expMonth">Mes</label>
+        <input
+          id="expMonth"
+          type="text"
+          formControlName="expMonth"
+          placeholder="MM"
+          maxlength="2"
+          inputmode="numeric"
+          autocomplete="cc-exp-month"
+        />
+      </div>
+
+      <div class="form-group form-group--small">
+        <label for="expYear">Año</label>
+        <input
+          id="expYear"
+          type="text"
+          formControlName="expYear"
+          placeholder="AA"
+          maxlength="2"
+          inputmode="numeric"
+          autocomplete="cc-exp-year"
+        />
+      </div>
+
+      <div class="form-group form-group--small">
+        <label for="cvc">CVC</label>
+        <input
+          id="cvc"
+          type="text"
+          formControlName="cvc"
+          placeholder="123"
+          maxlength="4"
+          inputmode="numeric"
+          autocomplete="cc-csc"
+        />
+      </div>
+    </div>
+
+    <div class="card-form-secure-note">
+      <i class="ti ti-lock"></i>
+      <span>Conexión segura y cifrada con Wompi</span>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn--primary btn--full"
+      [disabled]="cardForm.invalid || loading"
+    >
+      <i class="ti ti-credit-card" [class.spin]="loading"></i>
+      {{ loading ? 'Guardando tarjeta...' : 'Guardar tarjeta' }}
+    </button>
+
+  </form>
+
+</div>
