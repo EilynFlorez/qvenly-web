@@ -14,6 +14,7 @@ import { EventDetailComponent } from './pages/event-detail/event-detail.componen
 import { InvitationsComponent } from './pages/invitations/invitations.component';
 import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
 import { PlanesComponent } from './pages/planes/planes.component';
+import { EventHistoryComponent } from './pages/event-history/event-history.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { PlanesComponent } from './pages/planes/planes.component';
     EventDetailComponent,
     InvitationsComponent,
     PaymentResultComponent,
-    PlanesComponent
+    PlanesComponent,
+    EventHistoryComponent
   ],
   imports: [
     CommonModule,

@@ -271,13 +271,31 @@
             </button>
           </div>
 
+          <div class="invitation-filters" *ngIf="invitations.length > 0">
+            <input type="text" class="form-input" placeholder="Buscar por email..."
+              [(ngModel)]="invitationSearchTerm" />
+            <select class="form-input" [(ngModel)]="invitationStatusFilter">
+              <option value="ALL">Todos los estados</option>
+              <option value="PENDING">Pendiente</option>
+              <option value="ACCEPTED">Aceptada</option>
+              <option value="DECLINED">Rechazada</option>
+              <option value="CANCELLED">Cancelada</option>
+              <option value="EXPIRED">Vencida</option>
+            </select>
+          </div>
+
           <div class="empty-members" *ngIf="invitations.length === 0">
             <i class="ti ti-mail-off"></i>
             <p>No hay invitaciones enviadas.</p>
           </div>
 
-          <div class="invitation-list" *ngIf="invitations.length > 0">
-            <div class="invitation-item" *ngFor="let inv of invitations">
+          <div class="empty-members" *ngIf="invitations.length > 0 && filteredInvitations.length === 0">
+            <i class="ti ti-filter-off"></i>
+            <p>Ninguna invitación coincide con los filtros aplicados.</p>
+          </div>
+
+          <div class="invitation-list" *ngIf="filteredInvitations.length > 0">
+            <div class="invitation-item" *ngFor="let inv of filteredInvitations">
               <div class="invitation-item__info">
                 <p class="invitation-item__email">{{ inv.invitedEmail }}</p>
                 <p class="invitation-item__meta">
@@ -287,7 +305,7 @@
               </div>
               <div class="invitation-item__right">
                 <span class="invite-status-chip" [ngClass]="getInviteStatusClass(inv.status)">
-                  {{ inv.status }}
+                  {{ getInviteStatusLabel(inv.status) }}
                 </span>
                 <button class="btn-cancel-invite" *ngIf="inv.status === 'PENDING'"
                   (click)="openCancelInvite(inv)">
@@ -313,7 +331,7 @@
                 <i class="ti {{ getAuditIcon(log.actionType) }}"></i>
               </div>
               <div class="timeline-item__body">
-                <p class="timeline-item__action">{{ log.actionType.replace('_', ' ') }}</p>
+                <p class="timeline-item__action">{{ getAuditActionLabel(log.actionType) }}</p>
                 <p class="timeline-item__by">{{ log.performedByEmail }}</p>
                 <p class="timeline-item__date">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</p>
                 <p class="timeline-item__detail" *ngIf="log.changeDetail">{{ log.changeDetail }}</p>

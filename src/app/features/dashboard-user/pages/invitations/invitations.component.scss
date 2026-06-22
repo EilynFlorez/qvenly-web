@@ -79,6 +79,29 @@
   &__desc { font-size: $fs-body; color: $gray-400; margin: 0; max-width: 400px; line-height: 1.6; }
 }
 
+// ── Form inputs ───────────────────────────────────────────────────────────────
+.form-input {
+  padding: 10px 12px; border: 1px solid $gray-200; border-radius: $radius-sm;
+  font-size: $fs-body; font-family: $font; color: $gray-900; background: $white;
+  outline: none; width: 100%; box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  &:focus { border-color: $teal; box-shadow: 0 0 0 3px $teal-light; }
+}
+
+// ── Content card wrapper ──────────────────────────────────────────────────────
+.invitation-card-wrapper {
+  background: $white; border: 1px solid $teal-border;
+  border-radius: $radius-md; padding: 22px 24px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+.invitation-filters {
+  display: flex; gap: 10px; margin-bottom: 16px;
+  .form-input { flex: 1; }
+  @media (max-width: 600px) { flex-direction: column; }
+}
+
 // ── Invitation grid ───────────────────────────────────────────────────────────
 .invitation-grid {
   display: grid;
@@ -126,6 +149,21 @@
   &--judge      { background: $orange-bg; color: $orange; }
   &--participant { background: $teal-light; color: $teal-dark; }
   &--attendee   { background: $gray-100;  color: $gray-500; }
+}
+
+// ── Status badge (invitaciones no-PENDING) ────────────────────────────────────
+.invitation-card__status-badge {
+  display: flex; justify-content: flex-end;
+  padding-top: 12px; border-top: 1px solid $gray-100;
+}
+
+.status-chip {
+  font-size: $fs-meta; font-weight: 600; padding: 4px 12px; border-radius: $radius-pill;
+  &.invite-status--pending   { background: $orange-bg; color: $orange; }
+  &.invite-status--accepted  { background: $green-bg;  color: $green;  }
+  &.invite-status--declined  { background: $red-bg;    color: $red;    }
+  &.invite-status--cancelled { background: $gray-100;  color: $gray-400; }
+  &.invite-status--expired   { background: $gray-100;  color: $gray-400; }
 }
 
 // ── Action buttons ────────────────────────────────────────────────────────────

@@ -15,6 +15,7 @@ export class MyEventsComponent implements OnInit {
   error = false;
   noPlan = false;
   statusFilter = 'ALL';
+  searchTerm = '';
 
   private currentUserEmail = localStorage.getItem('email') || '';
 
@@ -43,8 +44,19 @@ export class MyEventsComponent implements OnInit {
   }
 
   get filteredEvents(): EventResponse[] {
-    if (this.statusFilter === 'ALL') return this.events;
-    return this.events.filter(e => e.status === this.statusFilter);
+    let result = this.events;
+    if (this.statusFilter !== 'ALL') {
+      result = result.filter(e => e.status === this.statusFilter);
+    }
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.trim().toLowerCase();
+      result = result.filter(e =>
+        e.title.toLowerCase().includes(term) ||
+        (e.description && e.description.toLowerCase().includes(term)) ||
+        e.eventType.toLowerCase().includes(term)
+      );
+    }
+    return result;
   }
 
   isOwner(event: EventResponse): boolean {

@@ -15,6 +15,24 @@ export class InvitationsComponent implements OnInit {
   successMessage = '';
   accepting: number | null = null;
 
+  invitationSearchTerm = '';
+  invitationStatusFilter: 'ALL' | 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED' | 'EXPIRED' = 'ALL';
+
+  get filteredInvitations(): InvitationResponse[] {
+    let result = this.invitations;
+    if (this.invitationStatusFilter !== 'ALL') {
+      result = result.filter(i => i.status === this.invitationStatusFilter);
+    }
+    if (this.invitationSearchTerm.trim()) {
+      const term = this.invitationSearchTerm.trim().toLowerCase();
+      result = result.filter(i =>
+        (i.eventTitle && i.eventTitle.toLowerCase().includes(term)) ||
+        (i.invitedByEmail && i.invitedByEmail.toLowerCase().includes(term))
+      );
+    }
+    return result;
+  }
+
   constructor(private invitationService: InvitationService) {}
 
   ngOnInit(): void {
@@ -26,9 +44,9 @@ export class InvitationsComponent implements OnInit {
     this.error = '';
     this.successMessage = '';
 
-    this.invitationService.getMyPendingInvitations().subscribe({
+    this.invitationService.getMyInvitations().subscribe({
       next: (res) => {
-        if (res.success) this.invitations = res.data.filter(i => i.status === 'PENDING');
+        if (res.success) this.invitations = res.data;
         this.loading = false;
       },
       error: () => { this.error = 'No se pudieron cargar las invitaciones.'; this.loading = false; }
@@ -51,6 +69,23 @@ export class InvitationsComponent implements OnInit {
         this.accepting = null;
       }
     });
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      PENDING: 'Pendiente', ACCEPTED: 'Aceptada',
+      DECLINED: 'Rechazada', CANCELLED: 'Cancelada', EXPIRED: 'Vencida'
+    };
+    return labels[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      PENDING: 'invite-status--pending', ACCEPTED: 'invite-status--accepted',
+      DECLINED: 'invite-status--declined', CANCELLED: 'invite-status--cancelled',
+      EXPIRED: 'invite-status--expired'
+    };
+    return map[status] || '';
   }
 
   getRoleLabel(role: EventRole): string {
