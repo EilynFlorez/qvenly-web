@@ -32,70 +32,104 @@
     <span>{{ successMessage }}</span>
   </div>
 
-  <!-- Sin invitaciones -->
-  <div class="empty-state" *ngIf="!loading && !error && invitations.length === 0">
-    <div class="empty-state__icon">
-      <i class="ti ti-mail-off"></i>
+  <!-- Tarjeta de contenido -->
+  <div class="invitation-card-wrapper" *ngIf="!loading && !error">
+
+    <!-- Filtros -->
+    <div class="invitation-filters" *ngIf="invitations.length > 0">
+      <input type="text" class="form-input" placeholder="Buscar por evento o remitente..."
+        [(ngModel)]="invitationSearchTerm" />
+      <select class="form-input" [(ngModel)]="invitationStatusFilter">
+        <option value="ALL">Todos los estados</option>
+        <option value="PENDING">Pendiente</option>
+        <option value="ACCEPTED">Aceptada</option>
+        <option value="DECLINED">Rechazada</option>
+        <option value="CANCELLED">Cancelada</option>
+        <option value="EXPIRED">Vencida</option>
+      </select>
     </div>
-    <h2 class="empty-state__title">No tienes invitaciones pendientes</h2>
-    <p class="empty-state__desc">
-      Cuando alguien te invite a un evento, aparecerá aquí para que puedas aceptar o rechazar.
-    </p>
-  </div>
 
-  <!-- Lista de invitaciones -->
-  <div class="invitation-grid" *ngIf="!loading && !error && invitations.length > 0">
-    <div class="invitation-card" *ngFor="let inv of invitations">
-
-      <div class="invitation-card__header">
-        <div class="event-ref">
-          <i class="ti ti-calendar-event"></i>
-          <span><strong>{{ inv.eventTitle }}</strong></span>
-        </div>
-        <span class="type-chip" *ngIf="inv.eventType">{{ inv.eventType }}</span>
+    <!-- Sin invitaciones (sin datos) -->
+    <div class="empty-state" *ngIf="invitations.length === 0">
+      <div class="empty-state__icon">
+        <i class="ti ti-mail-off"></i>
       </div>
-
-      <div class="invitation-card__body">
-        <p class="inv-description" *ngIf="inv.eventDescription">
-          {{ inv.eventDescription }}
-        </p>
-        <div class="inv-event-details">
-          <span *ngIf="inv.eventStartDatetime">
-            <i class="ti ti-calendar"></i> {{ inv.eventStartDatetime | date:'dd/MM/yyyy HH:mm' }}
-            <ng-container *ngIf="inv.eventEndDatetime"> → {{ inv.eventEndDatetime | date:'dd/MM/yyyy HH:mm' }}</ng-container>
-          </span>
-          <span *ngIf="inv.eventLocation">
-            <i class="ti ti-map-pin"></i> {{ inv.eventLocation }}
-          </span>
-        </div>
-        <p class="inv-detail">
-          <i class="ti ti-user"></i>
-          Enviada por <strong>{{ inv.invitedByEmail }}</strong>
-        </p>
-        <div class="inv-dates">
-          <span>
-            <i class="ti ti-send"></i> Enviada: {{ inv.sentAt | date:'dd/MM/yyyy' }}
-          </span>
-          <span>
-            <i class="ti ti-clock"></i> Vence: {{ inv.expiresAt | date:'dd/MM/yyyy' }}
-          </span>
-        </div>
-      </div>
-
-      <div class="invitation-card__actions">
-        <button class="btn-accept"
-          [disabled]="accepting === inv.id"
-          (click)="onAccept(inv)">
-          <i class="ti ti-check" *ngIf="accepting !== inv.id"></i>
-          <i class="ti ti-loader-2 spin" *ngIf="accepting === inv.id"></i>
-          {{ accepting === inv.id ? 'Aceptando...' : 'Aceptar' }}
-        </button>
-        <button class="btn-decline" disabled title="Función próximamente disponible">
-          <i class="ti ti-x"></i> Rechazar
-        </button>
-      </div>
-
+      <h2 class="empty-state__title">No tienes invitaciones pendientes</h2>
+      <p class="empty-state__desc">
+        Cuando alguien te invite a un evento, aparecerá aquí para que puedas aceptar o rechazar.
+      </p>
     </div>
-  </div>
+
+    <!-- Sin resultados para el filtro -->
+    <div class="empty-state" *ngIf="invitations.length > 0 && filteredInvitations.length === 0">
+      <div class="empty-state__icon">
+        <i class="ti ti-filter-off"></i>
+      </div>
+      <h2 class="empty-state__title">Sin resultados</h2>
+      <p class="empty-state__desc">Ninguna invitación coincide con los filtros aplicados.</p>
+    </div>
+
+    <!-- Lista de invitaciones -->
+    <div class="invitation-grid" *ngIf="filteredInvitations.length > 0">
+      <div class="invitation-card" *ngFor="let inv of filteredInvitations">
+
+        <div class="invitation-card__header">
+          <div class="event-ref">
+            <i class="ti ti-calendar-event"></i>
+            <span><strong>{{ inv.eventTitle }}</strong></span>
+          </div>
+          <span class="type-chip" *ngIf="inv.eventType">{{ inv.eventType }}</span>
+        </div>
+
+        <div class="invitation-card__body">
+          <p class="inv-description" *ngIf="inv.eventDescription">
+            {{ inv.eventDescription }}
+          </p>
+          <div class="inv-event-details">
+            <span *ngIf="inv.eventStartDatetime">
+              <i class="ti ti-calendar"></i> {{ inv.eventStartDatetime | date:'dd/MM/yyyy HH:mm' }}
+              <ng-container *ngIf="inv.eventEndDatetime"> → {{ inv.eventEndDatetime | date:'dd/MM/yyyy HH:mm' }}</ng-container>
+            </span>
+            <span *ngIf="inv.eventLocation">
+              <i class="ti ti-map-pin"></i> {{ inv.eventLocation }}
+            </span>
+          </div>
+          <p class="inv-detail">
+            <i class="ti ti-user"></i>
+            Enviada por <strong>{{ inv.invitedByEmail }}</strong>
+          </p>
+          <div class="inv-dates">
+            <span>
+              <i class="ti ti-send"></i> Enviada: {{ inv.sentAt | date:'dd/MM/yyyy' }}
+            </span>
+            <span>
+              <i class="ti ti-clock"></i> Vence: {{ inv.expiresAt | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="invitation-card__actions" *ngIf="inv.status === 'PENDING'">
+          <button class="btn-accept"
+            [disabled]="accepting === inv.id"
+            (click)="onAccept(inv)">
+            <i class="ti ti-check" *ngIf="accepting !== inv.id"></i>
+            <i class="ti ti-loader-2 spin" *ngIf="accepting === inv.id"></i>
+            {{ accepting === inv.id ? 'Aceptando...' : 'Aceptar' }}
+          </button>
+          <button class="btn-decline" disabled title="Función próximamente disponible">
+            <i class="ti ti-x"></i> Rechazar
+          </button>
+        </div>
+
+        <div class="invitation-card__status-badge" *ngIf="inv.status !== 'PENDING'">
+          <span class="status-chip" [ngClass]="getStatusClass(inv.status)">
+            {{ getStatusLabel(inv.status) }}
+          </span>
+        </div>
+
+      </div>
+    </div><!-- /invitation-grid -->
+
+  </div><!-- /invitation-card-wrapper -->
 
 </div>

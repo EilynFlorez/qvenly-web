@@ -48,8 +48,9 @@ export class InvitationService {
     return this.http.get<ApiResponse<InvitationResponse>>(`${this.invitationsUrl}/preview/${token}`);
   }
 
-  getMyPendingInvitations(): Observable<ApiResponse<InvitationResponse[]>> {
-    return this.http.get<ApiResponse<InvitationResponse[]>>(`${this.invitationsUrl}/my`, { withCredentials: true });
+  getMyInvitations(status?: string): Observable<ApiResponse<InvitationResponse[]>> {
+    const params = status ? `?status=${status}` : '';
+    return this.http.get<ApiResponse<InvitationResponse[]>>(`${this.invitationsUrl}/my${params}`, { withCredentials: true });
   }
 
   acceptInvitation(token: string): Observable<ApiResponse<any>> {

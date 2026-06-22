@@ -39,20 +39,20 @@ export class UserPlanService {
   /**
  * Renueva el plan activo del organizador.
  * @param userPlanId ID de la asignación a renovar
- * @param userEmail correo del usuario para la notificación
- * @param userName nombre del usuario para la notificación
  * @returns Observable con la asignación renovada
  */
-  renewPlan(userPlanId: number, userEmail: string, userName: string): Observable<ApiResponse<UserPlanResponse>> {
-    const params = new URLSearchParams();
-    if (userEmail) params.set('userEmail', userEmail);
-    if (userName) params.set('userName', userName);
-
-    return this.http.put<ApiResponse<UserPlanResponse>>(
-      `${this.apiUrl}/${userPlanId}/renew?${params.toString()}`,
-      {}
-    );
-  }
+  /**
+ * Renueva el plan activo del organizador.
+ *
+ * @param userPlanId ID de la asignación a renovar
+ */
+renewPlan(userPlanId: number): Observable<ApiResponse<UserPlanResponse>> {
+  return this.http.put<ApiResponse<UserPlanResponse>>(
+    `${this.apiUrl}/${userPlanId}/renew`,
+    {},
+    { withCredentials: true }
+  );
+}
 
   /**
    * Obtiene el plan activo de un organizador específico.

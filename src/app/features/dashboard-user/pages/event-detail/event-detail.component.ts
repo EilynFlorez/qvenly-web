@@ -24,6 +24,8 @@ export class EventDetailComponent implements OnInit {
   limits: LimitsUsage | null = null;
   auditLog: AuditLog[] = [];
   invitations: InvitationResponse[] = [];
+  invitationSearchTerm = '';
+  invitationStatusFilter: 'ALL' | 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED' | 'EXPIRED' = 'ALL';
 
   loading = true;
   error = false;
@@ -212,6 +214,21 @@ export class EventDetailComponent implements OnInit {
     );
   }
 
+  get filteredInvitations(): InvitationResponse[] {
+    let result = this.invitations;
+    if (this.invitationStatusFilter !== 'ALL') {
+      result = result.filter(i => i.status === this.invitationStatusFilter);
+    }
+    if (this.invitationSearchTerm.trim()) {
+      const term = this.invitationSearchTerm.trim().toLowerCase();
+      result = result.filter(i =>
+        i.invitedEmail.toLowerCase().includes(term) ||
+        (i.eventTitle && i.eventTitle.toLowerCase().includes(term))
+      );
+    }
+    return result;
+  }
+
   getMembersByRole(role: EventRole): EventMember[] {
     return this.members.filter(m => m.eventRole === role && m.status === 'ACTIVE');
   }
@@ -238,6 +255,30 @@ export class EventDetailComponent implements OnInit {
       IN_PROGRESS: 'status--inprogress', FINISHED: 'status--finished', CANCELLED: 'status--cancelled'
     };
     return classes[status] || '';
+  }
+
+  getInviteStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      PENDING: 'Pendiente', ACCEPTED: 'Aceptada',
+      DECLINED: 'Rechazada', CANCELLED: 'Cancelada', EXPIRED: 'Vencida'
+    };
+    return labels[status] || status;
+  }
+
+  getAuditActionLabel(actionType: string): string {
+    const labels: Record<string, string> = {
+      EVENT_CREATED: 'Evento creado', EVENT_PUBLISHED: 'Evento publicado',
+      EVENT_STARTED: 'Evento iniciado', EVENT_FINISHED: 'Evento finalizado',
+      EVENT_CANCELLED: 'Evento cancelado', EVENT_EDITED: 'Evento editado',
+      INVITATION_SENT: 'Invitación enviada', INVITATION_CANCELLED: 'Invitación cancelada',
+      MEMBER_ADDED: 'Miembro agregado', MEMBER_ROLE_CHANGED: 'Rol cambiado',
+      MEMBER_REMOVED: 'Miembro eliminado', MEMBER_LEFT: 'Miembro abandonó el evento',
+      ACTIVITY_CREATED: 'Actividad creada', ACTIVITY_EDITED: 'Actividad editada',
+      ACTIVITY_STARTED: 'Actividad iniciada', ACTIVITY_FINISHED: 'Actividad finalizada',
+      ACTIVITY_CANCELLED: 'Actividad cancelada', MEMBER_ASSIGNED: 'Miembro asignado',
+      MEMBER_CONFIRMED: 'Miembro confirmado', MEMBER_CANCELLED: 'Asignación cancelada'
+    };
+    return labels[actionType] || actionType.replace(/_/g, ' ');
   }
 
   getInviteStatusClass(status: string): string {
@@ -358,14 +399,17 @@ export class EventDetailComponent implements OnInit {
   }
 
   private computeExpiresAt(option: '3' | '7' | '15' | '30' | 'custom', customDate: string): string | undefined {
-    if (option === 'custom') {
-      return customDate ? new Date(customDate).toISOString() : undefined;
-    }
-    const days = Number(option);
-    const date = new Date();
-    date.setDate(date.getDate() + days);
+  if (option === 'custom') {
+    if (!customDate) return undefined;
+    const [year, month, day] = customDate.split('-').map(Number);
+    const date = new Date(year, month - 1, day + 1, 0, 0, 0);
     return date.toISOString();
   }
+  const days = Number(option);
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString();
+}
 
   submitInvite(): void {
     if (!this.event || !this.inviteEmail.trim()) return;

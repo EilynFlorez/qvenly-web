@@ -11,6 +11,7 @@ import { InvitationsComponent } from './pages/invitations/invitations.component'
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
+import { EventHistoryComponent } from './pages/event-history/event-history.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,7 @@ const routes: Routes = [
       { path: 'events/new',      component: EventCreateComponent },
       { path: 'events/:id',      component: EventDetailComponent },
       { path: 'invitations',     component: InvitationsComponent },
+      { path: 'history',         component: EventHistoryComponent },
       { path: 'notifications',   component: NotificationsComponent },
       { path: 'profile',         component: ProfileComponent },
       { path: 'payment/result',  component: PaymentResultComponent }

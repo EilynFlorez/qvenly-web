@@ -5,12 +5,14 @@ import { environment } from '../../../../environments/environment.development';
 import {
   CreatePaymentRequest,
   CreatePaymentResponse,
+  CreatePaymentSourceRequest,
   PaymentApiResponse,
-  PaymentRecord
+  PaymentRecord,
+  PaymentSourceResponse
 } from '../models/payment.model';
 
 /**
- * Servicio para la gestión de pagos con MercadoPago.
+ * Servicio para la gestión de pagos
  * Maneja la creación de preferencias de pago y consulta del historial.
  */
 @Injectable({
@@ -20,7 +22,7 @@ export class PaymentService {
 
   private apiUrl = `${environment.apiUrl}/payments`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Crea una preferencia de pago en MercadoPago.
@@ -44,6 +46,20 @@ export class PaymentService {
   getPaymentsByUser(userId: number): Observable<PaymentApiResponse<PaymentRecord[]>> {
     return this.http.get<PaymentApiResponse<PaymentRecord[]>>(
       `${this.apiUrl}/user/${userId}`,
+      { withCredentials: true }
+    );
+  }
+
+  /**
+ * Registra una tarjeta tokenizada como fuente de pago reutilizable,
+ * para poder cobrar renovaciones automáticas más adelante.
+ *
+ * @param request token de tarjeta (generado por Wompi en el frontend) y datos del usuario
+ */
+  registerPaymentSource(request: CreatePaymentSourceRequest): Observable<PaymentApiResponse<PaymentSourceResponse>> {
+    return this.http.post<PaymentApiResponse<PaymentSourceResponse>>(
+      `${this.apiUrl}/payment-source`,
+      request,
       { withCredentials: true }
     );
   }

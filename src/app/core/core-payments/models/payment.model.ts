@@ -44,3 +44,23 @@ export interface PaymentApiResponse<T> {
   data: T;
   timestamp: string;
 }
+
+/**
+ * Solicitud para registrar una tarjeta tokenizada como fuente de pago reutilizable.
+ * El cardToken viene de Wompi (tokenizado en el frontend), nunca el número de tarjeta.
+ */
+export interface CreatePaymentSourceRequest {
+  userId: number;
+  cardToken: string;
+  customerEmail: string;
+}
+
+/**
+ * Respuesta al registrar una fuente de pago.
+ */
+export interface PaymentSourceResponse {
+  id: number;
+  cardBrand: string;
+  lastFour: string;
+  active: boolean;
+}

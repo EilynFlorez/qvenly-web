@@ -179,13 +179,6 @@
     </div>
   </div>
 
-  <!-- Acciones -->
-  <div class="actions-row">
-    <a class="btn btn--outline" routerLink="/dashboard-user/planes">
-      <i class="ti ti-layout-grid-add"></i> Ver otros planes
-    </a>
-  </div>
-
   <!-- Mensaje de éxito -->
 <div class="feedback-card feedback-card--success" *ngIf="successMessage">
   <i class="ti ti-circle-check"></i>
@@ -204,3 +197,66 @@
 </div>
 
 </ng-container>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- Historial de planes -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="history-section">
+  <h2 class="features-section__title">
+    <i class="ti ti-history"></i> Historial de planes
+  </h2>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loadingHistory">
+    <div class="spinner"></div>
+    <span>Cargando historial...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="feedback-card feedback-card--error" *ngIf="!loadingHistory && errorHistory">
+    <i class="ti ti-alert-circle"></i>
+    <p>No pudimos cargar tu historial de planes. Intenta de nuevo más tarde.</p>
+  </div>
+
+  <!-- Sin historial -->
+  <div class="empty-state empty-state--small" *ngIf="!loadingHistory && !errorHistory && planHistory.length === 0">
+    <div class="empty-state__icon">
+      <i class="ti ti-file-off"></i>
+    </div>
+    <p class="empty-state__desc">Aún no tienes historial de planes.</p>
+  </div>
+
+  <!-- Lista del historial -->
+  <div class="history-list" *ngIf="!loadingHistory && !errorHistory && planHistory.length > 0">
+    <div class="history-item" *ngFor="let item of planHistory">
+      <div class="history-item__icon">
+        <i class="ti ti-diamond"></i>
+      </div>
+
+      <div class="history-item__body">
+        <div class="history-item__top">
+          <span class="history-item__plan">{{ item.plan.name }}</span>
+          <span class="badge" [ngClass]="{
+            'badge--active': item.status === 'active',
+            'badge--expired': item.status === 'expired',
+            'badge--cancelled': item.status === 'cancelled'
+          }">
+            <i class="ti" [ngClass]="{
+              'ti-circle-check': item.status === 'active',
+              'ti-calendar-off': item.status === 'expired',
+              'ti-x': item.status === 'cancelled'
+            }"></i>
+            {{ item.status === 'active' ? 'Activo' : item.status === 'expired' ? 'Vencido' : 'Cancelado' }}
+          </span>
+        </div>
+
+        <div class="history-item__dates">
+          <i class="ti ti-calendar"></i>
+          {{ item.startDate | date:'dd MMM yyyy' }} → {{ item.endDate | date:'dd MMM yyyy' }}
+        </div>
+
+        <p class="history-item__reason" *ngIf="item.reason">{{ item.reason }}</p>
+      </div>
+    </div>
+  </div>
+</div>
