@@ -9,6 +9,8 @@
       <p class="events-sub">Gestiona todos tus eventos desde aquí</p>
     </div>
     <div class="events-header__right">
+      <input type="text" class="filter-search" placeholder="Buscar por título, descripción o tipo..."
+        [(ngModel)]="searchTerm" />
       <select class="filter-select" [(ngModel)]="statusFilter">
         <option value="ALL">Todos los estados</option>
         <option value="DRAFT">Borradores</option>
@@ -50,22 +52,25 @@
     <button class="btn-retry" (click)="loadEvents()">Reintentar</button>
   </div>
 
-  <!-- Sin eventos -->
-  <div class="empty-state" *ngIf="!loading && !error && !noPlan && filteredEvents.length === 0">
+  <!-- Sin eventos en absoluto -->
+  <div class="empty-state" *ngIf="!loading && !error && !noPlan && events.length === 0">
     <div class="empty-state__icon">
       <i class="ti ti-calendar-off"></i>
     </div>
-    <h2 class="empty-state__title">
-      {{ statusFilter === 'ALL' ? 'Aún no tienes eventos' : 'No hay eventos con ese estado' }}
-    </h2>
-    <p class="empty-state__desc">
-      {{ statusFilter === 'ALL'
-        ? 'Crea tu primer evento y empieza a gestionarlo desde aquí.'
-        : 'Prueba cambiando el filtro de estado.' }}
-    </p>
-    <button class="btn-primary" *ngIf="statusFilter === 'ALL'" (click)="goToCreate()">
+    <h2 class="empty-state__title">Aún no tienes eventos</h2>
+    <p class="empty-state__desc">Crea tu primer evento y empieza a gestionarlo desde aquí.</p>
+    <button class="btn-primary" (click)="goToCreate()">
       <i class="ti ti-plus"></i> Crear mi primer evento
     </button>
+  </div>
+
+  <!-- Hay eventos pero ninguno coincide con el filtro/búsqueda -->
+  <div class="empty-state" *ngIf="!loading && !error && !noPlan && events.length > 0 && filteredEvents.length === 0">
+    <div class="empty-state__icon">
+      <i class="ti ti-filter-off"></i>
+    </div>
+    <h2 class="empty-state__title">Sin resultados</h2>
+    <p class="empty-state__desc">Ningún evento coincide con la búsqueda o el filtro aplicado.</p>
   </div>
 
   <!-- Grid de eventos -->
