@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
 import {
   ApiResponse, EventResponse, CreateEventRequest, UpdateEventRequest,
-  EventMember, LimitsUsage, AuditLog, EventRole
+  EventMember, LimitsUsage, AuditLog, EventRole, EventImageResponse
 } from '../models/event.model';
 
 @Injectable({ providedIn: 'root' })
@@ -70,5 +70,31 @@ export class EventService {
 
   leaveEvent(eventId: number, reason: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${eventId}/leave`, { reason }, { withCredentials: true });
+  }
+
+  uploadEventImage(eventId: number, file: File): Observable<ApiResponse<EventImageResponse>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ApiResponse<EventImageResponse>>(
+      `${this.apiUrl}/${eventId}/images`, formData, { withCredentials: true }
+    );
+  }
+
+  getEventImages(eventId: number): Observable<ApiResponse<EventImageResponse[]>> {
+    return this.http.get<ApiResponse<EventImageResponse[]>>(
+      `${this.apiUrl}/${eventId}/images`, { withCredentials: true }
+    );
+  }
+
+  deleteEventImage(eventId: number, imageId: number): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(
+      `${this.apiUrl}/${eventId}/images/${imageId}`, { withCredentials: true }
+    );
+  }
+
+  setCoverImage(eventId: number, imageId: number): Observable<ApiResponse<EventImageResponse>> {
+    return this.http.patch<ApiResponse<EventImageResponse>>(
+      `${this.apiUrl}/${eventId}/images/${imageId}/cover`, {}, { withCredentials: true }
+    );
   }
 }
