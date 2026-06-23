@@ -136,6 +136,17 @@
               <span class="info-item__value info-item__value--muted">{{ event.cancelReason }}</span>
             </div>
           </div>
+
+          <div class="event-images-gallery" *ngIf="eventImages.length > 0">
+            <p class="event-images-gallery__title">Imágenes del evento</p>
+            <div class="event-images-gallery__grid">
+              <div class="event-images-gallery__item" *ngFor="let img of eventImages"
+                   [class.event-images-gallery__item--cover]="img.isCover">
+                <img [src]="img.imageUrl" alt="Imagen del evento" />
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <div class="detail-card" *ngIf="isOrganizer && limits">
@@ -892,6 +903,43 @@
             <input type="datetime-local" class="form-input" [(ngModel)]="editEventForm.endDatetime">
           </div>
         </div>
+        <div class="image-gallery-section">
+          <label class="modal-label">Imágenes del evento ({{ eventImages.length }}/10)</label>
+
+          <div class="image-gallery" *ngIf="!eventImagesLoading">
+            <div class="image-gallery__item" *ngFor="let img of eventImages" [class.image-gallery__item--cover]="img.isCover">
+              <img [src]="img.imageUrl" alt="Imagen del evento" />
+              <span class="image-gallery__cover-badge" *ngIf="img.isCover">
+                <i class="ti ti-star-filled"></i>
+              </span>
+              <button class="image-gallery__set-cover" *ngIf="!img.isCover" (click)="setCoverImage(img.id)" title="Marcar como portada">
+                <i class="ti ti-star"></i>
+              </button>
+              <button class="image-gallery__delete" (click)="deleteEventImage(img.id)" title="Eliminar imagen">
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
+
+            <label class="image-gallery__upload" *ngIf="eventImages.length < 10">
+              <input type="file" accept="image/*" (change)="onImageFileSelected($event)" [disabled]="uploadingImage" hidden />
+              <i class="ti ti-loader-2 spin" *ngIf="uploadingImage"></i>
+              <ng-container *ngIf="!uploadingImage">
+                <i class="ti ti-plus"></i>
+                <span>Agregar</span>
+              </ng-container>
+            </label>
+          </div>
+
+          <div class="loading-row" *ngIf="eventImagesLoading">
+            <div class="spinner"></div>
+            <span>Cargando imágenes...</span>
+          </div>
+
+          <p class="modal-error" *ngIf="imageUploadError">
+            <i class="ti ti-alert-circle"></i> {{ imageUploadError }}
+          </p>
+        </div>
+
         <p class="modal-error" *ngIf="editEventFormError">
           <i class="ti ti-alert-circle"></i> {{ editEventFormError }}
         </p>

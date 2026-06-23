@@ -30,6 +30,7 @@ export interface EventResponse {
   ownerUserId: number;
   ownerEmail: string;
   planLimits: PlanLimits;
+  coverImageUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -99,6 +100,7 @@ export interface InvitationResponse {
   eventType: string;
   eventStartDatetime: string;
   eventEndDatetime: string;
+  eventCoverImageUrl: string | null;
 }
 
 export interface AuditLog {
@@ -109,4 +111,12 @@ export interface AuditLog {
   performedByRole: string;
   changeDetail: string;
   performedAt: string;
+}
+
+export interface EventImageResponse {
+  id: number;
+  eventId: number;
+  imageUrl: string;
+  isCover: boolean;
+  uploadedAt: string;
 }

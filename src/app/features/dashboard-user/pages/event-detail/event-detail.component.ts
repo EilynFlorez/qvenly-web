@@ -4,7 +4,7 @@ import { EventService } from '../../../../core/core-events/services/event.servic
 import { InvitationService } from '../../../../core/core-events/services/invitation.service';
 import {
   EventResponse, EventMember, LimitsUsage, AuditLog,
-  InvitationResponse, EventStatus, EventRole
+  InvitationResponse, EventStatus, EventRole, EventImageResponse
 } from '../../../../core/core-events/models/event.model';
 import { ActivityService } from '../../../../core/core-activities/services/activity.service';
 import {
@@ -112,6 +112,10 @@ export class EventDetailComponent implements OnInit {
   showEditEventModal = false;
   editEventForm = { title: '', description: '', location: '', eventType: '', startDatetime: '', endDatetime: '' };
   editEventFormError = '';
+  eventImages: EventImageResponse[] = [];
+  eventImagesLoading = false;
+  uploadingImage = false;
+  imageUploadError = '';
 
   private currentUserEmail = localStorage.getItem('email') || '';
 
@@ -137,7 +141,7 @@ export class EventDetailComponent implements OnInit {
     const check = () => { done++; if (done === total) this.loading = false; };
 
     this.eventService.getEventById(id).subscribe({
-      next: (res) => { if (res.success) this.event = res.data; check(); },
+      next: (res) => { if (res.success) { this.event = res.data; this.loadEventImagesReadonly(); } check(); },
       error: () => { this.error = true; this.loading = false; }
     });
 
@@ -370,6 +374,7 @@ export class EventDetailComponent implements OnInit {
       endDatetime: this.event.endDatetime.replace(' ', 'T').substring(0, 16)
     };
     this.editEventFormError = '';
+    this.loadEventImages();
     this.showEditEventModal = true;
   }
 
@@ -386,6 +391,60 @@ export class EventDetailComponent implements OnInit {
     }).subscribe({
       next: (res) => { if (res.success) this.event = res.data; this.showEditEventModal = false; this.processing = false; },
       error: (err) => { this.editEventFormError = err.error?.message || 'Error al editar.'; this.processing = false; }
+    });
+  }
+
+  loadEventImagesReadonly(): void {
+    if (!this.event) return;
+    this.eventService.getEventImages(this.event.id).subscribe({
+      next: (res) => { if (res.success) this.eventImages = res.data; }
+    });
+  }
+
+  loadEventImages(): void {
+    if (!this.event) return;
+    this.eventImagesLoading = true;
+    this.eventService.getEventImages(this.event.id).subscribe({
+      next: (res) => { if (res.success) this.eventImages = res.data; this.eventImagesLoading = false; },
+      error: () => { this.eventImagesLoading = false; }
+    });
+  }
+
+  onImageFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0 || !this.event) return;
+    const file = input.files[0];
+    this.uploadingImage = true;
+    this.imageUploadError = '';
+    this.eventService.uploadEventImage(this.event.id, file).subscribe({
+      next: (res) => {
+        if (res.success) this.eventImages = [...this.eventImages, res.data];
+        this.uploadingImage = false;
+        input.value = '';
+      },
+      error: (err) => {
+        this.imageUploadError = err.error?.message || 'Error al subir la imagen.';
+        this.uploadingImage = false;
+        input.value = '';
+      }
+    });
+  }
+
+  deleteEventImage(imageId: number): void {
+    if (!this.event) return;
+    this.eventService.deleteEventImage(this.event.id, imageId).subscribe({
+      next: () => { this.eventImages = this.eventImages.filter(img => img.id !== imageId); },
+      error: (err) => { this.imageUploadError = err.error?.message || 'Error al eliminar la imagen.'; }
+    });
+  }
+
+  setCoverImage(imageId: number): void {
+    if (!this.event) return;
+    this.eventService.setCoverImage(this.event.id, imageId).subscribe({
+      next: () => {
+        this.eventImages = this.eventImages.map(img => ({ ...img, isCover: img.id === imageId }));
+      },
+      error: (err) => { this.imageUploadError = err.error?.message || 'Error al actualizar la portada.'; }
     });
   }
 
