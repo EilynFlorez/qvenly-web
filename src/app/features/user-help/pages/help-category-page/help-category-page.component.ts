@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { catchError, of, switchMap } from 'rxjs';
-import { HelpCategoryDetail } from '../../../../core/core-user-help/models/user-help.model';
+﻿import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { switchMap } from 'rxjs';
+import { HelpArticleSection, HelpCategoryDetail, HelpFrequentlyAskedQuestion } from '../../../../core/core-user-help/models/user-help.model';
 import { UserHelpService } from '../../../../core/core-user-help/services/user-help.service';
 
 @Component({
@@ -13,10 +13,10 @@ export class HelpCategoryPageComponent implements OnInit {
 
   category: HelpCategoryDetail | null = null;
   loading = true;
-  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private userHelpService: UserHelpService
   ) { }
 
@@ -25,13 +25,7 @@ export class HelpCategoryPageComponent implements OnInit {
       switchMap(params => {
         const slug = params.get('slug') || '';
         this.loading = true;
-        this.errorMessage = '';
-        return this.userHelpService.getCategory(slug).pipe(
-          catchError(() => {
-            this.errorMessage = 'No pudimos cargar esta categoria desde el servidor.';
-            return of(this.buildFallback(slug));
-          })
-        );
+        return this.userHelpService.getCategory(slug);
       })
     ).subscribe(category => {
       this.category = category;
@@ -39,15 +33,21 @@ export class HelpCategoryPageComponent implements OnInit {
     });
   }
 
-  private buildFallback(slug: string): HelpCategoryDetail {
-    const title = slug.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-    return {
-      slug,
-      title: title || 'Categoria de ayuda',
-      description: '',
-      icon: 'ti ti-help-circle',
-      content: 'Consulta las guias disponibles o vuelve al centro de ayuda para buscar otro tema.',
-      articles: []
-    };
+  goToCategory(slug?: string): void {
+    if (slug) {
+      this.router.navigate(['/help/category', slug]);
+    }
+  }
+
+  trackBySection(_: number, section: HelpArticleSection): string {
+    return section.title;
+  }
+
+  trackByStep(_: number, step: string): string {
+    return step;
+  }
+
+  trackByFaq(_: number, faq: HelpFrequentlyAskedQuestion): string {
+    return faq.question;
   }
 }

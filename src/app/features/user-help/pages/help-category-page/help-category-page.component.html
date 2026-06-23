@@ -8,30 +8,61 @@
     <section class="category-hero">
       <div class="category-icon"><i [class]="current.icon"></i></div>
       <div>
+        <span class="eyebrow">Guía de usuario</span>
         <h1>{{ current.title }}</h1>
         <p>{{ current.description }}</p>
       </div>
     </section>
 
-    <p class="warning" *ngIf="errorMessage">{{ errorMessage }}</p>
-
-    <article class="category-card">
-      <h2>Guía rápida</h2>
-      <p>{{ current.content || 'Explora los contenidos asociados a esta categoría.' }}</p>
+    <article class="quick-card">
+      <div>
+        <h2>Guía rápida</h2>
+        <p>{{ current.content }}</p>
+      </div>
+      <button type="button" routerLink="/help">
+        <i class="ti ti-search"></i>
+        Buscar otro tema
+      </button>
     </article>
 
-    <section class="article-grid" *ngIf="current.articles && current.articles.length > 0">
-      <article class="article-card" *ngFor="let article of current.articles">
-        <h3>{{ article.title }}</h3>
-        <p>{{ article.description }}</p>
+    <section class="guide-grid" *ngIf="current.sections?.length">
+      <article class="guide-card" *ngFor="let section of current.sections; trackBy: trackBySection">
+        <span class="guide-icon"><i class="ti ti-checkup-list"></i></span>
+        <h3>{{ section.title }}</h3>
+        <p>{{ section.description }}</p>
+        <ol *ngIf="section.steps?.length">
+          <li *ngFor="let step of section.steps; trackBy: trackByStep">{{ step }}</li>
+        </ol>
       </article>
     </section>
 
-    <article class="category-card" *ngIf="!current.articles || current.articles.length === 0">
-      <h2>Sin artículos adicionales</h2>
-      <p>Cuando el backend envíe artículos para esta categoría, aparecerán aquí.</p>
-    </article>
+    <section class="faq-card" *ngIf="current.faqs?.length">
+      <div class="faq-heading">
+        <div>
+          <h2>Preguntas frecuentes</h2>
+          <p>Respuestas rápidas sobre {{ current.title | lowercase }}.</p>
+        </div>
+      </div>
+
+      <div class="faq-list">
+        <details *ngFor="let faq of current.faqs; trackBy: trackByFaq">
+          <summary>
+            <span><i class="ti ti-help-circle"></i>{{ faq.question }}</span>
+            <i class="ti ti-chevron-down"></i>
+          </summary>
+          <p>{{ faq.answer }}</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="next-card">
+      <div>
+        <h2>¿Necesitas más ayuda?</h2>
+        <p>Vuelve al centro de ayuda para buscar otra guía o abre el asistente Qvenly desde el botón flotante.</p>
+      </div>
+      <a routerLink="/help">Volver al centro</a>
+    </section>
   </main>
 
-  <div class="loading" *ngIf="loading">Cargando categoría...</div>
+  <div class="loading" *ngIf="loading">Cargando guía...</div>
 </section>

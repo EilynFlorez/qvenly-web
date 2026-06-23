@@ -12,6 +12,17 @@ export interface HelpSearchResult {
   slug?: string;
 }
 
+export interface HelpArticleSection {
+  title: string;
+  description: string;
+  steps?: string[];
+}
+
+export interface HelpFrequentlyAskedQuestion {
+  question: string;
+  answer: string;
+}
+
 export interface HelpCategory {
   slug: string;
   title: string;
@@ -22,6 +33,8 @@ export interface HelpCategory {
 export interface HelpCategoryDetail extends HelpCategory {
   content?: string;
   articles?: HelpSearchResult[];
+  sections?: HelpArticleSection[];
+  faqs?: HelpFrequentlyAskedQuestion[];
 }
 
 export interface HelpChatConfig {
