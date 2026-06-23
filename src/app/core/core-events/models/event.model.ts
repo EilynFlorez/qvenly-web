@@ -11,9 +11,7 @@ export interface PlanLimits {
   planName: string;
   maxEvents: number;
   maxOrganizers: number;
-  maxParticipants: number;
-  maxJudges: number;
-  maxAttendees: number;
+  maxGuests: number;
   maxStaff: number;
 }
 
@@ -75,9 +73,6 @@ export interface RoleUsage {
 export interface LimitsUsage {
   planName: string;
   organizers: RoleUsage;
-  participants: RoleUsage;
-  judges: RoleUsage;
-  attendees: RoleUsage;
   staff: RoleUsage;
   members: RoleUsage;
 }
