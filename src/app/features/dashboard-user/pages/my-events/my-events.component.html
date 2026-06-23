@@ -77,13 +77,17 @@
   <div class="events-grid" *ngIf="!loading && !error && !noPlan && filteredEvents.length > 0">
     <div class="event-card" *ngFor="let event of filteredEvents" (click)="goToDetail(event.id)">
 
-      <div class="event-card__top">
-        <span class="status-chip" [ngClass]="getStatusClass(event.status)">
-          {{ getStatusLabel(event.status) }}
-        </span>
-        <span class="owner-badge" *ngIf="isOwner(event)">
-          <i class="ti ti-crown"></i> Mi evento
-        </span>
+      <div class="event-card__cover" [class.event-card__cover--placeholder]="!event.coverImageUrl">
+        <img *ngIf="event.coverImageUrl" [src]="event.coverImageUrl" alt="Portada del evento" />
+        <i *ngIf="!event.coverImageUrl" class="ti ti-photo-off"></i>
+        <div class="event-card__top">
+          <span class="status-chip" [ngClass]="getStatusClass(event.status)">
+            {{ getStatusLabel(event.status) }}
+          </span>
+          <span class="owner-badge" *ngIf="isOwner(event)">
+            <i class="ti ti-crown"></i> Mi evento
+          </span>
+        </div>
       </div>
 
       <div class="event-card__body">

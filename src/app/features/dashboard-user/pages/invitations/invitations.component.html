@@ -73,6 +73,11 @@
     <div class="invitation-grid" *ngIf="filteredInvitations.length > 0">
       <div class="invitation-card" *ngFor="let inv of filteredInvitations">
 
+        <div class="invitation-card__cover" [class.invitation-card__cover--placeholder]="!inv.eventCoverImageUrl">
+          <img *ngIf="inv.eventCoverImageUrl" [src]="inv.eventCoverImageUrl" alt="Portada del evento" />
+          <i *ngIf="!inv.eventCoverImageUrl" class="ti ti-photo-off"></i>
+        </div>
+
         <div class="invitation-card__header">
           <div class="event-ref">
             <i class="ti ti-calendar-event"></i>
