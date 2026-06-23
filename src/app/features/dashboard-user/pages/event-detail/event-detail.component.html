@@ -169,42 +169,6 @@
 
             <div class="limit-item">
               <div class="limit-item__header">
-                <span class="limit-item__label">Participantes</span>
-                <span class="limit-item__count">{{ limits.participants.current }} / {{ limits.participants.max }}</span>
-              </div>
-              <div class="limit-bar">
-                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.participants.full"
-                  [style.width.%]="getPercent(limits.participants.current, limits.participants.max)"></div>
-              </div>
-              <span class="limit-item__remaining">{{ limits.participants.remaining }} disponibles</span>
-            </div>
-
-            <div class="limit-item">
-              <div class="limit-item__header">
-                <span class="limit-item__label">Jueces</span>
-                <span class="limit-item__count">{{ limits.judges.current }} / {{ limits.judges.max }}</span>
-              </div>
-              <div class="limit-bar">
-                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.judges.full"
-                  [style.width.%]="getPercent(limits.judges.current, limits.judges.max)"></div>
-              </div>
-              <span class="limit-item__remaining">{{ limits.judges.remaining }} disponibles</span>
-            </div>
-
-            <div class="limit-item">
-              <div class="limit-item__header">
-                <span class="limit-item__label">Asistentes</span>
-                <span class="limit-item__count">{{ limits.attendees.current }} / {{ limits.attendees.max }}</span>
-              </div>
-              <div class="limit-bar">
-                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.attendees.full"
-                  [style.width.%]="getPercent(limits.attendees.current, limits.attendees.max)"></div>
-              </div>
-              <span class="limit-item__remaining">{{ limits.attendees.remaining }} disponibles</span>
-            </div>
-
-            <div class="limit-item">
-              <div class="limit-item__header">
                 <span class="limit-item__label">Personal de apoyo</span>
                 <span class="limit-item__count">{{ limits.staff.current }} / {{ limits.staff.max }}</span>
               </div>
