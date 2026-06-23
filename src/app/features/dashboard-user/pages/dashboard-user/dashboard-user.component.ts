@@ -4,6 +4,8 @@ import { UserPlanService } from '../../../../core/core-plans/services/user-plan.
 import { PlanService } from '../../../../core/core-plans/services/plan.service';
 import { PaymentService } from '../../../../core/core-payments/services/payment.service';
 import { UserPlanResponse, PlanResponse } from '../../../../core/core-plans/models/plan.model';
+import { ActivityService } from '../../../../core/core-activities/services/activity.service';
+import { AgendaItem, ActivityMemberRole } from '../../../../core/core-activities/models/activity.model';
 
 @Component({
   selector: 'app-dashboard-user',
@@ -24,8 +26,19 @@ export class DashboardUserComponent implements OnInit {
 
   // ─── Planes disponibles ───────────────────────────────────────────────
   availablePlans: PlanResponse[] = [];
-  loadingPlans = true;
+  loadingPlans = false;
   plansError = false;
+
+  // ─── Agenda ───────────────────────────────────────────────────────────
+  agenda: AgendaItem[] = [];
+  loadingAgenda = true;
+  agendaError = false;
+  processingAgendaAction = false;
+  agendaActionError = '';
+
+  showCancelAgendaModal = false;
+  cancelAgendaActivityId: number | null = null;
+  cancelAgendaReason = '';
 
   // ─── Estado del pago ──────────────────────────────────────────────────
   processingPayment = false;
@@ -35,7 +48,8 @@ export class DashboardUserComponent implements OnInit {
     private authService: AuthService,
     private userPlanService: UserPlanService,
     private planService: PlanService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private activityService: ActivityService
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +57,34 @@ export class DashboardUserComponent implements OnInit {
     this.userId   = this.authService.getUserId();
 
     this.loadActivePlan();
-    this.loadAvailablePlans();
+    this.loadAgenda();
+  }
+
+  // ─── Computed: qué sección mostrar ──────────────────────────────────────
+  get sectionLoading(): boolean {
+    return this.loadingAgenda || this.loadingActivePlan;
+  }
+
+  get hasActivities(): boolean {
+    return this.agenda.length > 0;
+  }
+
+  get showAgendaSection(): boolean {
+    return !this.sectionLoading && this.hasActivities;
+  }
+
+  get showAvailablePlansSection(): boolean {
+    return !this.sectionLoading && !this.hasActivities && !!this.activePlan;
+  }
+
+  get showNoActivityMessage(): boolean {
+    return !this.sectionLoading && !this.hasActivities && !this.activePlan;
+  }
+
+  get sortedAgenda(): AgendaItem[] {
+    return [...this.agenda].sort((a, b) =>
+      new Date(a.startDatetime).getTime() - new Date(b.startDatetime).getTime()
+    );
   }
 
   // ─── Plan ─────────────────────────────────────────────────────────────
@@ -59,6 +100,7 @@ export class DashboardUserComponent implements OnInit {
   }
 
   loadAvailablePlans(): void {
+    this.loadingPlans = true;
     this.planService.getAllPlans().subscribe({
       next: (response) => {
         if (response.success) this.availablePlans = response.data;
@@ -66,6 +108,70 @@ export class DashboardUserComponent implements OnInit {
       },
       error: () => { this.plansError = true; this.loadingPlans = false; }
     });
+  }
+
+  // ─── Agenda ───────────────────────────────────────────────────────────
+  loadAgenda(): void {
+    this.loadingAgenda = true;
+    this.agendaError = false;
+    this.activityService.getMyAgenda().subscribe({
+      next: (res) => {
+        if (res.success) this.agenda = res.data;
+        this.loadingAgenda = false;
+        if (this.agenda.length === 0) this.loadAvailablePlans();
+      },
+      error: () => {
+        this.agendaError = true;
+        this.loadingAgenda = false;
+        this.loadAvailablePlans();
+      }
+    });
+  }
+
+  confirmAgendaItem(item: AgendaItem): void {
+    this.processingAgendaAction = true;
+    this.agendaActionError = '';
+    this.activityService.confirmParticipation(item.activityId).subscribe({
+      next: (res) => {
+        if (res.success) item.confirmationStatus = 'CONFIRMED';
+        this.processingAgendaAction = false;
+      },
+      error: (err) => {
+        this.agendaActionError = err.error?.message || 'Error al confirmar.';
+        this.processingAgendaAction = false;
+      }
+    });
+  }
+
+  openCancelAgenda(item: AgendaItem): void {
+    this.cancelAgendaActivityId = item.activityId;
+    this.cancelAgendaReason = '';
+    this.agendaActionError = '';
+    this.showCancelAgendaModal = true;
+  }
+
+  submitCancelAgenda(): void {
+    if (!this.cancelAgendaActivityId || !this.cancelAgendaReason.trim()) return;
+    this.processingAgendaAction = true;
+    this.activityService.cancelParticipation(this.cancelAgendaActivityId, this.cancelAgendaReason).subscribe({
+      next: () => {
+        this.agenda = this.agenda.filter(a => a.activityId !== this.cancelAgendaActivityId);
+        this.showCancelAgendaModal = false;
+        this.processingAgendaAction = false;
+        if (this.agenda.length === 0) this.loadAvailablePlans();
+      },
+      error: (err) => {
+        this.agendaActionError = err.error?.message || 'Error al cancelar.';
+        this.processingAgendaAction = false;
+      }
+    });
+  }
+
+  getAgendaRoleLabel(role: ActivityMemberRole): string {
+    const labels: Record<ActivityMemberRole, string> = {
+      STAFF: 'Personal de apoyo', JUDGE: 'Jurado', PARTICIPANT: 'Participante', ATTENDEE: 'Asistente'
+    };
+    return labels[role] || role;
   }
 
   // ─── Pago ─────────────────────────────────────────────────────────────
@@ -99,7 +205,7 @@ export class DashboardUserComponent implements OnInit {
     if (price === 0) return 'Gratis';
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
-      currency: 'COP', 
+      currency: 'COP',
       minimumFractionDigits: 0
     }).format(price);
   }

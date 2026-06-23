@@ -6,15 +6,16 @@ import { ApiResponse } from '../../core-events/models/event.model';
 import {
   ActivityResponse, CreateActivityRequest, UpdateActivityRequest,
   ActivityMember, AssignMemberRequest, ActivityEnrollment,
-  QrCodeResponse, AuditLogActivity
+  QrCodeResponse, AuditLogActivity,
+  AgendaItem
 } from '../models/activity.model';
 
 @Injectable({ providedIn: 'root' })
 export class ActivityService {
   private apiUrl = `${environment.apiUrl}/api/activities`;
-  private qrUrl  = `${environment.apiUrl}/api/qr`;
+  private qrUrl = `${environment.apiUrl}/api/qr`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // ── Actividades ────────────────────────────────────────────────────────────
 
@@ -100,21 +101,21 @@ export class ActivityService {
 
   // ── Inscripciones ──────────────────────────────────────────────────────────
 
-  getEnrollments(activityId: number): Observable<ApiResponse<ActivityEnrollment[]>> {
-    return this.http.get<ApiResponse<ActivityEnrollment[]>>(
-      `${this.apiUrl}/${activityId}/enrollments`, { withCredentials: true }
+  getEnrollments(activityId: number): Observable<ApiResponse<ActivityMember[]>> {
+    return this.http.get<ApiResponse<ActivityMember[]>>(
+      `${this.apiUrl}/${activityId}/members?role=ATTENDEE`, { withCredentials: true }
     );
   }
 
-  enroll(activityId: number): Observable<ApiResponse<ActivityEnrollment>> {
-    return this.http.post<ApiResponse<ActivityEnrollment>>(
+  enroll(activityId: number): Observable<ApiResponse<ActivityMember>> {
+    return this.http.post<ApiResponse<ActivityMember>>(
       `${this.apiUrl}/${activityId}/enroll`, {}, { withCredentials: true }
     );
   }
 
-  cancelEnrollment(activityId: number): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(
-      `${this.apiUrl}/${activityId}/enroll`, { withCredentials: true }
+  cancelEnrollment(activityId: number, cancelReason: string): Observable<ApiResponse<ActivityMember>> {
+    return this.http.patch<ApiResponse<ActivityMember>>(
+      `${this.apiUrl}/${activityId}/members/cancel`, { cancelReason }, { withCredentials: true }
     );
   }
 
@@ -131,6 +132,12 @@ export class ActivityService {
     return this.http.post<ApiResponse<QrCodeResponse>>(
       `${this.qrUrl}/activity/${activityId}/generate`,
       {}, { withCredentials: true }
+    );
+  }
+
+  getMyAgenda(): Observable<ApiResponse<AgendaItem[]>> {
+    return this.http.get<ApiResponse<AgendaItem[]>>(
+      `${this.apiUrl}/my-agenda`, { withCredentials: true }
     );
   }
 }

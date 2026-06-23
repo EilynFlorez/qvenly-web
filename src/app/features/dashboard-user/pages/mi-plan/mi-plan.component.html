@@ -185,6 +185,11 @@
   <p>{{ successMessage }}</p>
 </div>
 
+<div class="feedback-card feedback-card--error" *ngIf="renewError">
+  <i class="ti ti-alert-circle"></i>
+  <p>{{ renewError }}</p>
+</div>
+
 <!-- Acciones -->
 <div class="actions-row">
   <button class="btn btn--primary" (click)="renewPlan()" [disabled]="renewing">

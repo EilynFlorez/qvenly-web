@@ -33,12 +33,11 @@
   <!-- Grid de planes -->
   <div class="plans-grid" *ngIf="!loading && !error">
 
-    <div class="plan-card" *ngFor="let plan of plans"
-         [class.plan-card--featured]="plan.price === getMaxPrice()">
+    <div class="plan-card" *ngFor="let plan of plans" [class.plan-card--active]="isActivePlan(plan)">
 
-      <!-- Badge destacado -->
-      <div class="plan-card__badge" *ngIf="plan.price === getMaxPrice()">
-        <i class="ti ti-star-filled"></i> Más completo
+      <!-- Badge de plan activo -->
+      <div class="plan-card__badge plan-card__badge--active" *ngIf="isActivePlan(plan)">
+        <i class="ti ti-circle-check"></i> Tu plan actual
       </div>
 
       <!-- Header -->
@@ -50,7 +49,7 @@
           <p class="plan-card__name">{{ plan.name }}</p>
           <p class="plan-card__price">
             {{ formatPrice(plan.price) }}
-            <span *ngIf="plan.price > 0">/mes</span>
+            <span *ngIf="plan.price > 0">/plan</span>
           </p>
         </div>
       </div>
@@ -94,19 +93,39 @@
       </ul>
 
       <!-- Botón -->
-      <button class="plan-card__btn"
-              [class.plan-card__btn--featured]="plan.price === getMaxPrice()"
-              (click)="onAcquirePlan(plan)"
-              [disabled]="processingPayment">
-        <span *ngIf="!isProcessing(plan.idPlan)">
+      <button class="plan-card__btn" (click)="onAcquirePlan(plan)" [disabled]="processingPayment || isActivePlan(plan)">
+        <span *ngIf="isActivePlan(plan)">
+          <i class="ti ti-circle-check"></i> Plan activo
+        </span>
+        <span *ngIf="!isActivePlan(plan) && !isProcessing(plan.idPlan)">
           Adquirir plan <i class="ti ti-arrow-right"></i>
         </span>
-        <span *ngIf="isProcessing(plan.idPlan)">
+        <span *ngIf="!isActivePlan(plan) && isProcessing(plan.idPlan)">
           Procesando... <i class="ti ti-loader-2 spin"></i>
         </span>
       </button>
 
     </div>
+
+    <!-- Modal de confirmación de cambio de plan -->
+    <div class="modal-overlay" *ngIf="showChangeConfirm" (click)="cancelChangePlan()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-card__icon">
+          <i class="ti ti-alert-triangle"></i>
+        </div>
+        <h3 class="modal-card__title">¿Cambiar de plan?</h3>
+        <p class="modal-card__desc">
+          Ya tienes el plan <strong>{{ activePlan?.plan?.name }}</strong> activo. Si continúas, serás redirigido
+          a la pasarela de pago para adquirir <strong>{{ planPendingConfirm?.name }}</strong>, y tu plan actual
+          será reemplazado una vez se confirme el pago.
+        </p>
+        <div class="modal-card__actions">
+          <button class="btn btn--outline" (click)="cancelChangePlan()">Cancelar</button>
+          <button class="btn btn--primary" (click)="confirmChangePlan()">Sí, continuar al pago</button>
+        </div>
+      </div>
+    </div>
+    
   </div>
 
 </div>
