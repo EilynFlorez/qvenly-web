@@ -1,7 +1,9 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CalendarDateFormatter, CalendarModule, CalendarNativeDateFormatter, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
 import { DashboardUserRoutingModule } from './dashboard-user-routing.module';
 import { SharedModule } from '../../shared/shared.module';
@@ -15,6 +17,10 @@ import { InvitationsComponent } from './pages/invitations/invitations.component'
 import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
 import { PlanesComponent } from './pages/planes/planes.component';
 import { EventHistoryComponent } from './pages/event-history/event-history.component';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs);
 
 @NgModule({
   declarations: [
@@ -35,7 +41,15 @@ import { EventHistoryComponent } from './pages/event-history/event-history.compo
     ReactiveFormsModule,
     RouterModule,
     SharedModule,
-    DashboardUserRoutingModule
+    DashboardUserRoutingModule,
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory
+    })
+  ],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'es' },
+    { provide: CalendarDateFormatter, useClass: CalendarNativeDateFormatter }
   ]
 })
-export class DashboardUserModule {}
+export class DashboardUserModule { }

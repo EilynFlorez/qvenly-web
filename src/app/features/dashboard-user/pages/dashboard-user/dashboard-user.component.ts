@@ -6,6 +6,8 @@ import { PaymentService } from '../../../../core/core-payments/services/payment.
 import { UserPlanResponse, PlanResponse } from '../../../../core/core-plans/models/plan.model';
 import { ActivityService } from '../../../../core/core-activities/services/activity.service';
 import { AgendaItem, ActivityMemberRole, ActivityStatus } from '../../../../core/core-activities/models/activity.model';
+import { CalendarEvent, CalendarView } from 'angular-calendar';
+import { isSameMonth } from 'date-fns';
 
 @Component({
   selector: 'app-dashboard-user',
@@ -47,6 +49,14 @@ export class DashboardUserComponent implements OnInit {
   filterDate = '';
   filterStatus: ActivityStatus | '' = '';
 
+  // ─── Vista de Agenda (lista / calendario) ──────────────────────────────
+  agendaViewMode: 'list' | 'calendar' = 'list';
+  CalendarView = CalendarView;
+  calendarViewType: CalendarView = CalendarView.Month;
+  viewDate: Date = new Date();
+  selectedDate: Date | null = null;
+  selectedDayItems: AgendaItem[] = [];
+
   // ─── Estado del pago ──────────────────────────────────────────────────
   processingPayment = false;
   paymentError = '';
@@ -57,11 +67,11 @@ export class DashboardUserComponent implements OnInit {
     private planService: PlanService,
     private paymentService: PaymentService,
     private activityService: ActivityService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userName = this.authService.getUserName() || '';
-    this.userId   = this.authService.getUserId();
+    this.userId = this.authService.getUserId();
 
     this.loadActivePlan();
     this.loadAgenda();
@@ -75,6 +85,18 @@ export class DashboardUserComponent implements OnInit {
     return [...this.agenda].sort((a, b) =>
       new Date(a.startDatetime).getTime() - new Date(b.startDatetime).getTime()
     );
+  }
+
+  get calendarEvents(): CalendarEvent[] {
+    return this.agenda
+      .filter(item => item.confirmationStatus !== 'CANCELLED')
+      .map(item => ({
+        start: new Date(item.startDatetime),
+        end: new Date(item.endDatetime),
+        title: item.activityTitle,
+        color: this.getCalendarEventColor(item.confirmationStatus),
+        meta: item
+      }));
   }
 
   // ─── Estadísticas de Agenda ───────────────────────────────────────────
@@ -218,6 +240,29 @@ export class DashboardUserComponent implements OnInit {
     };
     return labels[role] || role;
   }
+
+  getCalendarEventColor(status: string): { primary: string; secondary: string } {
+    const colors: Record<string, { primary: string; secondary: string }> = {
+      CONFIRMED: { primary: '#00b8a9', secondary: '#e6f8f6' },
+      PENDING: { primary: '#f59e0b', secondary: '#fef3e2' },
+      CANCELLED: { primary: '#ef4444', secondary: '#fee2e2' }
+    };
+    return colors[status] || colors['PENDING'];
+  }
+
+  dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
+    if (!isSameMonth(date, this.viewDate)) {
+      this.viewDate = date;
+    }
+    this.selectedDate = date;
+    this.selectedDayItems = events.map(e => e.meta as AgendaItem);
+  }
+
+  closeDayDetail(): void {
+    this.selectedDate = null;
+    this.selectedDayItems = [];
+  }
+
 
   // ─── Pago ─────────────────────────────────────────────────────────────
   onAcquirePlan(plan: PlanResponse): void {

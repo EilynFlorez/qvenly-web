@@ -805,6 +805,214 @@
   gap: 16px;
 }
 
+// ─── Toggle Lista / Calendario ───────────────────────────────────────────
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  background: $gray-100;
+  border-radius: $radius-sm;
+  padding: 3px;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
+    font-size: $fs-body;
+    font-family: $font;
+    font-weight: 500;
+    color: $gray-400;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+
+    i {
+      font-size: 14px;
+    }
+
+    &:hover {
+      color: $gray-900;
+    }
+
+    &--active {
+      background: $white;
+      color: $teal-dark;
+      box-shadow: 0 1px 4px rgba(0, 184, 169, 0.15);
+
+      &:hover {
+        color: $teal-dark;
+      }
+    }
+  }
+}
+
+// ─── Vista de Calendario ──────────────────────────────────────────────────
+.agenda-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.agenda-calendar__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.agenda-calendar__title {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.cal-nav-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  background: $white;
+  color: $gray-500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  i {
+    font-size: 15px;
+  }
+
+  &:hover {
+    border-color: $teal;
+    color: $teal;
+  }
+}
+
+.cal-today-btn {
+  padding: 7px 14px;
+  border: 1px solid $teal;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $teal;
+  font-size: $fs-body;
+  font-family: $font;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    background: $teal;
+    color: $white;
+  }
+}
+
+// ─── Panel de detalle del evento seleccionado en el calendario ────────────
+.calendar-detail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 22px;
+  border: 1px solid $teal-border;
+  border-radius: $radius-md;
+  background: linear-gradient(160deg, $white 60%, rgba(0, 184, 169, 0.035));
+  box-shadow: 0 4px 16px rgba(0, 184, 169, 0.1);
+}
+
+.calendar-detail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-detail__date {
+  font-size: 16px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.calendar-detail__item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid $teal-border;
+  border-radius: $radius-sm;
+  background: $white;
+
+  &:not(:last-child) {
+    margin-bottom: 4px;
+  }
+}
+
+// ─── Overrides de angular-calendar para tema teal ─────────────────────────
+:host ::ng-deep {
+  .cal-month-view {
+    border-radius: $radius-md;
+    border-color: $teal-border;
+    font-family: $font;
+
+    .cal-cell-row {
+      .cal-cell {
+        &:hover {
+          background-color: $teal-light;
+        }
+      }
+    }
+
+    .cal-day-cell.cal-today {
+      background-color: $teal-light;
+
+      .cal-day-number {
+        color: $teal-dark;
+        font-weight: 700;
+      }
+    }
+
+    .cal-header {
+      font-weight: 600;
+      color: $gray-500;
+      font-size: $fs-meta;
+      text-transform: uppercase;
+    }
+
+    .cal-cell-top {
+      .cal-day-number {
+        font-size: $fs-body;
+        color: $gray-900;
+        opacity: 1;
+      }
+    }
+
+    .cal-out-month {
+      .cal-day-number {
+        color: $gray-400;
+        opacity: 0.5;
+      }
+    }
+
+    .cal-event {
+      border-radius: 6px;
+      font-size: $fs-meta;
+      padding: 1px 4px;
+    }
+
+    .cal-events-row {
+      .cal-event-title {
+        color: $gray-900;
+      }
+    }
+  }
+}
+
 .agenda-item {
   position: relative;
   display: flex;
