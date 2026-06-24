@@ -73,6 +73,6 @@ export class MySupportTicketsPageComponent implements OnInit {
   }
 
   trackByResponse(_: number, response: SupportResponse): string {
-    return response.respondedAt;
+    return response.respondedAt + response.message;
   }
 }
