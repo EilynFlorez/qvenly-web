@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment.development';
 import { ApiResponse } from '../../core-events/models/event.model';
@@ -7,7 +7,8 @@ import {
   ActivityResponse, CreateActivityRequest, UpdateActivityRequest,
   ActivityMember, AssignMemberRequest, ActivityEnrollment,
   QrCodeResponse, AuditLogActivity,
-  AgendaItem
+  AgendaItem,
+  ActivityStatus
 } from '../models/activity.model';
 
 @Injectable({ providedIn: 'root' })
@@ -19,9 +20,17 @@ export class ActivityService {
 
   // ── Actividades ────────────────────────────────────────────────────────────
 
-  getActivitiesByEvent(eventId: number): Observable<ApiResponse<ActivityResponse[]>> {
+  getActivitiesByEvent(
+    eventId: number,
+    filters?: { name?: string; date?: string; status?: ActivityStatus }
+  ): Observable<ApiResponse<ActivityResponse[]>> {
+    let params = new HttpParams();
+    if (filters?.name) params = params.set('name', filters.name);
+    if (filters?.date) params = params.set('date', filters.date);
+    if (filters?.status) params = params.set('status', filters.status);
+
     return this.http.get<ApiResponse<ActivityResponse[]>>(
-      `${this.apiUrl}/event/${eventId}`, { withCredentials: true }
+      `${this.apiUrl}/event/${eventId}`, { params, withCredentials: true }
     );
   }
 
@@ -135,9 +144,17 @@ export class ActivityService {
     );
   }
 
-  getMyAgenda(): Observable<ApiResponse<AgendaItem[]>> {
+  getMyAgenda(
+    filters?: { name?: string; eventId?: number; date?: string; status?: ActivityStatus }
+  ): Observable<ApiResponse<AgendaItem[]>> {
+    let params = new HttpParams();
+    if (filters?.name) params = params.set('name', filters.name);
+    if (filters?.eventId) params = params.set('eventId', filters.eventId.toString());
+    if (filters?.date) params = params.set('date', filters.date);
+    if (filters?.status) params = params.set('status', filters.status);
+
     return this.http.get<ApiResponse<AgendaItem[]>>(
-      `${this.apiUrl}/my-agenda`, { withCredentials: true }
+      `${this.apiUrl}/my-agenda`, { params, withCredentials: true }
     );
   }
 }

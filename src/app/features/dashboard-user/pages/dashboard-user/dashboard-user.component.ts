@@ -5,7 +5,7 @@ import { PlanService } from '../../../../core/core-plans/services/plan.service';
 import { PaymentService } from '../../../../core/core-payments/services/payment.service';
 import { UserPlanResponse, PlanResponse } from '../../../../core/core-plans/models/plan.model';
 import { ActivityService } from '../../../../core/core-activities/services/activity.service';
-import { AgendaItem, ActivityMemberRole } from '../../../../core/core-activities/models/activity.model';
+import { AgendaItem, ActivityMemberRole, ActivityStatus } from '../../../../core/core-activities/models/activity.model';
 
 @Component({
   selector: 'app-dashboard-user',
@@ -31,6 +31,7 @@ export class DashboardUserComponent implements OnInit {
 
   // ─── Agenda ───────────────────────────────────────────────────────────
   agenda: AgendaItem[] = [];
+  agendaAll: AgendaItem[] = []; // copia completa sin filtros, para estadísticas y opciones de evento
   loadingAgenda = true;
   agendaError = false;
   processingAgendaAction = false;
@@ -39,6 +40,12 @@ export class DashboardUserComponent implements OnInit {
   showCancelAgendaModal = false;
   cancelAgendaActivityId: number | null = null;
   cancelAgendaReason = '';
+
+  // ─── Filtros de Agenda ────────────────────────────────────────────────
+  filterName = '';
+  filterEventId: number | null = null;
+  filterDate = '';
+  filterStatus: ActivityStatus | '' = '';
 
   // ─── Estado del pago ──────────────────────────────────────────────────
   processingPayment = false;
@@ -66,7 +73,7 @@ export class DashboardUserComponent implements OnInit {
   }
 
   get hasActivities(): boolean {
-    return this.agenda.length > 0;
+    return this.agendaAll.length > 0;
   }
 
   get showAgendaSection(): boolean {
@@ -85,6 +92,29 @@ export class DashboardUserComponent implements OnInit {
     return [...this.agenda].sort((a, b) =>
       new Date(a.startDatetime).getTime() - new Date(b.startDatetime).getTime()
     );
+  }
+
+  // ─── Estadísticas de Agenda ───────────────────────────────────────────
+  get totalActivitiesCount(): number {
+    return this.agendaAll.length;
+  }
+
+  get confirmedCount(): number {
+    return this.agendaAll.filter(a => a.confirmationStatus === 'CONFIRMED').length;
+  }
+
+  get pendingCount(): number {
+    return this.agendaAll.filter(a => a.confirmationStatus === 'PENDING').length;
+  }
+
+  get cancelledCount(): number {
+    return this.agendaAll.filter(a => a.confirmationStatus === 'CANCELLED').length;
+  }
+
+  get uniqueEventsForFilter(): { eventId: number; eventTitle: string }[] {
+    const map = new Map<number, string>();
+    this.agendaAll.forEach(a => map.set(a.eventId, a.eventTitle));
+    return Array.from(map, ([eventId, eventTitle]) => ({ eventId, eventTitle }));
   }
 
   // ─── Plan ─────────────────────────────────────────────────────────────
@@ -116,9 +146,12 @@ export class DashboardUserComponent implements OnInit {
     this.agendaError = false;
     this.activityService.getMyAgenda().subscribe({
       next: (res) => {
-        if (res.success) this.agenda = res.data;
+        if (res.success) {
+          this.agenda = res.data;
+          this.agendaAll = res.data;
+        }
         this.loadingAgenda = false;
-        if (this.agenda.length === 0) this.loadAvailablePlans();
+        if (this.agendaAll.length === 0) this.loadAvailablePlans();
       },
       error: () => {
         this.agendaError = true;
@@ -126,6 +159,33 @@ export class DashboardUserComponent implements OnInit {
         this.loadAvailablePlans();
       }
     });
+  }
+
+  applyAgendaFilters(): void {
+    this.loadingAgenda = true;
+    this.activityService.getMyAgenda({
+      name: this.filterName || undefined,
+      eventId: this.filterEventId || undefined,
+      date: this.filterDate || undefined,
+      status: this.filterStatus || undefined
+    }).subscribe({
+      next: (res) => {
+        if (res.success) this.agenda = res.data;
+        this.loadingAgenda = false;
+      },
+      error: () => {
+        this.agendaError = true;
+        this.loadingAgenda = false;
+      }
+    });
+  }
+
+  clearAgendaFilters(): void {
+    this.filterName = '';
+    this.filterEventId = null;
+    this.filterDate = '';
+    this.filterStatus = '';
+    this.agenda = this.agendaAll;
   }
 
   confirmAgendaItem(item: AgendaItem): void {
@@ -156,9 +216,10 @@ export class DashboardUserComponent implements OnInit {
     this.activityService.cancelParticipation(this.cancelAgendaActivityId, this.cancelAgendaReason).subscribe({
       next: () => {
         this.agenda = this.agenda.filter(a => a.activityId !== this.cancelAgendaActivityId);
+        this.agendaAll = this.agendaAll.filter(a => a.activityId !== this.cancelAgendaActivityId);
         this.showCancelAgendaModal = false;
         this.processingAgendaAction = false;
-        if (this.agenda.length === 0) this.loadAvailablePlans();
+        if (this.agendaAll.length === 0) this.loadAvailablePlans();
       },
       error: (err) => {
         this.agendaActionError = err.error?.message || 'Error al cancelar.';
