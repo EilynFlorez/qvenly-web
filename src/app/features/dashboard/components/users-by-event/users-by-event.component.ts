@@ -9,38 +9,38 @@ import { DashboardService } from '../../../../core/core-dashboard/services/dashb
 })
 export class UsersByEventComponent {
 
-  
-          loading = true;
-          error = false;
-          events: EventUserDetail[] = [];
-          noData = false;
 
-          constructor(private dashboardService: DashboardService){}
+  loading = true;
+  error = false;
+  events: EventUserDetail[] = [];
+  noData = false;
 
-          ngOnInit(): void{
-            this.dashboardService.getUserByEvent().subscribe({
-              next: (data) => {
-                this.events = data;
-                this.loading = false;
+  constructor(private dashboardService: DashboardService) { }
 
-                 this.loading = false;
+  ngOnInit(): void {
+    this.dashboardService.getUserByEvent().subscribe({
+      next: (data) => {
+        this.events = data;
+        this.loading = false;
 
-                if (!data || data.length === 0) {
-                  this.noData = true;
-                  return;
-                }
+        this.loading = false;
 
-                this.noData = false;
-              },
-              error: (err) =>{
-                console.error(err);
-                this.error = true;
-                this.loading = false;
-              }
-            });
-          }
+        if (!data || data.length === 0) {
+          this.noData = true;
+          return;
+        }
 
-          getTotal(event: EventUserDetail): number{
-            return event.staff + event.assistants + event.judges + event.participants;
-          }
+        this.noData = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = true;
+        this.loading = false;
+      }
+    });
+  }
+
+  getTotal(event: EventUserDetail): number {
+    return event.staff + event.guests;
+  }
 }

@@ -67,25 +67,8 @@ export class DashboardUserComponent implements OnInit {
     this.loadAgenda();
   }
 
-  // ─── Computed: qué sección mostrar ──────────────────────────────────────
-  get sectionLoading(): boolean {
-    return this.loadingAgenda || this.loadingActivePlan;
-  }
-
   get hasActivities(): boolean {
     return this.agendaAll.length > 0;
-  }
-
-  get showAgendaSection(): boolean {
-    return !this.sectionLoading && this.hasActivities;
-  }
-
-  get showAvailablePlansSection(): boolean {
-    return !this.sectionLoading && !this.hasActivities && !!this.activePlan;
-  }
-
-  get showNoActivityMessage(): boolean {
-    return !this.sectionLoading && !this.hasActivities && !this.activePlan;
   }
 
   get sortedAgenda(): AgendaItem[] {
@@ -119,13 +102,17 @@ export class DashboardUserComponent implements OnInit {
 
   // ─── Plan ─────────────────────────────────────────────────────────────
   loadActivePlan(): void {
-    if (!this.userId) { this.loadingActivePlan = false; return; }
+    if (!this.userId) { this.loadingActivePlan = false; this.loadAvailablePlans(); return; }
     this.userPlanService.getActivePlanByUser(this.userId).subscribe({
       next: (response) => {
         if (response.success) this.activePlan = response.data;
         this.loadingActivePlan = false;
+        if (!this.activePlan) this.loadAvailablePlans();
       },
-      error: () => { this.loadingActivePlan = false; }
+      error: () => {
+        this.loadingActivePlan = false;
+        this.loadAvailablePlans();
+      }
     });
   }
 
@@ -151,12 +138,10 @@ export class DashboardUserComponent implements OnInit {
           this.agendaAll = res.data;
         }
         this.loadingAgenda = false;
-        if (this.agendaAll.length === 0) this.loadAvailablePlans();
       },
       error: () => {
         this.agendaError = true;
         this.loadingAgenda = false;
-        this.loadAvailablePlans();
       }
     });
   }
@@ -219,7 +204,6 @@ export class DashboardUserComponent implements OnInit {
         this.agendaAll = this.agendaAll.filter(a => a.activityId !== this.cancelAgendaActivityId);
         this.showCancelAgendaModal = false;
         this.processingAgendaAction = false;
-        if (this.agendaAll.length === 0) this.loadAvailablePlans();
       },
       error: (err) => {
         this.agendaActionError = err.error?.message || 'Error al cancelar.';

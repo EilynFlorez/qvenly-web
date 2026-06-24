@@ -66,21 +66,13 @@
           <i class="ti ti-calendar-event"></i>
           <span>Hasta <strong>{{ plan.maxEvents }}</strong> eventos</span>
         </li>
-        <li *ngIf="plan.maxAttendees > 0">
+        <li *ngIf="plan.maxGuests > 0">
           <i class="ti ti-users"></i>
-          <span>Hasta <strong>{{ plan.maxAttendees }}</strong> asistentes</span>
+          <span>Hasta <strong>{{ plan.maxGuests }}</strong> invitados</span>
         </li>
         <li *ngIf="plan.maxOrganizers > 0">
           <i class="ti ti-user-check"></i>
           <span><strong>{{ plan.maxOrganizers }}</strong> organizador(es)</span>
-        </li>
-        <li *ngIf="plan.maxParticipants > 0">
-          <i class="ti ti-user-plus"></i>
-          <span>Hasta <strong>{{ plan.maxParticipants }}</strong> participantes</span>
-        </li>
-        <li *ngIf="plan.maxJudges > 0">
-          <i class="ti ti-gavel"></i>
-          <span>Hasta <strong>{{ plan.maxJudges }}</strong> jueces</span>
         </li>
         <li *ngIf="plan.maxStaff > 0">
           <i class="ti ti-briefcase"></i>
