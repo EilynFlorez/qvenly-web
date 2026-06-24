@@ -34,21 +34,13 @@
       <i class="ti ti-user-check"></i>
       Máx. Organizadores: {{ plan.maxOrganizers }}
     </li>
-    <li *ngIf="plan.maxAttendees > 0">
+    <li *ngIf="plan.maxGuests > 0">
       <i class="ti ti-users"></i>
-      Máx. Asistentes: {{ plan.maxAttendees }}
+      Máx. Invitados: {{ plan.maxGuests }}
     </li>
     <li *ngIf="plan.maxStaff > 0">
       <i class="ti ti-briefcase"></i>
       Máx. Personal: {{ plan.maxStaff }}
-    </li>
-    <li *ngIf="plan.maxJudges > 0">
-      <i class="ti ti-gavel"></i>
-      Máx. Jueces: {{ plan.maxJudges }}
-    </li>
-    <li *ngIf="plan.maxParticipants > 0">
-      <i class="ti ti-user-plus"></i>
-      Máx. Participantes: {{ plan.maxParticipants }}
     </li>
   </ul>
 

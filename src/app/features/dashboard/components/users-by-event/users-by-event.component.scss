@@ -77,10 +77,8 @@ td {
 
   i { font-size: 14px; }
 
-  &.personal     { color: #8b5cf6; }
-  &.asistentes   { color: #10b981; }
-  &.jurados      { color: #f97316; }
-  &.participantes{ color: #ec4899; }
+  &.personal   { color: #8b5cf6; }
+  &.invitados  { color: #10b981; }
 }
 
 /* Badges de valores */
@@ -93,10 +91,8 @@ td {
   font-size: 13px;
   font-weight: 500;
 
-  &.personal      { background: rgba(139,92,246,0.08);  color: #8b5cf6; }
-  &.asistentes    { background: rgba(16,185,129,0.08);  color: #10b981; }
-  &.jurados       { background: rgba(249,115,22,0.08);  color: #f97316; }
-  &.participantes { background: rgba(236,72,153,0.08);  color: #ec4899; }
+  &.personal   { background: rgba(139,92,246,0.08); color: #8b5cf6; }
+  &.invitados  { background: rgba(16,185,129,0.08); color: #10b981; }
 }
 
 .total {

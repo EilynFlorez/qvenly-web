@@ -64,50 +64,36 @@
   </div>
 
   <!-- Límites de usuarios -->
-  <div class="form-section">
-    <h3 class="form-section__title">
-      <i class="ti ti-users"></i>
-      Límites de usuarios por rol
-    </h3>
-    <div class="form-grid">
+<div class="form-section">
+  <h3 class="form-section__title">
+    <i class="ti ti-users"></i>
+    Límites de usuarios por rol
+  </h3>
+  <div class="form-grid">
 
-      <app-form-field
-        label="Máx. Organizadores"
-        type="number"
-        icon="ti-user-check"
-        [control]="planForm.get('maxOrganizers')">
-      </app-form-field>
+    <app-form-field
+      label="Máx. Organizadores"
+      type="number"
+      icon="ti-user-check"
+      [control]="planForm.get('maxOrganizers')">
+    </app-form-field>
 
-      <app-form-field
-        label="Máx. Asistentes"
-        type="number"
-        icon="ti-users"
-        [control]="planForm.get('maxAttendees')">
-      </app-form-field>
+    <app-form-field
+      label="Máx. Invitados"
+      type="number"
+      icon="ti-users"
+      [control]="planForm.get('maxGuests')">
+    </app-form-field>
 
-      <app-form-field
-        label="Máx. Participantes"
-        type="number"
-        icon="ti-user-plus"
-        [control]="planForm.get('maxParticipants')">
-      </app-form-field>
+    <app-form-field
+      label="Máx. Personal de apoyo"
+      type="number"
+      icon="ti-briefcase"
+      [control]="planForm.get('maxStaff')">
+    </app-form-field>
 
-      <app-form-field
-        label="Máx. Jueces"
-        type="number"
-        icon="ti-gavel"
-        [control]="planForm.get('maxJudges')">
-      </app-form-field>
-
-      <app-form-field
-        label="Máx. Personal de apoyo"
-        type="number"
-        icon="ti-briefcase"
-        [control]="planForm.get('maxStaff')">
-      </app-form-field>
-
-    </div>
   </div>
+</div>
 
   <!-- Acciones -->
   <div class="form-actions">

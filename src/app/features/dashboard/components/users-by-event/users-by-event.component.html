@@ -29,21 +29,9 @@
             </span>
           </th>
           <th>
-            <span class="th-badge asistentes">
-              <i class="ti ti-ticket"></i>
-              Asistentes
-            </span>
-          </th>
-          <th>
-            <span class="th-badge jurados">
-              <i class="ti ti-gavel"></i>
-              Jurados
-            </span>
-          </th>
-          <th>
-            <span class="th-badge participantes">
-              <i class="ti ti-trophy"></i>
-              Participantes
+            <span class="th-badge invitados">
+              <i class="ti ti-users"></i>
+              Invitados
             </span>
           </th>
           <th>Total</th>
@@ -56,9 +44,7 @@
             {{ event.eventName }}
           </td>
           <td><span class="badge personal">{{ event.staff }}</span></td>
-          <td><span class="badge asistentes">{{ event.assistants }}</span></td>
-          <td><span class="badge jurados">{{ event.judges }}</span></td>
-          <td><span class="badge participantes">{{ event.participants }}</span></td>
+          <td><span class="badge invitados">{{ event.guests }}</span></td>
           <td><span class="total">{{ getTotal(event) }}</span></td>
         </tr>
       </tbody>
