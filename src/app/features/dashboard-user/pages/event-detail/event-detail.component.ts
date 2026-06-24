@@ -83,6 +83,7 @@ export class EventDetailComponent implements OnInit {
   inviteError = '';
   inviteExpirationOption: '3' | '7' | '15' | '30' | 'custom' = '7';
   inviteCustomExpiresAt = '';
+  inviteRole: 'ORGANIZER' | 'STAFF' | 'MEMBER' = 'MEMBER';
 
   showBulkInviteModal = false;
   bulkInviteFile: File | null = null;
@@ -453,6 +454,7 @@ export class EventDetailComponent implements OnInit {
     this.inviteEmail = ''; this.inviteError = '';
     this.inviteExpirationOption = '7';
     this.inviteCustomExpiresAt = '';
+    this.inviteRole = 'MEMBER';
     this.showInviteModal = true;
     if (this.invitations.length === 0) this.loadInvitations();
   }
@@ -476,7 +478,8 @@ export class EventDetailComponent implements OnInit {
     this.invitationService.sendInvitation(
       this.event.id,
       this.inviteEmail.trim(),
-      this.computeExpiresAt(this.inviteExpirationOption, this.inviteCustomExpiresAt)
+      this.computeExpiresAt(this.inviteExpirationOption, this.inviteCustomExpiresAt),
+      this.inviteRole
     ).subscribe({
       next: () => {
         this.showInviteModal = false; this.processing = false;

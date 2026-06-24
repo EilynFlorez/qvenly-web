@@ -457,13 +457,21 @@
   <div class="modal-overlay" *ngIf="showInviteModal" (click)="showInviteModal = false">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3 class="modal-title">Invitar miembro</h3>
+        <h3 class="modal-title">Enviar invitación</h3>
         <button class="modal-close" (click)="showInviteModal = false"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="modal-form-row">
           <label class="modal-label">Email</label>
           <input type="email" class="form-input" [(ngModel)]="inviteEmail" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="modal-form-row">
+          <label class="modal-label">Rol</label>
+          <select class="form-input" [(ngModel)]="inviteRole">
+            <option value="MEMBER">Miembro</option>
+            <option value="STAFF">Personal de apoyo</option>
+            <option value="ORGANIZER">Organizador</option>
+          </select>
         </div>
         <div class="modal-form-row">
           <label class="modal-label">Vencimiento de la invitación</label>
