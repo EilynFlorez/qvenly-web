@@ -102,14 +102,11 @@
           <li *ngIf="activePlan.plan.maxEvents > 0">
             <i class="ti ti-calendar-event"></i> Hasta {{ activePlan.plan.maxEvents }} eventos
           </li>
-          <li *ngIf="activePlan.plan.maxAttendees > 0">
-            <i class="ti ti-users"></i> Hasta {{ activePlan.plan.maxAttendees }} asistentes
+          <li *ngIf="activePlan.plan.maxGuests > 0">
+            <i class="ti ti-users"></i> Hasta {{ activePlan.plan.maxGuests }} invitados
           </li>
           <li *ngIf="activePlan.plan.maxOrganizers > 0">
             <i class="ti ti-user-check"></i> {{ activePlan.plan.maxOrganizers }} organizador(es)
-          </li>
-          <li *ngIf="activePlan.plan.maxParticipants > 0">
-            <i class="ti ti-user-plus"></i> Hasta {{ activePlan.plan.maxParticipants }} participantes
           </li>
           <li *ngIf="activePlan.plan.maxStaff > 0">
             <i class="ti ti-briefcase"></i> Hasta {{ activePlan.plan.maxStaff }} personal de apoyo
@@ -163,17 +160,11 @@
           <li *ngIf="plan.maxEvents > 0">
             <i class="ti ti-calendar-event"></i> Hasta {{ plan.maxEvents }} eventos
           </li>
-          <li *ngIf="plan.maxAttendees > 0">
-            <i class="ti ti-users"></i> Hasta {{ plan.maxAttendees }} asistentes
+          <li *ngIf="plan.maxGuests > 0">
+            <i class="ti ti-users"></i> Hasta {{ plan.maxGuests }} invitados
           </li>
           <li *ngIf="plan.maxOrganizers > 0">
             <i class="ti ti-user-check"></i> {{ plan.maxOrganizers }} organizador(es)
-          </li>
-          <li *ngIf="plan.maxParticipants > 0">
-            <i class="ti ti-user-plus"></i> Hasta {{ plan.maxParticipants }} participantes
-          </li>
-          <li *ngIf="plan.maxJudges > 0">
-            <i class="ti ti-gavel"></i> Hasta {{ plan.maxJudges }} jueces
           </li>
           <li *ngIf="plan.maxStaff > 0">
             <i class="ti ti-briefcase"></i> Hasta {{ plan.maxStaff }} personal de apoyo

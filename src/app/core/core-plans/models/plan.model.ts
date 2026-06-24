@@ -3,27 +3,16 @@
  * Se envía al backend en los endpoints de creación y actualización.
  */
 export interface PlanRequest {
-  /** Nombre del plan */
   name: string;
-  /** Descripción detallada del plan */
   description: string;
-  /** Precio del plan */
   price: number;
-  /** Duración del plan en días */
   durationDays: number;
-  /** Cantidad máxima de eventos permitidos */
   maxEvents: number;
-  /** Cantidad máxima de organizadores permitidos */
   maxOrganizers: number;
-  /** Cantidad máxima de participantes permitidos */
-  maxParticipants: number;
-  /** Cantidad máxima de jueces permitidos */
-  maxJudges: number;
-  /** Cantidad máxima de asistentes permitidos */
-  maxAttendees: number;
+  /** Cantidad máxima de invitados permitidos (jurado, participante, asistente) */
+  maxGuests: number;
   /** Cantidad máxima de personal de apoyo permitido */
   maxStaff: number;
-  /** Estado del plan */
   status: 'active' | 'inactive';
 }
 
@@ -31,37 +20,23 @@ export interface PlanRequest {
  * Respuesta del backend con los datos completos de un plan de servicio.
  */
 export interface PlanResponse {
-  /** Identificador único del plan */
   idPlan: number;
-  /** Nombre del plan */
   name: string;
-  /** Descripción detallada del plan */
   description: string;
-  /** Precio del plan */
   price: number;
-  /** Duración del plan en días */
   durationDays: number;
-  /** Cantidad máxima de eventos permitidos */
   maxEvents: number;
-  /** Cantidad máxima de organizadores permitidos */
   maxOrganizers: number;
-  /** Cantidad máxima de participantes permitidos */
-  maxParticipants: number;
-  /** Cantidad máxima de jueces permitidos */
-  maxJudges: number;
-  /** Cantidad máxima de asistentes permitidos */
-  maxAttendees: number;
+  /** Cantidad máxima de invitados permitidos (jurado, participante, asistente) */
+  maxGuests: number;
   /** Cantidad máxima de personal de apoyo permitido */
   maxStaff: number;
-  /** Estado actual del plan */
   status: 'active' | 'inactive';
-  /** Indica si el plan fue eliminado lógicamente */
   deleted: boolean;
-  /** Fecha de creación del plan */
   createdAt: string;
-  /** Fecha de última actualización del plan */
   updatedAt: string;
 }
+
 /**
  * Solicitud para asignar un plan a un organizador.
  * Usada tanto por el administrador como por el propio organizador.

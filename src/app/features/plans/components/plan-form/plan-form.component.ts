@@ -49,20 +49,18 @@ export class PlanFormComponent implements OnInit {
    * Construye el formulario con sus validaciones.
    */
   buildForm(): void {
-    this.planForm = this.fb.group({
-      name:           ['', [Validators.required, Validators.maxLength(100)]],
-      description:    ['', [Validators.required]],
-      price:          [null, [Validators.required, Validators.min(0.01)]],
-      durationDays:   [null, [Validators.required, Validators.min(1)]],
-      maxEvents: [0, [Validators.required, Validators.min(0)]],
-      maxOrganizers:  [0, [Validators.required, Validators.min(0)]],
-      maxParticipants:[0, [Validators.required, Validators.min(0)]],
-      maxJudges:      [0, [Validators.required, Validators.min(0)]],
-      maxAttendees:   [0, [Validators.required, Validators.min(0)]],
-      maxStaff:       [0, [Validators.required, Validators.min(0)]],
-      status:         ['active', [Validators.required]]
-    });
-  }
+  this.planForm = this.fb.group({
+    name:           ['', [Validators.required, Validators.maxLength(100)]],
+    description:    ['', [Validators.required]],
+    price:          [null, [Validators.required, Validators.min(0.01)]],
+    durationDays:   [null, [Validators.required, Validators.min(1)]],
+    maxEvents: [0, [Validators.required, Validators.min(0)]],
+    maxOrganizers:  [0, [Validators.required, Validators.min(0)]],
+    maxGuests:      [0, [Validators.required, Validators.min(0)]],
+    maxStaff:       [0, [Validators.required, Validators.min(0)]],
+    status:         ['active', [Validators.required]]
+  });
+}
 
   /**
    * Verifica si un campo tiene error y fue tocado.
