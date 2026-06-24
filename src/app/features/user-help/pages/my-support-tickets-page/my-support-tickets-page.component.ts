@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SupportTicketResponse } from '../../../../core/core-user-help/models/user-help.model';
+import { SupportResponse, SupportTicketResponse } from '../../../../core/core-user-help/models/user-help.model';
 import { UserHelpService } from '../../../../core/core-user-help/services/user-help.service';
 
 @Component({
@@ -12,6 +12,9 @@ export class MySupportTicketsPageComponent implements OnInit {
   tickets: SupportTicketResponse[] = [];
   loading = true;
   errorMessage = '';
+  expandedTicketId: string | null = null;
+  ticketResponses: SupportResponse[] = [];
+  loadingResponses = false;
 
   constructor(private userHelpService: UserHelpService) { }
 
@@ -22,6 +25,8 @@ export class MySupportTicketsPageComponent implements OnInit {
   loadTickets(): void {
     this.loading = true;
     this.errorMessage = '';
+    this.expandedTicketId = null;
+    this.ticketResponses = [];
 
     this.userHelpService.getMySupportTickets().subscribe({
       next: (tickets) => {
@@ -36,11 +41,38 @@ export class MySupportTicketsPageComponent implements OnInit {
     });
   }
 
+  toggleResponses(ticketId: string): void {
+    if (this.expandedTicketId === ticketId) {
+      this.expandedTicketId = null;
+      this.ticketResponses = [];
+      return;
+    }
+
+    this.expandedTicketId = ticketId;
+    this.loadingResponses = true;
+    this.ticketResponses = [];
+
+    this.userHelpService.getTicketResponses(ticketId).subscribe({
+      next: (responses) => {
+        this.ticketResponses = responses || [];
+        this.loadingResponses = false;
+      },
+      error: () => {
+        this.ticketResponses = [];
+        this.loadingResponses = false;
+      }
+    });
+  }
+
   onTicketCreated(): void {
     this.loadTickets();
   }
 
   trackByTicket(_: number, ticket: SupportTicketResponse): string {
     return ticket.id;
+  }
+
+  trackByResponse(_: number, response: SupportResponse): string {
+    return response.respondedAt;
   }
 }

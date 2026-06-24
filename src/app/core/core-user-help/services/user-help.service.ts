@@ -12,6 +12,7 @@ import {
   HelpManualResponse,
   HelpManualSection,
   HelpSearchResponse,
+  SupportResponse,
   SupportTicketResponse
 } from '../models/user-help.model';
 
@@ -254,6 +255,13 @@ export class UserHelpService {
   getMySupportTickets(): Observable<SupportTicketResponse[]> {
     return this.http.get<ApiResponse<SupportTicketResponse[]> | SupportTicketResponse[]>(
       `${this.apiUrl}/support/my`,
+      { withCredentials: true }
+    ).pipe(map(response => this.unwrap(response)));
+  }
+
+  getTicketResponses(id: string): Observable<SupportResponse[]> {
+    return this.http.get<ApiResponse<SupportResponse[]> | SupportResponse[]>(
+      `${this.apiUrl}/support/${id}/responses`,
       { withCredentials: true }
     ).pipe(map(response => this.unwrap(response)));
   }

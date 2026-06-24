@@ -89,6 +89,12 @@ export interface CreateSupportTicketRequest {
   priority: SupportTicketPriority;
 }
 
+export interface SupportResponse {
+  message: string;
+  respondedAt: string;
+  respondedBy: string;
+}
+
 export interface SupportTicketResponse {
   id: string;
   userId?: string;

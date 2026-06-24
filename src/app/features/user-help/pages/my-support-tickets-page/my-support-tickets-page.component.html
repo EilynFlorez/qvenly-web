@@ -26,17 +26,34 @@
     </section>
 
     <section class="tickets-list" *ngIf="tickets.length > 0; else emptyState">
-      <article class="ticket-card" *ngFor="let ticket of tickets; trackBy: trackByTicket">
-        <div class="ticket-main">
+      <article class="ticket-card" *ngFor="let ticket of tickets; trackBy: trackByTicket"
+               [class.expanded]="expandedTicketId === ticket.id">
+        <div class="ticket-main" (click)="toggleResponses(ticket.id)">
           <span class="ticket-type">{{ ticket.type }}</span>
           <h2>{{ ticket.description }}</h2>
           <p *ngIf="ticket.adminResponse">Respuesta: {{ ticket.adminResponse }}</p>
           <p *ngIf="!ticket.adminResponse">Aún no hay respuesta del administrador.</p>
+          <small class="click-hint">
+            {{ expandedTicketId === ticket.id ? 'Ocultar historial' : 'Ver historial de respuestas' }}
+          </small>
         </div>
         <div class="ticket-meta">
           <span>{{ ticket.status }}</span>
           <strong>{{ ticket.priority }}</strong>
           <small>{{ ticket.createdAt }}</small>
+        </div>
+        <div class="ticket-responses" *ngIf="expandedTicketId === ticket.id">
+          <div *ngIf="loadingResponses" class="loading">Cargando respuestas...</div>
+          <div *ngIf="!loadingResponses && ticketResponses.length === 0" class="no-responses">
+            No hay respuestas registradas aún.
+          </div>
+          <div *ngFor="let response of ticketResponses; trackBy: trackByResponse" class="response-item">
+            <div class="response-header">
+              <strong>Respuesta del equipo</strong>
+              <small>{{ response.respondedAt }}</small>
+            </div>
+            <p class="response-message">{{ response.message }}</p>
+          </div>
         </div>
       </article>
     </section>
