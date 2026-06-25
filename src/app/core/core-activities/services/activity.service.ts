@@ -8,7 +8,8 @@ import {
   ActivityMember, AssignMemberRequest, ActivityEnrollment,
   QrCodeResponse, AuditLogActivity,
   AgendaItem,
-  ActivityStatus
+  ActivityStatus,
+  ActivityImageResponse
 } from '../models/activity.model';
 
 @Injectable({ providedIn: 'root' })
@@ -155,6 +156,26 @@ export class ActivityService {
 
     return this.http.get<ApiResponse<AgendaItem[]>>(
       `${this.apiUrl}/my-agenda`, { params, withCredentials: true }
+    );
+  }
+
+  getActivityImages(activityId: number): Observable<ApiResponse<ActivityImageResponse[]>> {
+    return this.http.get<ApiResponse<ActivityImageResponse[]>>(
+      `${this.apiUrl}/${activityId}/images`, { withCredentials: true }
+    );
+  }
+
+  uploadActivityImage(activityId: number, file: File): Observable<ApiResponse<ActivityImageResponse>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ApiResponse<ActivityImageResponse>>(
+      `${this.apiUrl}/${activityId}/images`, formData, { withCredentials: true }
+    );
+  }
+
+  deleteActivityImage(activityId: number, imageId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(
+      `${this.apiUrl}/${activityId}/images/${imageId}`, { withCredentials: true }
     );
   }
 }

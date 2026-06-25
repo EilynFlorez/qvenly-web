@@ -538,6 +538,12 @@
   border-radius: $radius-pill;
   padding: 3px 10px;
   width: fit-content;
+
+  &--closed {
+    color: $gray-400;
+    background: $gray-100;
+    border-color: $gray-200;
+  }
 }
 
 .btn-icon {
@@ -819,4 +825,50 @@
   border-bottom: 0.5px solid $gray-100;
   &:last-child { border-bottom: none; }
   i { font-size: 13px; flex-shrink: 0; }
+}
+
+// ── Assign member modal ────────────────────────────────────────────────────────
+.assignable-member-list {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-right: 2px;
+}
+
+.assignable-member-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; background: $gray-100; border-radius: $radius-sm;
+  border: 1.5px solid transparent; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover { background: $teal-light; border-color: $teal-border; }
+
+  &--selected {
+    background: $teal-light;
+    border-color: $teal;
+  }
+
+  &__avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, $teal, $teal-dark);
+    color: $white; font-size: $fs-body; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+
+  &__email {
+    font-size: $fs-body; font-weight: 500; color: $gray-900;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  &__check {
+    font-size: 16px; color: $teal; flex-shrink: 0;
+  }
 }

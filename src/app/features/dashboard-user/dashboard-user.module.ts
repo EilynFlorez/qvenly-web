@@ -17,6 +17,7 @@ import { InvitationsComponent } from './pages/invitations/invitations.component'
 import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
 import { PlanesComponent } from './pages/planes/planes.component';
 import { EventHistoryComponent } from './pages/event-history/event-history.component';
+import { ActivityDetailComponent } from './pages/activity-detail/activity-detail.component';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
@@ -33,7 +34,8 @@ registerLocaleData(localeEs);
     InvitationsComponent,
     PaymentResultComponent,
     PlanesComponent,
-    EventHistoryComponent
+    EventHistoryComponent,
+    ActivityDetailComponent
   ],
   imports: [
     CommonModule,
