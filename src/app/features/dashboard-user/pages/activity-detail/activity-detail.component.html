@@ -1,0 +1,128 @@
+<div class="activity-detail-container">
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Cargando actividad...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-row" *ngIf="!loading && error">
+    <i class="ti ti-alert-circle"></i>
+    <span>No se pudo cargar la actividad.</span>
+    <button class="btn-retry" (click)="goBack()">← Volver</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && activity">
+
+    <!-- Encabezado -->
+    <div class="page-header">
+      <div class="page-header__top">
+        <button class="btn-back" (click)="goBack()">
+          <i class="ti ti-arrow-left"></i> Volver al evento
+        </button>
+        <span class="status-badge" [ngClass]="getActivityStatusClass(activity.status)">
+          {{ getActivityStatusLabel(activity.status) }}
+        </span>
+      </div>
+      <h1 class="activity-title">{{ activity.title }}</h1>
+    </div>
+
+    <!-- Info general -->
+    <div class="detail-card">
+      <h2 class="detail-card__title">
+        <i class="ti ti-info-circle"></i> Información general
+      </h2>
+      <div class="info-grid">
+        <div class="info-item" *ngIf="activity.description">
+          <span class="info-item__label">Descripción</span>
+          <span class="info-item__value">{{ activity.description }}</span>
+        </div>
+        <div class="info-item" *ngIf="activity.location">
+          <span class="info-item__label"><i class="ti ti-map-pin"></i> Ubicación</span>
+          <span class="info-item__value">{{ activity.location }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-calendar"></i> Inicio</span>
+          <span class="info-item__value">{{ activity.startDatetime | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-calendar-off"></i> Fin</span>
+          <span class="info-item__value">{{ activity.endDatetime | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-user"></i> Creado por</span>
+          <span class="info-item__value">{{ activity.createdByEmail }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-clock"></i> Fecha de creación</span>
+          <span class="info-item__value">{{ activity.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="info-item" *ngIf="activity.enrollmentEnabled">
+          <span class="info-item__label"><i class="ti ti-users"></i> Inscripciones</span>
+          <span class="info-item__value">
+            {{ activity.currentEnrollments }}
+            <ng-container *ngIf="activity.maxEnrollment"> / {{ activity.maxEnrollment }}</ng-container>
+            inscritos
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Galería de imágenes -->
+    <div class="detail-card" *ngIf="imagesLoading || activityImages.length > 0">
+      <h2 class="detail-card__title">
+        <i class="ti ti-photo"></i> Imágenes
+      </h2>
+      <div class="loading-row loading-row--inline" *ngIf="imagesLoading">
+        <div class="spinner"></div>
+        <span>Cargando imágenes...</span>
+      </div>
+      <div class="event-images-gallery__grid" *ngIf="!imagesLoading && activityImages.length > 0">
+        <div class="event-images-gallery__item" *ngFor="let img of activityImages">
+          <img [src]="img.imageUrl" alt="Imagen de la actividad" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Miembros asignados -->
+    <div class="detail-card">
+      <h2 class="detail-card__title">
+        <i class="ti ti-users"></i> Miembros asignados
+      </h2>
+      <div class="invitation-filters" *ngIf="activityMembers.length > 0">
+        <input type="text" class="form-input" placeholder="Buscar por email..."
+               [(ngModel)]="memberSearchTerm" />
+        <select class="form-input" [(ngModel)]="memberRoleFilter">
+          <option value="ALL">Todos los roles</option>
+          <option value="STAFF">Personal de apoyo</option>
+          <option value="JUDGE">Jurado</option>
+          <option value="PARTICIPANT">Participante</option>
+          <option value="ATTENDEE">Asistente</option>
+        </select>
+      </div>
+      <div class="loading-row loading-row--inline" *ngIf="membersLoading">
+        <div class="spinner"></div>
+        <span>Cargando miembros...</span>
+      </div>
+      <div class="empty-state-sm" *ngIf="!membersLoading && activityMembers.length === 0">
+        No hay miembros asignados aún.
+      </div>
+      <div class="member-row" *ngFor="let m of filteredActivityMembers">
+        <span class="member-email">{{ m.userEmail }}</span>
+        <span class="role-badge">{{ getActivityRoleLabel(m.eventRole) }}</span>
+        <span class="confirmation-badge" [class.confirmed]="m.confirmationStatus === 'CONFIRMED'">
+          {{ m.confirmationStatus === 'CONFIRMED' ? 'Confirmado' :
+             m.confirmationStatus === 'CANCELLED' ? 'Cancelado' : 'Pendiente' }}
+        </span>
+        <span class="member-function" *ngIf="m.functionDescription">
+          {{ m.functionDescription }}
+        </span>
+        <span class="member-assigned-at">
+          <i class="ti ti-calendar-plus"></i> {{ m.assignedAt | date:'dd/MM/yyyy' }}
+        </span>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

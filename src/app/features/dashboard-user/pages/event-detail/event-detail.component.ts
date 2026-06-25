@@ -9,7 +9,7 @@ import {
 import { ActivityService } from '../../../../core/core-activities/services/activity.service';
 import {
   ActivityResponse, ActivityMember, AuditLogActivity,
-  ActivityMemberRole, ActivityStatus
+  ActivityMemberRole, ActivityStatus, ActivityImageResponse
 } from '../../../../core/core-activities/models/activity.model';
 
 @Component({
@@ -40,11 +40,13 @@ export class EventDetailComponent implements OnInit {
   activities: ActivityResponse[] = [];
   activitiesLoading = false;
   activitiesError = false;
-  selectedActivity: ActivityResponse | null = null;
-  activityMembers: ActivityMember[] = [];
-  activityMembersLoading = false;
   myActivityAssignments: Set<number> = new Set();
   activityAuditLog: AuditLogActivity[] = [];
+  activityImages: ActivityImageResponse[] = [];
+  activityImagesLoading = false;
+  uploadingActivityImage = false;
+  activityImageUploadError = '';
+  newActivityPendingFiles: File[] = [];
 
   showCreateActivityModal = false;
   showEditActivityModal = false;
@@ -54,13 +56,11 @@ export class EventDetailComponent implements OnInit {
 
   showAssignMemberModal = false;
   assignActivityId: number | null = null;
-  assignMemberEmail = '';
   assignMemberRole: ActivityMemberRole = 'PARTICIPANT';
+  assignMemberRoleFilter: 'ALL' | 'STAFF' | 'MEMBER' = 'ALL';
+  selectedAssignMember: EventMember | null = null;
   assignMemberFunction = '';
   assignMemberError = '';
-
-  showActivityDetailModal = false;
-  activityMembersLoading2 = false;
 
   activityForm = {
     title: '',
@@ -232,6 +232,21 @@ export class EventDetailComponent implements OnInit {
       );
     }
     return result;
+  }
+
+  get assignableEventMembers(): EventMember[] {
+    let result = this.members.filter(m => m.status === 'ACTIVE' && m.eventRole !== 'ORGANIZER');
+    if (this.assignMemberRoleFilter !== 'ALL') {
+      result = result.filter(m => m.eventRole === this.assignMemberRoleFilter);
+    }
+    return result;
+  }
+
+  get availableActivityRoles(): ActivityMemberRole[] {
+    if (!this.selectedAssignMember) return [];
+    if (this.selectedAssignMember.eventRole === 'STAFF') return ['STAFF'];
+    if (this.selectedAssignMember.eventRole === 'MEMBER') return ['PARTICIPANT', 'JUDGE'];
+    return [];
   }
 
   getMembersByRole(role: EventRole): EventMember[] {
@@ -635,7 +650,19 @@ export class EventDetailComponent implements OnInit {
     this.activityForm = { title: '', description: '', location: '',
       startDatetime: '', endDatetime: '', enrollmentEnabled: false, maxEnrollment: null };
     this.activityFormError = '';
+    this.newActivityPendingFiles = [];
     this.showCreateActivityModal = true;
+  }
+
+  onNewActivityFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    this.newActivityPendingFiles = [...this.newActivityPendingFiles, ...Array.from(input.files)];
+    input.value = '';
+  }
+
+  removePendingActivityFile(index: number): void {
+    this.newActivityPendingFiles = this.newActivityPendingFiles.filter((_, i) => i !== index);
   }
 
   openEditActivity(activity: ActivityResponse): void {
@@ -650,7 +677,42 @@ export class EventDetailComponent implements OnInit {
       maxEnrollment: activity.maxEnrollment
     };
     this.activityFormError = '';
+    this.activityImages = [];
+    this.activityImagesLoading = true;
+    this.activityImageUploadError = '';
+    this.activityService.getActivityImages(activity.id).subscribe({
+      next: (res) => { if (res.success) this.activityImages = res.data; this.activityImagesLoading = false; },
+      error: () => { this.activityImagesLoading = false; }
+    });
     this.showEditActivityModal = true;
+  }
+
+  onActivityImageFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0 || !this.editingActivityId) return;
+    const file = input.files[0];
+    this.uploadingActivityImage = true;
+    this.activityImageUploadError = '';
+    this.activityService.uploadActivityImage(this.editingActivityId, file).subscribe({
+      next: (res) => {
+        if (res.success) this.activityImages = [...this.activityImages, res.data];
+        this.uploadingActivityImage = false;
+        input.value = '';
+      },
+      error: (err) => {
+        this.activityImageUploadError = err.error?.message || 'Error al subir la imagen.';
+        this.uploadingActivityImage = false;
+        input.value = '';
+      }
+    });
+  }
+
+  deleteActivityImageFile(imageId: number): void {
+    if (!this.editingActivityId) return;
+    this.activityService.deleteActivityImage(this.editingActivityId, imageId).subscribe({
+      next: () => { this.activityImages = this.activityImages.filter(img => img.id !== imageId); },
+      error: (err) => { this.activityImageUploadError = err.error?.message || 'Error al eliminar la imagen.'; }
+    });
   }
 
   submitCreateActivity(): void {
@@ -670,9 +732,34 @@ export class EventDetailComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.activities = [...this.activities, res.data];
-          this.showCreateActivityModal = false;
+          const files = [...this.newActivityPendingFiles];
+          if (files.length > 0) {
+            const activityId = res.data.id;
+            let remaining = files.length;
+            let failedCount = 0;
+            const onDone = () => {
+              remaining--;
+              if (remaining === 0) {
+                if (failedCount > 0) this.activityFormError = 'Actividad creada. Algunas imágenes no se pudieron subir.';
+                this.newActivityPendingFiles = [];
+                this.showCreateActivityModal = false;
+                this.processing = false;
+              }
+            };
+            files.forEach(file => {
+              this.activityService.uploadActivityImage(activityId, file).subscribe({
+                next: () => onDone(),
+                error: () => { failedCount++; onDone(); }
+              });
+            });
+          } else {
+            this.newActivityPendingFiles = [];
+            this.showCreateActivityModal = false;
+            this.processing = false;
+          }
+        } else {
+          this.processing = false;
         }
-        this.processing = false;
       },
       error: (err) => {
         this.activityFormError = err.error?.message || 'Error al crear la actividad.';
@@ -753,18 +840,28 @@ export class EventDetailComponent implements OnInit {
 
   openAssignMember(activityId: number): void {
     this.assignActivityId = activityId;
-    this.assignMemberEmail = '';
+    this.selectedAssignMember = null;
+    this.assignMemberRoleFilter = 'ALL';
     this.assignMemberRole = 'PARTICIPANT';
     this.assignMemberFunction = '';
     this.assignMemberError = '';
     this.showAssignMemberModal = true;
   }
 
+  selectAssignMember(member: EventMember): void {
+    this.selectedAssignMember = member;
+    if (member.eventRole === 'STAFF') {
+      this.assignMemberRole = 'STAFF';
+    } else if (member.eventRole === 'MEMBER') {
+      this.assignMemberRole = 'PARTICIPANT';
+    }
+  }
+
   submitAssignMember(): void {
-    if (!this.assignActivityId || !this.assignMemberEmail.trim()) return;
+    if (!this.assignActivityId || !this.selectedAssignMember) return;
     this.processing = true; this.assignMemberError = '';
     this.activityService.assignMember(this.assignActivityId, {
-      userEmail: this.assignMemberEmail.trim(),
+      userEmail: this.selectedAssignMember.userEmail,
       eventRole: this.assignMemberRole,
       functionDescription: this.assignMemberFunction || undefined
     }).subscribe({
@@ -780,16 +877,7 @@ export class EventDetailComponent implements OnInit {
   }
 
   openActivityDetail(activity: ActivityResponse): void {
-    this.selectedActivity = activity;
-    this.activityMembersLoading = true;
-    this.showActivityDetailModal = true;
-    this.activityService.getMembersByActivity(activity.id).subscribe({
-      next: (res) => {
-        if (res.success) this.activityMembers = res.data;
-        this.activityMembersLoading = false;
-      },
-      error: () => { this.activityMembersLoading = false; }
-    });
+    this.router.navigate(['/dashboard-user/activities', activity.id]);
   }
 
   getActivityStatusLabel(status: ActivityStatus): string {
@@ -810,7 +898,7 @@ export class EventDetailComponent implements OnInit {
 
   getActivityRoleLabel(role: string): string {
     const labels: Record<string, string> = {
-      PARTICIPANT: 'Participante', JUDGE: 'Jurado', STAFF: 'Personal de apoyo'
+      PARTICIPANT: 'Participante', JUDGE: 'Jurado', STAFF: 'Personal de apoyo', ATTENDEE: 'Asistente'
     };
     return labels[role] || role;
   }

@@ -118,3 +118,10 @@ export interface AgendaItem {
   role: ActivityMemberRole;
   confirmationStatus: ConfirmationStatus;
 }
+
+export interface ActivityImageResponse {
+  id: number;
+  activityId: number;
+  imageUrl: string;
+  uploadedAt: string;
+}
