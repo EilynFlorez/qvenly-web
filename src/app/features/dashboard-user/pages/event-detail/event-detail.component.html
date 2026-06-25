@@ -434,6 +434,19 @@
                   <i class="ti ti-users"></i>
                   Inscripción cerrada
                 </div>
+
+                <!-- Botón de inscripción para invitados (rol MEMBER) -->
+                <div class="enroll-action" *ngIf="canEnroll(activity)">
+                  <button class="btn-enroll" [disabled]="enrollingActivityId === activity.id"
+                    (click)="enrollInActivity(activity.id)">
+                    <i class="ti ti-user-plus"></i>
+                    {{ enrollingActivityId === activity.id ? 'Inscribiendo...' : 'Inscribirse' }}
+                  </button>
+                </div>
+
+                <p class="enroll-error" *ngIf="enrollError">
+                  <i class="ti ti-alert-circle"></i> {{ enrollError }}
+                </p>
               </div>
             </div>
           </div>

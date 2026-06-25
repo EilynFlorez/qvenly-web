@@ -1,0 +1,5 @@
+[33mac81736[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/agent-user[m[33m)[m Merge branch 'develop' of https://github.com/EilynFlorez/qvenly-web into feature/agent-user
+[33m74765cf[m fix: resolve conflict
+[33md3ceb45[m[33m ([m[1;31morigin/develop[m[33m)[m Merge pull request #33 from EilynFlorez/feature/event-activity-dashboard
+[33m582e661[m fix(events): restrict change-role select to ORGANIZER/STAFF/MEMBER and add audit log to activity detail page
+[33m4a709ed[m feat: add self-enrollment button for event members on enrollable activities
