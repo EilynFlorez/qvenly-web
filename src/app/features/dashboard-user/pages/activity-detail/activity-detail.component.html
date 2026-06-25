@@ -124,5 +124,29 @@
       </div>
     </div>
 
+    <!-- Historial de auditoría -->
+    <div class="detail-card" *ngIf="auditLoading || auditLog.length > 0">
+      <h2 class="detail-card__title">
+        <i class="ti ti-history"></i> Historial de actividad
+      </h2>
+      <div class="loading-row loading-row--inline" *ngIf="auditLoading">
+        <div class="spinner"></div>
+        <span>Cargando historial...</span>
+      </div>
+      <div class="timeline" *ngIf="!auditLoading && auditLog.length > 0">
+        <div class="timeline-item" *ngFor="let log of sortedAuditLog">
+          <div class="timeline-item__dot">
+            <i class="ti {{ getAuditIcon(log.actionType) }}"></i>
+          </div>
+          <div class="timeline-item__body">
+            <p class="timeline-item__action">{{ getAuditActionLabel(log.actionType) }}</p>
+            <p class="timeline-item__by">{{ log.performedByEmail }}</p>
+            <p class="timeline-item__date">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p class="timeline-item__detail" *ngIf="log.changeDetail">{{ log.changeDetail }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </ng-container>
 </div>

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '../../../../core/core-activities/services/activity.service';
 import {
   ActivityResponse, ActivityMember, ActivityStatus,
-  ActivityImageResponse
+  ActivityImageResponse, AuditLogActivity
 } from '../../../../core/core-activities/models/activity.model';
 
 @Component({
@@ -15,6 +15,8 @@ export class ActivityDetailComponent implements OnInit {
   activity: ActivityResponse | null = null;
   activityMembers: ActivityMember[] = [];
   activityImages: ActivityImageResponse[] = [];
+  auditLog: AuditLogActivity[] = [];
+  auditLoading = false;
 
   loading = true;
   error = false;
@@ -45,6 +47,7 @@ export class ActivityDetailComponent implements OnInit {
           this.activity = res.data;
           this.loadMembers(id);
           this.loadImages(id);
+          this.loadAuditLog(id);
         } else {
           this.error = true;
         }
@@ -70,12 +73,26 @@ export class ActivityDetailComponent implements OnInit {
     });
   }
 
+  private loadAuditLog(id: number): void {
+    this.auditLoading = true;
+    this.activityService.getAuditLog(id).subscribe({
+      next: (res) => { if (res.success) this.auditLog = res.data; this.auditLoading = false; },
+      error: () => { this.auditLoading = false; }
+    });
+  }
+
   goBack(): void {
     if (this.activity) {
       this.router.navigate(['/dashboard-user/events', this.activity.eventId]);
     } else {
       this.router.navigate(['/dashboard-user/events']);
     }
+  }
+
+  get sortedAuditLog(): AuditLogActivity[] {
+    return [...this.auditLog].sort((a, b) =>
+      new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime()
+    );
   }
 
   get filteredActivityMembers(): ActivityMember[] {
@@ -111,5 +128,35 @@ export class ActivityDetailComponent implements OnInit {
       PARTICIPANT: 'Participante', JUDGE: 'Jurado', STAFF: 'Personal de apoyo', ATTENDEE: 'Asistente'
     };
     return labels[role] || role;
+  }
+
+  getAuditActionLabel(actionType: string): string {
+    const labels: Record<string, string> = {
+      EVENT_CREATED: 'Evento creado', EVENT_PUBLISHED: 'Evento publicado',
+      EVENT_STARTED: 'Evento iniciado', EVENT_FINISHED: 'Evento finalizado',
+      EVENT_CANCELLED: 'Evento cancelado', EVENT_EDITED: 'Evento editado',
+      INVITATION_SENT: 'Invitación enviada', INVITATION_CANCELLED: 'Invitación cancelada',
+      MEMBER_ADDED: 'Miembro agregado', MEMBER_ROLE_CHANGED: 'Rol cambiado',
+      MEMBER_REMOVED: 'Miembro eliminado', MEMBER_LEFT: 'Miembro abandonó el evento',
+      ACTIVITY_CREATED: 'Actividad creada', ACTIVITY_EDITED: 'Actividad editada',
+      ACTIVITY_STARTED: 'Actividad iniciada', ACTIVITY_FINISHED: 'Actividad finalizada',
+      ACTIVITY_CANCELLED: 'Actividad cancelada', MEMBER_ASSIGNED: 'Miembro asignado',
+      MEMBER_CONFIRMED: 'Miembro confirmado', MEMBER_CANCELLED: 'Asignación cancelada'
+    };
+    return labels[actionType] || actionType.replace(/_/g, ' ');
+  }
+
+  getAuditIcon(actionType: string): string {
+    if (actionType.includes('CREATE'))  return 'ti-plus';
+    if (actionType.includes('PUBLISH')) return 'ti-send';
+    if (actionType.includes('START'))   return 'ti-player-play';
+    if (actionType.includes('FINISH'))  return 'ti-flag-check';
+    if (actionType.includes('CANCEL'))  return 'ti-x';
+    if (actionType.includes('INVITE'))  return 'ti-user-plus';
+    if (actionType.includes('MEMBER'))  return 'ti-users';
+    if (actionType.includes('ROLE'))    return 'ti-arrows-exchange';
+    if (actionType.includes('LEAVE'))   return 'ti-door-exit';
+    if (actionType.includes('UPDATE'))  return 'ti-edit';
+    return 'ti-history';
   }
 }

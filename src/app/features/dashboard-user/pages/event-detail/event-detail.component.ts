@@ -101,7 +101,7 @@ export class EventDetailComponent implements OnInit {
   showChangeRoleModal = false;
   changeRoleMemberId: number | null = null;
   changeRoleMemberEmail = '';
-  newRole: EventRole = 'PARTICIPANT';
+  newRole: EventRole = 'MEMBER';
 
   showCancelInviteModal = false;
   cancelInviteId: number | null = null;
