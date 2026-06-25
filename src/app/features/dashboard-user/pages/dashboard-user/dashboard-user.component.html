@@ -136,6 +136,16 @@
           <p class="agenda-stat-card__value">{{ cancelledCount }}</p>
         </div>
       </div>
+
+      <div class="agenda-stat-card">
+        <div class="agenda-stat-card__icon agenda-stat-card__icon--finished">
+          <i class="ti ti-checkbox"></i>
+        </div>
+        <div class="agenda-stat-card__text">
+          <p class="agenda-stat-card__label">Finalizadas</p>
+          <p class="agenda-stat-card__value">{{ finishedCount }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- ─── Filtros ──────────────────────────────────────────────────── -->
@@ -303,6 +313,48 @@
     </div>
   </div>
 
+</div>
+
+<!-- Sección: Historial de actividades -->
+<div class="section" *ngIf="finishedActivities.length > 0">
+  <div class="section-card">
+    <div class="section-card__header">
+      <h2 class="section-card__title">
+        <i class="ti ti-history"></i> Historial de actividades
+      </h2>
+    </div>
+
+    <div class="agenda-list">
+      <div class="agenda-item agenda-item--finished" *ngFor="let item of finishedActivities">
+        <div class="agenda-item__top">
+          <span class="agenda-item__event-badge">
+            <i class="ti ti-calendar-event"></i> {{ item.eventTitle }}
+          </span>
+          <span class="status-chip status-chip--finished">
+            <span class="status-chip__dot"></span>
+            Finalizada
+          </span>
+        </div>
+
+        <h3 class="agenda-item__title">{{ item.activityTitle }}</h3>
+
+        <div class="agenda-item__meta">
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-clock"></i>
+            {{ item.startDatetime | date:'EEEE, dd MMM yyyy' }}
+          </span>
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-hourglass"></i>
+            {{ item.startDatetime | date:'HH:mm' }} – {{ item.endDatetime | date:'HH:mm' }}
+          </span>
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-user"></i>
+            {{ getAgendaRoleLabel(item.role) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Sección: Mi Plan / Planes disponibles -->
