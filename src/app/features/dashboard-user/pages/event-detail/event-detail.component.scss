@@ -872,3 +872,45 @@
     font-size: 16px; color: $teal; flex-shrink: 0;
   }
 }
+
+.enroll-action {
+  margin-top: 10px;
+}
+
+.btn-enroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: $radius-sm;
+  background: $teal;
+  color: $white;
+  font-size: $fs-body;
+  font-family: $font;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) {
+    background: $teal-dark;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
+.enroll-error {
+  margin-top: 8px;
+  font-size: $fs-meta;
+  color: $red;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

@@ -118,6 +118,9 @@ export class EventDetailComponent implements OnInit {
   uploadingImage = false;
   imageUploadError = '';
 
+  enrollingActivityId: number | null = null;
+  enrollError = '';
+
   private currentUserEmail = localStorage.getItem('email') || '';
 
   constructor(
@@ -197,6 +200,11 @@ export class EventDetailComponent implements OnInit {
       );
     }
     return this.event?.ownerEmail === this.currentUserEmail;
+  }
+
+  get myEventRole(): EventRole | null {
+    const m = this.members.find(x => x.userEmail === this.currentUserEmail && x.status === 'ACTIVE');
+    return m ? m.eventRole : null;
   }
 
   get canLeave(): boolean {
@@ -642,6 +650,33 @@ export class EventDetailComponent implements OnInit {
           }
         }
       });
+    });
+  }
+
+  canEnroll(activity: ActivityResponse): boolean {
+    if (this.myEventRole !== 'MEMBER') return false;
+    if (!activity.enrollmentEnabled) return false;
+    if (activity.status !== 'PENDING') return false;
+    if (this.myActivityAssignments.has(activity.id)) return false;
+    if (activity.maxEnrollment && activity.currentEnrollments >= activity.maxEnrollment) return false;
+    return true;
+  }
+
+  enrollInActivity(activityId: number): void {
+    this.enrollingActivityId = activityId;
+    this.enrollError = '';
+    this.activityService.enroll(activityId).subscribe({
+      next: () => {
+        this.myActivityAssignments.add(activityId);
+        this.activities = this.activities.map(a =>
+          a.id === activityId ? { ...a, currentEnrollments: a.currentEnrollments + 1 } : a
+        );
+        this.enrollingActivityId = null;
+      },
+      error: (err) => {
+        this.enrollError = err.error?.message || 'Error al inscribirte.';
+        this.enrollingActivityId = null;
+      }
     });
   }
 
