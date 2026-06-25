@@ -82,14 +82,14 @@ export class DashboardUserComponent implements OnInit {
   }
 
   get sortedAgenda(): AgendaItem[] {
-    return [...this.agenda].sort((a, b) =>
-      new Date(a.startDatetime).getTime() - new Date(b.startDatetime).getTime()
-    );
+    return [...this.agenda]
+      .filter(a => a.activityStatus !== 'FINISHED')
+      .sort((a, b) => new Date(a.startDatetime).getTime() - new Date(b.startDatetime).getTime());
   }
 
   get calendarEvents(): CalendarEvent[] {
     return this.agenda
-      .filter(item => item.confirmationStatus !== 'CANCELLED')
+      .filter(item => item.confirmationStatus !== 'CANCELLED' && item.activityStatus !== 'FINISHED')
       .map(item => ({
         start: new Date(item.startDatetime),
         end: new Date(item.endDatetime),
@@ -105,21 +105,31 @@ export class DashboardUserComponent implements OnInit {
   }
 
   get confirmedCount(): number {
-    return this.agendaAll.filter(a => a.confirmationStatus === 'CONFIRMED').length;
+    return this.agendaAll.filter(a => a.confirmationStatus === 'CONFIRMED' && a.activityStatus !== 'FINISHED').length;
   }
 
   get pendingCount(): number {
-    return this.agendaAll.filter(a => a.confirmationStatus === 'PENDING').length;
+    return this.agendaAll.filter(a => a.confirmationStatus === 'PENDING' && a.activityStatus !== 'FINISHED').length;
   }
 
   get cancelledCount(): number {
-    return this.agendaAll.filter(a => a.confirmationStatus === 'CANCELLED').length;
+    return this.agendaAll.filter(a => a.confirmationStatus === 'CANCELLED' && a.activityStatus !== 'FINISHED').length;
   }
 
   get uniqueEventsForFilter(): { eventId: number; eventTitle: string }[] {
     const map = new Map<number, string>();
     this.agendaAll.forEach(a => map.set(a.eventId, a.eventTitle));
     return Array.from(map, ([eventId, eventTitle]) => ({ eventId, eventTitle }));
+  }
+
+  get finishedCount(): number {
+    return this.agendaAll.filter(a => a.activityStatus === 'FINISHED').length;
+  }
+
+  get finishedActivities(): AgendaItem[] {
+    return this.agendaAll
+      .filter(a => a.activityStatus === 'FINISHED')
+      .sort((a, b) => new Date(b.startDatetime).getTime() - new Date(a.startDatetime).getTime());
   }
 
   // ─── Plan ─────────────────────────────────────────────────────────────

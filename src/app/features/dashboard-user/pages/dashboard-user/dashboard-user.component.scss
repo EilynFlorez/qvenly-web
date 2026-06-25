@@ -614,11 +614,15 @@
 // ─── Estadísticas de Agenda ──────────────────────────────────────────────
 .agenda-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   margin-bottom: 18px;
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 700px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -656,22 +660,42 @@
 
     &--total {
       background: $teal-light;
-      i { color: $teal; }
+
+      i {
+        color: $teal;
+      }
     }
 
     &--confirmed {
       background: $green-bg;
-      i { color: $green; }
+
+      i {
+        color: $green;
+      }
     }
 
     &--pending {
       background: $orange-bg;
-      i { color: $orange; }
+
+      i {
+        color: $orange;
+      }
     }
 
     &--cancelled {
       background: $red-bg;
-      i { color: $red; }
+
+      i {
+        color: $red;
+      }
+    }
+
+    &--finished {
+      background: $blue-bg;
+
+      i {
+        color: $blue;
+      }
     }
   }
 
@@ -1028,7 +1052,9 @@
   &::before {
     content: '';
     position: absolute;
-    left: 0; right: 0; top: 0;
+    left: 0;
+    right: 0;
+    top: 0;
     height: 4px;
     border-radius: $radius-md $radius-md 0 0;
     background: linear-gradient(90deg, $teal, $teal-dark);
@@ -1098,6 +1124,14 @@
   }
 }
 
+.agenda-item--finished {
+  &::before {
+    background: linear-gradient(90deg, $gray-200, $gray-400);
+  }
+
+  opacity: 0.92;
+}
+
 // ─── Chip de estado (estilo prototipo) ──────────────────────────────────
 .status-chip {
   display: inline-flex;
@@ -1129,6 +1163,11 @@
   &--cancelled {
     background: $red-bg;
     color: $red;
+  }
+
+  &--finished {
+    background: $blue-bg;
+    color: $blue;
   }
 }
 
@@ -1185,8 +1224,15 @@
   padding: 2.5rem 1.5rem;
   gap: 12px;
   color: $gray-400;
-  i { font-size: 38px; }
-  p { margin: 0; font-size: $fs-body; }
+
+  i {
+    font-size: 38px;
+  }
+
+  p {
+    margin: 0;
+    font-size: $fs-body;
+  }
 }
 
 // ─── Modal (ventana emergente) ──────────────────────────────────────────────
@@ -1225,14 +1271,33 @@
   font-weight: 700;
   color: $gray-900;
   margin: 0;
-  i { font-size: 18px; color: $red; }
+
+  i {
+    font-size: 18px;
+    color: $red;
+  }
 }
 
 .modal-close {
-  width: 30px; height: 30px; border: none; background: none; border-radius: 8px;
-  cursor: pointer; color: $gray-400; display: flex; align-items: center; justify-content: center;
-  i { font-size: 17px; }
-  &:hover { background: $gray-100; color: $gray-900; }
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: $gray-400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 17px;
+  }
+
+  &:hover {
+    background: $gray-100;
+    color: $gray-900;
+  }
 }
 
 .modal-body {
@@ -1260,7 +1325,11 @@
   width: 100%;
   box-sizing: border-box;
   resize: vertical;
-  &:focus { border-color: $teal; box-shadow: 0 0 0 3px $teal-light; }
+
+  &:focus {
+    border-color: $teal;
+    box-shadow: 0 0 0 3px $teal-light;
+  }
 }
 
 .modal-footer {
@@ -1281,7 +1350,11 @@
   font-family: $font;
   cursor: pointer;
   transition: all 0.2s;
-  &:hover { border-color: $gray-900; color: $gray-900; }
+
+  &:hover {
+    border-color: $gray-900;
+    color: $gray-900;
+  }
 }
 
 .btn-modal-danger {
@@ -1295,8 +1368,15 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
-  &:hover:not(:disabled) { background: darken(#ef4444, 8%); }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &:hover:not(:disabled) {
+    background: darken(#ef4444, 8%);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .modal-error {
@@ -1306,5 +1386,8 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  i { font-size: 14px; }
+
+  i {
+    font-size: 14px;
+  }
 }
