@@ -75,6 +75,18 @@
         </button>
         <p class="action-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
       </div>
+
+      <!-- QR / Asistencia -->
+      <div class="action-bar" *ngIf="canShowEventQr || canScanEventAttendance">
+        <div class="action-bar__left">
+          <button class="btn-action btn-action--outline" *ngIf="canShowEventQr" (click)="openEventQrModal()">
+            <i class="ti ti-qrcode"></i> Mi QR de acceso
+          </button>
+          <button class="btn-action btn-action--outline" *ngIf="canScanEventAttendance" (click)="openScanModal()">
+            <i class="ti ti-scan"></i> Escanear asistencia
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- ── Tab bar ─────────────────────────────────────────────────────────── -->
@@ -93,6 +105,11 @@
               (click)="setTab('activities')">
         <i class="ti ti-calendar-event"></i> Actividades
         <span class="tab-count" *ngIf="activities.length > 0">{{ activities.length }}</span>
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'attendance'"
+              *ngIf="canScanEventAttendance" (click)="setTab('attendance')">
+        <i class="ti ti-users-check"></i> Asistencia
+        <span class="tab-count" *ngIf="eventAttendance.length > 0">{{ eventAttendance.length }}</span>
       </button>
       <button class="tab-btn tab-btn--disabled" *ngIf="isOrganizer" disabled>
         <i class="ti ti-cash"></i> Presupuesto
@@ -392,7 +409,7 @@
             <p>Ninguna actividad coincide con los filtros aplicados.</p>
           </div>
 
-          <div class="activities-list" *ngIf="!activitiesLoading && activities.length > 0">
+          <div class="activities-list" *ngIf="!activitiesLoading && activities.length > 0 && filteredActivities.length > 0">
             <div class="activity-card" *ngFor="let activity of filteredActivities">
               <div class="activity-card__header">
                 <div class="activity-card__info">
@@ -481,6 +498,45 @@
             </div>
           </div>
 
+        </div>
+      </ng-container>
+
+      <!-- Asistencia al evento (org/staff) -->
+      <ng-container *ngIf="activeTab === 'attendance'">
+        <div class="detail-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="ti ti-users-check"></i> Asistencia al evento
+            </h3>
+            <button class="btn-outline-sm" (click)="loadEventAttendance()" [disabled]="attendanceLoading">
+              <i class="ti ti-refresh"></i> Actualizar
+            </button>
+          </div>
+          <div class="loading-row" *ngIf="attendanceLoading">
+            <div class="spinner"></div><span>Cargando asistencia...</span>
+          </div>
+          <div class="empty-state" *ngIf="!attendanceLoading && eventAttendance.length === 0">
+            <i class="ti ti-user-check"></i>
+            <p>Aún no hay asistentes registrados.</p>
+          </div>
+          <div class="attendance-table-wrap" *ngIf="!attendanceLoading && eventAttendance.length > 0">
+            <table class="attendance-table">
+              <thead>
+                <tr>
+                  <th>Asistente</th>
+                  <th>Registrado por</th>
+                  <th>Fecha y hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let att of eventAttendance">
+                  <td>{{ att.userEmail }}</td>
+                  <td>{{ att.scannedBy }}</td>
+                  <td>{{ att.registeredAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </ng-container>
 
@@ -1045,6 +1101,94 @@
           <i class="ti ti-check"></i>
           {{ processing ? 'Guardando...' : 'Guardar cambios' }}
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Mi QR del evento -->
+  <div class="modal-overlay" *ngIf="showEventQrModal" (click)="showEventQrModal = false">
+    <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-qrcode"></i> Mi QR de acceso</h3>
+        <button class="modal-close" (click)="showEventQrModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="loading-row" *ngIf="eventQrLoading">
+          <div class="spinner"></div><span>Generando QR...</span>
+        </div>
+        <div class="qr-wrap" *ngIf="!eventQrLoading && eventQrImage">
+          <img [src]="eventQrImage" alt="Código QR" class="qr-image" />
+          <p class="qr-hint">Muestra este código al organizador o personal para registrar tu asistencia.</p>
+        </div>
+        <p class="modal-error" *ngIf="!eventQrLoading && eventQrError">
+          <i class="ti ti-alert-circle"></i> {{ eventQrError }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showEventQrModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Escanear asistencia evento -->
+  <div class="modal-overlay" *ngIf="showScanModal" (click)="closeScanModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-scan"></i> Escanear asistencia</h3>
+        <button class="modal-close" (click)="closeScanModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Resultado exitoso -->
+        <div class="scan-success" *ngIf="scanResult">
+          <i class="ti ti-circle-check"></i>
+          <div class="scan-success__info">
+            <p class="scan-success__email">{{ scanResult.userEmail }}</p>
+            <p class="scan-success__time">{{ scanResult.registeredAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+          <button class="btn-scan-again" (click)="resetScan()">
+            <i class="ti ti-scan"></i> Escanear otro
+          </button>
+        </div>
+
+        <ng-container *ngIf="!scanResult">
+          <!-- Vista de cámara -->
+          <div *ngIf="!cameraError" class="camera-container">
+            <div id="qr-reader"></div>
+            <p class="scan-hint" *ngIf="!cameraActive">Iniciando cámara...</p>
+          </div>
+
+          <!-- Error de cámara -->
+          <div class="camera-error-msg" *ngIf="cameraError">
+            <i class="ti ti-camera-off"></i>
+            <p>Cámara no disponible. Usa el campo manual.</p>
+          </div>
+
+          <!-- Input manual -->
+          <div class="manual-scan-wrap">
+            <label class="modal-label">Token manual</label>
+            <div class="manual-scan-row">
+              <input type="text" class="form-input" [(ngModel)]="scanToken"
+                placeholder="Pega el token aquí..." (keyup.enter)="submitScanManual()" />
+              <button class="btn-modal-primary"
+                [disabled]="!scanToken.trim() || scanProcessing"
+                (click)="submitScanManual()">
+                <i class="ti ti-check"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="loading-row" *ngIf="scanProcessing">
+            <div class="spinner"></div><span>Registrando asistencia...</span>
+          </div>
+          <p class="modal-error" *ngIf="scanError">
+            <i class="ti ti-alert-circle"></i> {{ scanError }}
+          </p>
+        </ng-container>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="closeScanModal()">Cerrar</button>
       </div>
     </div>
   </div>

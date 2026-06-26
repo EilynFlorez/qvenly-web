@@ -931,3 +931,83 @@
   align-items: center;
   gap: 5px;
 }
+
+// ── QR & Escaneo ──────────────────────────────────────────────────────────────
+.qr-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0;
+}
+.qr-image {
+  width: 220px; height: 220px; display: block;
+  border-radius: $radius-sm; border: 1px solid $gray-100;
+}
+.qr-hint {
+  font-size: $fs-meta; color: $gray-400; text-align: center; margin: 0; line-height: 1.4;
+}
+
+.camera-container {
+  border-radius: $radius-md; overflow: hidden; background: $gray-100;
+  min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  #qr-reader { width: 100%; }
+}
+.scan-hint {
+  font-size: $fs-body; color: $gray-400; text-align: center; margin: 0; padding: 16px;
+}
+.camera-error-msg {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 20px; text-align: center; color: $gray-400;
+  i { font-size: 32px; }
+  p { margin: 0; font-size: $fs-body; }
+}
+
+.manual-scan-wrap {
+  display: flex; flex-direction: column; gap: 6px;
+  border-top: 1px solid $gray-100; padding-top: 14px; margin-top: 4px;
+}
+.manual-scan-row {
+  display: flex; gap: 8px;
+  .form-input { flex: 1; }
+  .btn-modal-primary { flex-shrink: 0; padding: 9px 14px; }
+}
+
+.scan-success {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: $green-bg; border-radius: $radius-md; padding: 16px;
+  i.ti-circle-check { font-size: 32px; color: $green; flex-shrink: 0; }
+}
+.scan-success__info { flex: 1; min-width: 0; }
+.scan-success__email { font-size: $fs-body; font-weight: 600; color: $gray-900; margin: 0 0 4px; }
+.scan-success__time { font-size: $fs-meta; color: $gray-400; margin: 0; }
+.btn-scan-again {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 12px; background: $teal; color: $white; border: none;
+  border-radius: $radius-sm; font-size: $fs-body; font-family: $font;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  i { font-size: 14px; }
+  &:hover { background: $teal-dark; }
+}
+
+// ── Tabla de asistencia ──────────────────────────────────────────────────────
+.attendance-table-wrap { overflow-x: auto; }
+.attendance-table {
+  width: 100%; border-collapse: collapse; font-size: $fs-body; font-family: $font;
+
+  thead tr {
+    background: $gray-100;
+    th {
+      padding: 10px 14px; text-align: left; font-size: $fs-meta;
+      font-weight: 600; color: $gray-400; text-transform: uppercase;
+      letter-spacing: 0.4px; border-bottom: 1.5px solid $gray-200;
+      white-space: nowrap;
+    }
+  }
+  tbody tr {
+    border-bottom: 1px solid $gray-200;
+    &:last-child { border-bottom: none; }
+    &:hover { background: $gray-100; }
+    td {
+      padding: 10px 14px; vertical-align: middle;
+      &:first-child { color: $gray-900; font-weight: 500; }
+      &:not(:first-child) { color: $gray-500; }
+    }
+  }
+}
