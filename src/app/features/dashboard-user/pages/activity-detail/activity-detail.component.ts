@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '../../../../core/core-activities/services/activity.service';
+import { EventService } from '../../../../core/core-events/services/event.service';
+import { EventMember } from '../../../../core/core-events/models/event.model';
 import {
   ActivityResponse, ActivityMember, ActivityStatus,
   ActivityImageResponse, AuditLogActivity
@@ -17,6 +19,10 @@ export class ActivityDetailComponent implements OnInit {
   activityImages: ActivityImageResponse[] = [];
   auditLog: AuditLogActivity[] = [];
   auditLoading = false;
+  isOrganizer = false;
+  myAssignment: ActivityMember | null = null;
+  myAssignmentLoading = false;
+  private currentUserEmail = localStorage.getItem('email') || '';
 
   loading = true;
   error = false;
@@ -29,7 +35,8 @@ export class ActivityDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private eventService: EventService
   ) {}
 
   ngOnInit(): void {
@@ -45,9 +52,8 @@ export class ActivityDetailComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.activity = res.data;
-          this.loadMembers(id);
           this.loadImages(id);
-          this.loadAuditLog(id);
+          this.checkIfOrganizer(this.activity.eventId);
         } else {
           this.error = true;
         }
@@ -78,6 +84,35 @@ export class ActivityDetailComponent implements OnInit {
     this.activityService.getAuditLog(id).subscribe({
       next: (res) => { if (res.success) this.auditLog = res.data; this.auditLoading = false; },
       error: () => { this.auditLoading = false; }
+    });
+  }
+
+  private checkIfOrganizer(eventId: number): void {
+    this.eventService.getMembers(eventId).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.isOrganizer = res.data.some((m: EventMember) =>
+            m.userEmail === this.currentUserEmail && m.eventRole === 'ORGANIZER' && m.status === 'ACTIVE'
+          );
+        }
+        if (this.isOrganizer) {
+          this.loadMembers(this.activity!.id);
+          this.loadAuditLog(this.activity!.id);
+        } else {
+          this.loadMyAssignment(this.activity!.id);
+        }
+      },
+      error: () => {
+        this.loadMyAssignment(this.activity!.id);
+      }
+    });
+  }
+
+  private loadMyAssignment(id: number): void {
+    this.myAssignmentLoading = true;
+    this.activityService.getMyAssignment(id).subscribe({
+      next: (res) => { if (res.success) this.myAssignment = res.data; this.myAssignmentLoading = false; },
+      error: () => { this.myAssignmentLoading = false; }
     });
   }
 

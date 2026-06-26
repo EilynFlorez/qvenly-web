@@ -872,3 +872,20 @@
     font-size: 16px; color: $teal; flex-shrink: 0;
   }
 }
+
+.checkbox-filter {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: $fs-body; color: $gray-500; cursor: pointer; white-space: nowrap;
+  input[type="checkbox"] { accent-color: $teal; width: 15px; height: 15px; cursor: pointer; }
+  &:hover { color: $teal; }
+}
+
+.inprogress-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: $radius-pill;
+  background: $green-bg; color: $green;
+  border: 1px solid transparent; font-size: $fs-body; font-family: $font;
+  font-weight: 600; cursor: pointer; transition: border-color 0.15s, background 0.15s;
+  &:hover { border-color: $green; background: darken($green-bg, 4%); }
+  i { font-size: 13px; }
+}

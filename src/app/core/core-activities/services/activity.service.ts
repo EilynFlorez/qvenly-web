@@ -85,6 +85,12 @@ export class ActivityService {
     );
   }
 
+  getMyAssignment(activityId: number): Observable<ApiResponse<ActivityMember | null>> {
+    return this.http.get<ApiResponse<ActivityMember | null>>(
+      `${this.apiUrl}/${activityId}/members/me`, { withCredentials: true }
+    );
+  }
+
   assignMember(activityId: number, data: AssignMemberRequest): Observable<ApiResponse<ActivityMember>> {
     return this.http.post<ApiResponse<ActivityMember>>(
       `${this.apiUrl}/${activityId}/members`, data, { withCredentials: true }

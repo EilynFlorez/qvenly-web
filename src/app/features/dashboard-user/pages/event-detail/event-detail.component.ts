@@ -32,7 +32,7 @@ export class EventDetailComponent implements OnInit {
   processing = false;
   actionError = '';
 
-  readonly ROLES: EventRole[] = ['ORGANIZER', 'STAFF', 'JUDGE', 'PARTICIPANT', 'ATTENDEE'];
+  readonly ROLES: EventRole[] = ['ORGANIZER', 'STAFF', 'MEMBER'];
 
   activeTab: 'general' | 'members' | 'invitations' | 'activities' | 'budget' | 'audit' = 'general';
 
@@ -41,6 +41,10 @@ export class EventDetailComponent implements OnInit {
   activitiesLoading = false;
   activitiesError = false;
   myActivityAssignments: Set<number> = new Set();
+  myStaffAssignedActivities: Set<number> = new Set();
+  activityStatusFilter: 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED' = 'ALL';
+  activitySearchTerm = '';
+  showOnlyMyActivities = false;
   activityAuditLog: AuditLogActivity[] = [];
   activityImages: ActivityImageResponse[] = [];
   activityImagesLoading = false;
@@ -217,6 +221,25 @@ export class EventDetailComponent implements OnInit {
     return [...this.auditLog].sort((a, b) =>
       new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime()
     );
+  }
+
+  get inProgressCount(): number {
+    return this.activities.filter(a => a.status === 'IN_PROGRESS').length;
+  }
+
+  get filteredActivities(): ActivityResponse[] {
+    let result = this.activities;
+    if (this.activityStatusFilter !== 'ALL') {
+      result = result.filter(a => a.status === this.activityStatusFilter);
+    }
+    if (this.showOnlyMyActivities) {
+      result = result.filter(a => this.myActivityAssignments.has(a.id));
+    }
+    if (this.activitySearchTerm.trim()) {
+      const term = this.activitySearchTerm.trim().toLowerCase();
+      result = result.filter(a => a.title.toLowerCase().includes(term));
+    }
+    return result;
   }
 
   get filteredInvitations(): InvitationResponse[] {
@@ -631,14 +654,15 @@ export class EventDetailComponent implements OnInit {
   loadMyActivityAssignments(): void {
     if (!this.event || this.isOrganizer) return;
     this.myActivityAssignments = new Set();
+    this.myStaffAssignedActivities = new Set();
     this.activities.forEach(activity => {
-      this.activityService.getMembersByActivity(activity.id).subscribe({
+      this.activityService.getMyAssignment(activity.id).subscribe({
         next: (res) => {
-          if (res.success) {
-            const isAssigned = res.data.some(
-              (m: ActivityMember) => m.userEmail === this.currentUserEmail && m.status === 'ACTIVE'
-            );
-            if (isAssigned) this.myActivityAssignments.add(activity.id);
+          if (res.success && res.data) {
+            this.myActivityAssignments.add(activity.id);
+            if (res.data.eventRole === 'STAFF') {
+              this.myStaffAssignedActivities.add(activity.id);
+            }
           }
         }
       });
