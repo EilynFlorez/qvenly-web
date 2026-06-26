@@ -22,6 +22,7 @@ export class EventCreateComponent {
   submitError = '';
   noPlanError = false;
   limitError = false;
+  pendingFiles: File[] = [];
 
   readonly eventTypes = [
     { value: 'CONFERENCIA', label: 'Conferencia' },
@@ -74,7 +75,12 @@ export class EventCreateComponent {
     }).subscribe({
       next: (res) => {
         if (res.success) {
-          this.router.navigate(['/dashboard-user/events', res.data.id]);
+          const files = [...this.pendingFiles];
+          if (files.length > 0) {
+            this.uploadImagesSequentially(res.data.id, files, 0);
+          } else {
+            this.router.navigate(['/dashboard-user/events', res.data.id]);
+          }
         } else {
           this.submitError = res.message || 'Error al crear el evento.';
           this.submitting = false;
@@ -91,6 +97,28 @@ export class EventCreateComponent {
         this.submitting = false;
       }
     });
+  }
+
+  private uploadImagesSequentially(eventId: number, files: File[], index: number): void {
+    if (index >= files.length) {
+      this.router.navigate(['/dashboard-user/events', eventId]);
+      return;
+    }
+    this.eventService.uploadEventImage(eventId, files[index]).subscribe({
+      next: () => this.uploadImagesSequentially(eventId, files, index + 1),
+      error: () => this.uploadImagesSequentially(eventId, files, index + 1)
+    });
+  }
+
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    this.pendingFiles = [...this.pendingFiles, ...Array.from(input.files)];
+    input.value = '';
+  }
+
+  removePendingFile(index: number): void {
+    this.pendingFiles = this.pendingFiles.filter((_, i) => i !== index);
   }
 
   onCancel(): void {

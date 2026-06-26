@@ -102,6 +102,22 @@
       </div>
     </div>
 
+    <!-- Imágenes -->
+    <div class="form-row">
+      <label class="form-label">Imágenes del evento <span class="optional">(opcional)</span></label>
+      <input type="file" class="form-input" accept="image/*" multiple
+             (change)="onFilesSelected($event)" />
+    </div>
+    <div class="pending-files-list" *ngIf="pendingFiles.length > 0">
+      <div class="pending-file-item" *ngFor="let f of pendingFiles; let i = index">
+        <i class="ti ti-photo"></i>
+        <span>{{ f.name }}</span>
+        <button type="button" class="btn-remove-file" (click)="removePendingFile(i)" title="Quitar">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+    </div>
+
     <!-- Botones -->
     <div class="form-actions">
       <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="submitting">
