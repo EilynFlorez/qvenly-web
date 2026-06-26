@@ -138,12 +138,10 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   private loadMyAssignment(id: number): void {
     this.myAssignmentLoading = true;
-    this.activityService.getMembersByActivity(id).subscribe({
+    this.activityService.getMyAssignment(id).subscribe({
       next: (res) => {
         if (res.success) {
-          this.myAssignment = res.data.find(
-            m => m.userEmail === this.currentUserEmail && m.status === 'ACTIVE'
-          ) ?? null;
+          this.myAssignment = res.data;
           if (this.myAssignment?.eventRole === 'STAFF') {
             this.loadActivityAttendance();
           }
