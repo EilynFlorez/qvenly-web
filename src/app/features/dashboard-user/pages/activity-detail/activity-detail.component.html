@@ -85,8 +85,29 @@
       </div>
     </div>
 
-    <!-- Miembros asignados -->
-    <div class="detail-card">
+    <!-- Mi asignación (no organizadores) -->
+    <div class="detail-card" *ngIf="!isOrganizer && (myAssignmentLoading || myAssignment)">
+      <h2 class="detail-card__title">
+        <i class="ti ti-user-check"></i> Tu asignación
+      </h2>
+      <div class="loading-row loading-row--inline" *ngIf="myAssignmentLoading">
+        <div class="spinner"></div>
+        <span>Cargando...</span>
+      </div>
+      <div class="member-row" *ngIf="!myAssignmentLoading && myAssignment">
+        <span class="role-badge">{{ getActivityRoleLabel(myAssignment.eventRole) }}</span>
+        <span class="confirmation-badge" [class.confirmed]="myAssignment.confirmationStatus === 'CONFIRMED'">
+          {{ myAssignment.confirmationStatus === 'CONFIRMED' ? 'Confirmado' :
+             myAssignment.confirmationStatus === 'CANCELLED' ? 'Cancelado' : 'Pendiente' }}
+        </span>
+        <span class="member-function" *ngIf="myAssignment.functionDescription">
+          {{ myAssignment.functionDescription }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Miembros asignados (solo organizador) -->
+    <div class="detail-card" *ngIf="isOrganizer">
       <h2 class="detail-card__title">
         <i class="ti ti-users"></i> Miembros asignados
       </h2>
@@ -124,8 +145,8 @@
       </div>
     </div>
 
-    <!-- Historial de auditoría -->
-    <div class="detail-card" *ngIf="auditLoading || auditLog.length > 0">
+    <!-- Historial de auditoría (solo organizador) -->
+    <div class="detail-card" *ngIf="isOrganizer && (auditLoading || auditLog.length > 0)">
       <h2 class="detail-card__title">
         <i class="ti ti-history"></i> Historial de actividad
       </h2>

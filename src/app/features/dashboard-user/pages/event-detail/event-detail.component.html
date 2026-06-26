@@ -347,6 +347,27 @@
             </button>
           </div>
 
+          <button class="inprogress-chip" *ngIf="inProgressCount > 0" (click)="activityStatusFilter = 'IN_PROGRESS'">
+            <i class="ti ti-player-play"></i>
+            {{ inProgressCount }} en proceso
+          </button>
+
+          <div class="invitation-filters" *ngIf="activities.length > 0">
+            <input type="text" class="form-input" placeholder="Buscar por nombre..."
+                   [(ngModel)]="activitySearchTerm" />
+            <select class="form-input" [(ngModel)]="activityStatusFilter">
+              <option value="ALL">Todos los estados</option>
+              <option value="PENDING">Pendiente</option>
+              <option value="IN_PROGRESS">En proceso</option>
+              <option value="FINISHED">Finalizada</option>
+              <option value="CANCELLED">Cancelada</option>
+            </select>
+            <label class="checkbox-filter" *ngIf="!isOrganizer">
+              <input type="checkbox" [(ngModel)]="showOnlyMyActivities" />
+              Solo asignadas a mí
+            </label>
+          </div>
+
           <div class="loading-row" *ngIf="activitiesLoading">
             <div class="spinner"></div>
             <span>Cargando actividades...</span>
@@ -366,8 +387,13 @@
             </button>
           </div>
 
+          <div class="empty-state" *ngIf="!activitiesLoading && activities.length > 0 && filteredActivities.length === 0">
+            <i class="ti ti-filter-off"></i>
+            <p>Ninguna actividad coincide con los filtros aplicados.</p>
+          </div>
+
           <div class="activities-list" *ngIf="!activitiesLoading && activities.length > 0">
-            <div class="activity-card" *ngFor="let activity of activities">
+            <div class="activity-card" *ngFor="let activity of filteredActivities">
               <div class="activity-card__header">
                 <div class="activity-card__info">
                   <span class="status-badge" [ngClass]="getActivityStatusClass(activity.status)">
@@ -378,35 +404,39 @@
                   </span>
                   <h4 class="activity-card__title">{{ activity.title }}</h4>
                 </div>
-                <div class="activity-card__actions" *ngIf="isOrganizer">
+                <div class="activity-card__actions">
                   <button class="btn-icon" title="Ver detalles" (click)="openActivityDetail(activity)">
                     <i class="ti ti-eye"></i>
                   </button>
-                  <button class="btn-icon" title="Editar"
-                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
-                          (click)="openEditActivity(activity)">
-                    <i class="ti ti-edit"></i>
-                  </button>
-                  <button class="btn-icon" title="Asignar miembro"
-                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
-                          (click)="openAssignMember(activity.id)">
-                    <i class="ti ti-user-plus"></i>
-                  </button>
+                  <ng-container *ngIf="isOrganizer">
+                    <button class="btn-icon" title="Editar"
+                            *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                            (click)="openEditActivity(activity)">
+                      <i class="ti ti-edit"></i>
+                    </button>
+                    <button class="btn-icon" title="Asignar miembro"
+                            *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                            (click)="openAssignMember(activity.id)">
+                      <i class="ti ti-user-plus"></i>
+                    </button>
+                  </ng-container>
                   <button class="btn-icon btn-icon--success" title="Iniciar"
-                          *ngIf="activity.status === 'PENDING'"
+                          *ngIf="activity.status === 'PENDING' && (isOrganizer || myStaffAssignedActivities.has(activity.id))"
                           (click)="startActivity(activity.id)" [disabled]="processing">
                     <i class="ti ti-player-play"></i>
                   </button>
                   <button class="btn-icon btn-icon--success" title="Finalizar"
-                          *ngIf="activity.status === 'IN_PROGRESS'"
+                          *ngIf="activity.status === 'IN_PROGRESS' && (isOrganizer || myStaffAssignedActivities.has(activity.id))"
                           (click)="finishActivity(activity.id)" [disabled]="processing">
                     <i class="ti ti-flag-check"></i>
                   </button>
-                  <button class="btn-icon btn-icon--danger" title="Cancelar"
-                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
-                          (click)="openCancelActivity(activity.id)">
-                    <i class="ti ti-x"></i>
-                  </button>
+                  <ng-container *ngIf="isOrganizer">
+                    <button class="btn-icon btn-icon--danger" title="Cancelar"
+                            *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                            (click)="openCancelActivity(activity.id)">
+                      <i class="ti ti-x"></i>
+                    </button>
+                  </ng-container>
                 </div>
               </div>
               <div class="activity-card__body">
