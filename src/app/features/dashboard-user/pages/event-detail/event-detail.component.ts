@@ -694,17 +694,12 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     this.myActivityAssignments = new Set();
     this.myStaffAssignedActivities = new Set();
     this.activities.forEach(activity => {
-      this.activityService.getMembersByActivity(activity.id).subscribe({
+      this.activityService.getMyAssignment(activity.id).subscribe({
         next: (res) => {
-          if (res.success) {
-            const mine = res.data.find(
-              (m: any) => m.userEmail === this.currentUserEmail && m.status === 'ACTIVE'
-            );
-            if (mine) {
-              this.myActivityAssignments.add(activity.id);
-              if (mine.eventRole === 'STAFF') {
-                this.myStaffAssignedActivities.add(activity.id);
-              }
+          if (res.success && res.data) {
+            this.myActivityAssignments.add(activity.id);
+            if (res.data.eventRole === 'STAFF') {
+              this.myStaffAssignedActivities.add(activity.id);
             }
           }
         },
