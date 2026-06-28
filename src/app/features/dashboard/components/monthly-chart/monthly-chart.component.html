@@ -12,14 +12,20 @@
             mes pico: {{peakMonth}}
         </div>
     </div>
-    <!-- Sin datos -->
-    <div *ngIf="noData" class="no-data">
-        <i class="ti ti-chart-line-off"></i>
-        <p>No hay datos de crecimiento disponibles</p>
-    </div>
+     <!-- Sin datos sin filtros -->
+  <div *ngIf="noData && !hasActiveFilters" class="no-data">
+    <i class="ti ti-chart-line-off"></i>
+    <p>No hay datos de crecimiento disponibles</p>
+  </div>
 
-    <!-- Con datos -->
-    <div *ngIf="!noData" class="chart-wrapper">
-        <canvas id="monthlyChart"></canvas>
-    </div>
+  <!-- Sin datos con filtros -->
+  <div *ngIf="noData && hasActiveFilters" class="no-data">
+    <i class="ti ti-filter-off"></i>
+    <p>No se encontraron resultados para los filtros seleccionados</p>
+  </div>
+
+  <!-- Con datos -->
+  <div *ngIf="!noData" class="chart-wrapper">
+    <canvas id="monthlyChart"></canvas>
+  </div>
 </div>

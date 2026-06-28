@@ -23,6 +23,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 export class EventDetailComponent implements OnInit, OnDestroy {
 
   event: EventResponse | null = null;
+  surveys: any[] = [];
   members: EventMember[] = [];
   limits: LimitsUsage | null = null;
   auditLog: AuditLog[] = [];
@@ -37,7 +38,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
 
   readonly ROLES: EventRole[] = ['ORGANIZER', 'STAFF', 'MEMBER'];
 
-  activeTab: 'general' | 'members' | 'invitations' | 'activities' | 'attendance' | 'budget' | 'audit' = 'general';
+  activeTab: 'general' | 'members' | 'invitations' | 'activities' |  'attendance' | 'budget' | 'audit' | 'surveys' = 'general';
 
   // ── Actividades ──────────────────────────────────────────────────────────────
   activities: ActivityResponse[] = [];
@@ -1113,4 +1114,8 @@ export class EventDetailComponent implements OnInit, OnDestroy {
       error: () => { this.attendanceLoading = false; }
     });
   }
+  get currentUserRole(): string {
+  const m = this.members.find(x => x.userEmail === this.currentUserEmail && x.status === 'ACTIVE');
+  return m?.eventRole || '';
+}
 }
