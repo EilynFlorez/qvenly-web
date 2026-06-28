@@ -1,0 +1,427 @@
+<div class="surveys-wrapper">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       VISTA: LISTA DE ENCUESTAS
+  ════════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="currentView === 'list'">
+
+    <div class="surveys-section">
+
+      <!-- Header -->
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="ti ti-clipboard-list"></i> Encuestas del evento
+        </h3>
+        <button class="btn-primary" *ngIf="canCreate" (click)="openCreateModal()">
+          <i class="ti ti-plus"></i> Nueva encuesta
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-row" *ngIf="loading">
+        <div class="spinner"></div>
+        <span>Cargando encuestas...</span>
+      </div>
+
+      <!-- Error -->
+      <div class="error-row" *ngIf="!loading && error">
+        <i class="ti ti-alert-circle"></i>
+        <span>No se pudieron cargar las encuestas.</span>
+        <button class="btn-retry" (click)="loadSurveys()">Reintentar</button>
+      </div>
+
+      <!-- Empty -->
+      <div class="empty-state" *ngIf="!loading && !error && surveys.length === 0">
+        <i class="ti ti-clipboard-off"></i>
+        <p>No hay encuestas creadas aún.</p>
+        <button class="btn-primary" *ngIf="canCreate" (click)="openCreateModal()">
+          <i class="ti ti-plus"></i> Crear primera encuesta
+        </button>
+        <p class="empty-hint" *ngIf="!canCreate">
+          Podrás crear encuestas cuando el evento esté publicado o en progreso.
+        </p>
+      </div>
+
+      <!-- Lista -->
+      <div class="activities-list" *ngIf="!loading && !error && surveys.length > 0">
+
+        <!-- ① Click en la card abre la vista previa -->
+        <div class="activity-card" *ngFor="let survey of surveys"
+             (click)="goToPreview(survey.id)" style="cursor: pointer;">
+
+          <!-- Card header -->
+          <div class="activity-card__header">
+            <div class="activity-card__info">
+              <span class="status-badge" [ngClass]="getStatusClass(survey.status)">
+                {{ getStatusLabel(survey.status) }}
+              </span>
+              <h4 class="activity-card__title">{{ survey.title }}</h4>
+            </div>
+
+            <div class="activity-card__actions" (click)="$event.stopPropagation()">
+
+              <!-- DRAFT: solo vista previa + publicar (sin cancelar) -->
+              <!-- DRAFT: solo vista previa + publicar -->
+              <ng-container *ngIf="survey.status === 'DRAFT' && isOrganizer">
+                <button class="btn-icon" title="Vista previa"
+                        (click)="goToPreview(survey.id)">
+                  <i class="ti ti-eye"></i>
+                </button>
+                <button class="btn-icon-text btn-icon-text--success"
+                        [title]="eventStatus === 'IN_PROGRESS' ? 'Publicar' : 'El evento debe estar en progreso para publicar'"
+                        (click)="openPublishConfirm(survey.id)"
+                        [disabled]="processing || eventStatus !== 'IN_PROGRESS'">
+                  <i class="ti ti-send"></i>
+                  <span>Publicar</span>
+                </button>
+              </ng-container>
+
+              <!-- PUBLISHED: resultados + cancelar -->
+              <ng-container *ngIf="survey.status === 'PUBLISHED' && isOrganizer">
+                <button class="btn-icon btn-icon--info" title="Ver resultados"
+                        (click)="goToResults(survey.id)">
+                  <i class="ti ti-chart-bar"></i>
+                </button>
+                <button class="btn-icon btn-icon--danger" title="Cancelar"
+                        (click)="openCancelModal(survey.id)">
+                  <i class="ti ti-x"></i>
+                </button>
+              </ng-container>
+
+              <!-- CANCELLED -->
+              <ng-container *ngIf="survey.status === 'CANCELLED'">
+                <button class="btn-icon" title="Ver encuesta"
+                        (click)="goToPreview(survey.id)">
+                  <i class="ti ti-eye"></i>
+                </button>
+              </ng-container>
+
+              <!-- CLOSED: ver resultados + preview -->
+              <ng-container *ngIf="survey.status === 'CLOSED' && isOrganizer">
+                <button class="btn-icon" title="Vista previa"
+                        (click)="goToPreview(survey.id)">
+                  <i class="ti ti-eye"></i>
+                </button>
+                <button class="btn-icon btn-icon--info" title="Ver resultados"
+                        (click)="goToResults(survey.id)">
+                  <i class="ti ti-chart-bar"></i>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Card body -->
+          <div class="activity-card__body">
+            <div class="activity-card__meta">
+
+              <!-- ② Roles siempre visibles en la lista -->
+              <span *ngIf="survey.targetRoles?.length">
+                <i class="ti ti-users"></i>
+                {{ getRolesDisplay(survey.targetRoles) }}
+              </span>
+
+              <span *ngIf="survey.deadline">
+                <i class="ti ti-calendar"></i>
+                Límite: {{ survey.deadline | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+
+              <span *ngIf="survey.anonymous">
+                <i class="ti ti-incognito"></i> Anónima
+              </span>
+
+              <span *ngIf="survey.questionCount">
+                <i class="ti ti-list"></i>
+                {{ survey.questionCount }} pregunta{{ survey.questionCount !== 1 ? 's' : '' }}
+              </span>
+
+            </div>
+            <p class="activity-card__desc" *ngIf="survey.description">
+              {{ survey.description }}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </ng-container>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       VISTA: PREVIEW DE ENCUESTA
+  ════════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="currentView === 'preview'">
+
+    <div class="subview-header">
+      <button class="btn-back" (click)="goToList()">
+        <i class="ti ti-arrow-left"></i> Volver a encuestas
+      </button>
+    </div>
+
+    <div class="loading-row" *ngIf="previewLoading">
+      <div class="spinner"></div>
+      <span>Cargando encuesta...</span>
+    </div>
+
+    <div class="subview-content" *ngIf="!previewLoading && selectedSurvey">
+
+      <div class="preview-header">
+        <div class="preview-header__top">
+          <span class="status-badge" [ngClass]="getStatusClass(selectedSurvey.status)">
+            {{ getStatusLabel(selectedSurvey.status) }}
+          </span>
+          <h3 class="preview-title">{{ selectedSurvey.title }}</h3>
+        </div>
+        <p class="preview-desc" *ngIf="selectedSurvey.description">
+          {{ selectedSurvey.description }}
+        </p>
+        <div class="preview-meta">
+          <span *ngIf="selectedSurvey.targetRoles?.length">
+            <i class="ti ti-users"></i>
+            {{ getRolesDisplay(selectedSurvey.targetRoles) }}
+          </span>
+          <span *ngIf="selectedSurvey.deadline">
+            <i class="ti ti-calendar"></i>
+            Límite: {{ selectedSurvey.deadline | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+          <span *ngIf="selectedSurvey.anonymous">
+            <i class="ti ti-incognito"></i> Anónima
+          </span>
+        </div>
+      </div>
+
+      <div class="preview-questions">
+        <div class="preview-question" *ngFor="let q of selectedSurvey.questions; let i = index">
+          <div class="preview-question__header">
+            <span class="question-num">{{ i + 1 }}</span>
+            <div class="preview-question__info">
+              <span class="preview-question__text">{{ q.questionText }}</span>
+              <div class="preview-question__tags">
+                <span class="tag tag--type">{{ getQuestionTypeLabel(q.questionType) }}</span>
+                <span class="tag tag--required" *ngIf="q.required">Obligatoria</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-options"
+               *ngIf="q.questionType === 'SINGLE_CHOICE' || q.questionType === 'MULTIPLE_CHOICE'">
+            <div class="preview-option" *ngFor="let opt of q.options">
+              <span class="preview-option__bullet">
+                <i class="ti" [ngClass]="q.questionType === 'SINGLE_CHOICE' ? 'ti-circle' : 'ti-square'"></i>
+              </span>
+              {{ opt.optionText }}
+            </div>
+          </div>
+
+          <div class="preview-open" *ngIf="q.questionType === 'OPEN_TEXT'">
+            <div class="preview-open__placeholder">Respuesta de texto libre...</div>
+          </div>
+
+          <div class="preview-rating" *ngIf="q.questionType === 'RATING'">
+            <div class="rating-stars">
+              <i class="ti ti-star" *ngFor="let s of [1,2,3,4,5]"></i>
+            </div>
+            <span class="rating-hint">1 = Muy malo &nbsp;·&nbsp; 5 = Excelente</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </ng-container>
+
+
+      <!-- ═══════════════════════════════════════════════════════════════════════
+          VISTA: RESULTADOS
+      ════════════════════════════════════════════════════════════════════════ -->
+      <ng-container *ngIf="currentView === 'results'">
+        <app-survey-results
+          [eventId]="eventId"
+          [surveyId]="selectedSurveyId!"
+          (onBack)="goToList()">
+        </app-survey-results>
+      </ng-container>
+  
+</div>
+
+
+<!-- MODAL: CREAR ENCUESTA -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false">
+  <div class="modal-card modal-card--lg" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="ti ti-clipboard-list"></i> Nueva encuesta
+      </h3>
+      <button class="modal-close" (click)="showCreateModal = false">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label>Título <span class="required">*</span></label>
+        <input type="text" class="form-input" [(ngModel)]="surveyForm.title"
+               placeholder="Ej: Encuesta de satisfacción" maxlength="150">
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="form-textarea" [(ngModel)]="surveyForm.description"
+                  rows="2" placeholder="Descripción opcional"></textarea>
+      </div>
+
+      <div class="form-row">
+        <!-- ③ Fecha de expiración obligatoria -->
+        <div class="form-group">
+          <label>Fecha límite <span class="required">*</span></label>
+          <input type="datetime-local" class="form-input" [(ngModel)]="surveyForm.deadline">
+        </div>
+        <div class="form-group form-group--checkbox" style="align-self: flex-end; padding-bottom: 8px;">
+          <input type="checkbox" id="anonymous" [(ngModel)]="surveyForm.anonymous">
+          <label for="anonymous">Respuestas anónimas</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>¿Quiénes pueden responder? <span class="required">*</span></label>
+        <div class="checkbox-group">
+          <label class="checkbox-option" *ngFor="let role of availableRoles">
+            <input type="checkbox"
+                   [checked]="surveyForm.targetRoles.includes(role.value)"
+                   (change)="toggleRole(role.value)">
+            {{ role.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="section-header" style="margin-bottom: 8px;">
+          <label style="margin: 0;">Preguntas <span class="required">*</span></label>
+          <button class="btn-outline-sm" (click)="addQuestion()">
+            <i class="ti ti-plus"></i> Agregar pregunta
+          </button>
+        </div>
+
+        <div class="empty-state-sm" *ngIf="surveyForm.questions.length === 0">
+          Agrega al menos una pregunta.
+        </div>
+
+        <div class="question-list">
+          <div class="question-item" *ngFor="let q of surveyForm.questions; let i = index">
+            <div class="question-item__header">
+              <span class="question-num">{{ i + 1 }}</span>
+              <input type="text" class="form-input" [(ngModel)]="q.questionText"
+                     placeholder="Texto de la pregunta" style="flex: 1;">
+              <select class="form-input" [(ngModel)]="q.questionType" style="width: 160px;"
+                      (change)="onTypeChange(q)">
+                <option value="SINGLE_CHOICE">Opción única</option>
+                <option value="MULTIPLE_CHOICE">Múltiple opción</option>
+                <option value="OPEN_TEXT">Texto abierto</option>
+                <option value="RATING">Calificación</option>
+              </select>
+              <input type="checkbox" [id]="'req-' + i" [(ngModel)]="q.required">
+              <label [for]="'req-' + i" style="font-size: 12px; white-space: nowrap;">Obligatoria</label>
+              <button class="btn-icon btn-icon--danger" (click)="removeQuestion(i)">
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
+
+            <div class="options-list"
+                 *ngIf="q.questionType === 'SINGLE_CHOICE' || q.questionType === 'MULTIPLE_CHOICE'">
+              <div class="option-item" *ngFor="let opt of q.options; let j = index">
+                <input type="text" class="form-input" [(ngModel)]="opt.optionText"
+                       placeholder="Opción {{ j + 1 }}">
+                <button class="btn-icon btn-icon--danger" (click)="removeOption(q, j)"
+                        *ngIf="q.options.length > 2">
+                  <i class="ti ti-x"></i>
+                </button>
+              </div>
+              <button class="btn-link" (click)="addOption(q)">
+                <i class="ti ti-plus"></i> Agregar opción
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="modal-error" *ngIf="formError">
+        <i class="ti ti-alert-circle"></i> {{ formError }}
+      </p>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" (click)="showCreateModal = false">Cancelar</button>
+      <button class="btn-modal-primary" (click)="submitCreate()"
+              [disabled]="processing || !surveyForm.title.trim()">
+        <i class="ti ti-check"></i>
+        {{ processing ? 'Creando...' : 'Crear encuesta' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: CONFIRMAR PUBLICAR -->
+<div class="modal-overlay" *ngIf="showPublishConfirmModal" (click)="showPublishConfirmModal = false">
+  <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="ti ti-send"></i> Publicar encuesta
+      </h3>
+      <button class="modal-close" (click)="showPublishConfirmModal = false">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="margin: 0; font-size: 14px; color: #6b7280;">
+        Al publicar, los roles seleccionados podrán ver y responder la encuesta.
+        Si necesitas detenerla, podrás cancelarla desde la lista de encuestas.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" (click)="showPublishConfirmModal = false">Cancelar</button>
+      <button class="btn-modal-primary" (click)="confirmPublish()" [disabled]="processing">
+        <i class="ti ti-send"></i>
+        {{ processing ? 'Publicando...' : 'Sí, publicar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL: CANCELAR ENCUESTA -->
+<div class="modal-overlay" *ngIf="showCancelModal" (click)="showCancelModal = false">
+  <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="ti ti-x"></i> Cancelar encuesta
+      </h3>
+      <button class="modal-close" (click)="showCancelModal = false">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-warning">
+        La encuesta dejará de estar disponible para los participantes y no se podrán recibir más respuestas.
+      </p>
+      <div class="form-group">
+        <label>Motivo <span class="required">*</span></label>
+        <textarea class="form-textarea" [(ngModel)]="cancelReason"
+                  rows="3" placeholder="Explica el motivo de cancelación..."></textarea>
+      </div>
+      <p class="modal-error" *ngIf="cancelError">
+        <i class="ti ti-alert-circle"></i> {{ cancelError }}
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" (click)="showCancelModal = false">Volver</button>
+      <button class="btn-modal-danger" (click)="submitCancel()"
+              [disabled]="processing || !cancelReason.trim()">
+        {{ processing ? 'Procesando...' : 'Cancelar encuesta' }}
+      </button>
+    </div>
+  </div>
+</div>

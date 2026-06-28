@@ -1,0 +1,217 @@
+@use '../../styles/dashboard-variables' as *;
+
+:host { display: block; }
+
+// ── Loading / Error ────────────────────────────────────────────────────────────
+.loading-row {
+  display: flex; align-items: center; gap: 12px;
+  color: $gray-400; font-size: $fs-body; padding: 60px 0; justify-content: center;
+}
+.spinner {
+  width: 20px; height: 20px; border: 2px solid $gray-100;
+  border-top-color: $teal; border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: $fs-body; color: $red; padding: 14px 18px;
+  background: $red-bg; border-radius: $radius-sm;
+  i { font-size: 18px; }
+}
+.btn-retry {
+  margin-left: auto; padding: 6px 14px; border: 1px solid $red;
+  background: none; color: $red; border-radius: 8px; font-size: 12px;
+  cursor: pointer; font-family: $font;
+  &:hover { background: $red-bg; }
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+.results-wrapper { display: flex; flex-direction: column; gap: 20px; }
+
+.subview-header {
+  padding-bottom: 16px; border-bottom: 1px solid $gray-200;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border: 1px solid $gray-200; border-radius: $radius-sm;
+  background: transparent; color: $gray-500; font-size: $fs-body;
+  font-family: $font; cursor: pointer; transition: all 0.2s;
+  i { font-size: 15px; }
+  &:hover { border-color: $teal; color: $teal; }
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────────
+.results-hero {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+  padding: 20px; background: $white;
+  border: 1.5px solid $teal-border; border-radius: $radius-md;
+
+  &__info { display: flex; flex-direction: column; gap: 8px; }
+  &__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+}
+
+.results-title {
+  font-size: $fs-section; font-weight: 600; color: $gray-900; margin: 0;
+}
+
+.results-stats { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.stat-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: $radius-pill;
+  font-size: $fs-meta; font-weight: 500;
+  background: $teal-light; color: $teal-dark;
+  i { font-size: 13px; }
+  &--role { background: $gray-100; color: $gray-500; }
+}
+
+.results-filter { width: auto; min-width: 160px; }
+
+// ── Botones ───────────────────────────────────────────────────────────────────
+.btn-outline-sm {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 12px; border: 1px solid $gray-200; border-radius: $radius-sm;
+  background: transparent; color: $gray-500; font-size: $fs-body;
+  font-family: $font; cursor: pointer; transition: all 0.2s;
+  i { font-size: 14px; }
+  &:hover { border-color: $teal; color: $teal; }
+}
+
+// ── Empty ─────────────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 3rem 2rem; gap: 12px; color: $gray-400;
+  i { font-size: 42px; }
+  p { margin: 0; font-size: $fs-body; }
+}
+.empty-hint {
+  font-size: 13px; color: $gray-400; margin: 0;
+}
+
+// ── Preguntas ─────────────────────────────────────────────────────────────────
+.results-questions { display: flex; flex-direction: column; gap: 16px; }
+
+.result-card {
+  padding: 18px; background: $white; border: 1px solid $gray-200;
+  border-radius: $radius-md; display: flex; flex-direction: column; gap: 14px;
+
+  &__header { display: flex; align-items: flex-start; gap: 10px; }
+  &__info { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  &__text { font-size: $fs-body; font-weight: 500; color: $gray-900; margin: 0 0 4px; }
+}
+
+.question-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: $teal; color: $white; font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.tag {
+  font-size: $fs-meta; padding: 2px 8px; border-radius: $radius-pill; font-weight: 500;
+  &--type { background: $gray-100; color: $gray-500; }
+}
+
+// ── Barras ────────────────────────────────────────────────────────────────────
+.result-bars { display: flex; flex-direction: column; gap: 10px; padding-left: 34px; }
+
+.result-bar-row { display: flex; align-items: center; gap: 10px; }
+
+.result-bar-label {
+  font-size: $fs-body; color: $gray-500; min-width: 120px; max-width: 200px;
+}
+.result-bar-track {
+  flex: 1; height: 10px; background: $gray-100;
+  border-radius: $radius-pill; overflow: hidden;
+}
+.result-bar-fill {
+  height: 100%; background: $teal;
+  border-radius: $radius-pill; transition: width 0.4s ease;
+}
+.result-bar-count {
+  font-size: 12px; color: $gray-500; white-space: nowrap; min-width: 70px;
+}
+
+// ── Rating ────────────────────────────────────────────────────────────────────
+.result-rating {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding-left: 34px;
+
+  &__avg-block {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  &__avg { font-size: 36px; font-weight: 700; color: $teal; line-height: 1; }
+  &__scale { font-size: $fs-section; color: $gray-400; }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  &__label { font-size: 12px; color: $gray-500; }
+}
+
+.rating-stars {
+  display: flex; gap: 4px;
+  i {
+    font-size: 18px; color: $gray-200;
+    &.ti-star-filled { color: #f59e0b; }
+  }
+}
+
+.rating-histogram {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 4px;
+}
+
+.rating-hist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.rating-hist-label {
+  width: 2.5rem;
+  font-size: 0.8rem;
+  color: $gray-500;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+
+  .ti-star-filled { color: #f5a623; font-size: 0.75rem; }
+}
+
+.rating-hist-track {
+  flex: 1;
+  height: 8px;
+  background: $gray-100;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rating-hist-fill {
+  height: 100%;
+  background: #f5a623;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.rating-hist-count {
+  width: 1.5rem;
+  font-size: 0.8rem;
+  color: $gray-500;
+  text-align: right;
+  flex-shrink: 0;
+}

@@ -18,6 +18,7 @@ export class OrganizerChartComponent {
   topOrganizer = '';
   chart: Chart | null = null;
   noData = false;
+  hasActiveFilters = false;
 
   constructor(private dashboardService: DashboardService, private filterService: FilterService){}
 
@@ -25,6 +26,7 @@ export class OrganizerChartComponent {
 
     this.filterService.filters$.subscribe(filters=>{
       this.loading = true;
+        this.hasActiveFilters = !!(filters.startDate || filters.endDate || filters.plan);
     if (this.chart) { this.chart.destroy(); this.chart = null;
     }
     this.dashboardService.getEventsByOrganizer(
@@ -33,6 +35,7 @@ export class OrganizerChartComponent {
       filters.plan
     ).subscribe({
       next: (data) => {
+        console.log('organizers data:', data);
         this.topOrganizers = data.topOrganizer.split(', ');
         this.loading = false;
 
@@ -93,7 +96,7 @@ export class OrganizerChartComponent {
           },
           tooltip:{
             callbacks:{
-              label: (ctx) => ` ${ctx.parsed.y} eventos creados`
+              label: (ctx) => ` ${ctx.parsed.y} eventos creado(s)`
             }
           }
         },

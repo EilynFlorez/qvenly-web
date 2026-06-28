@@ -16,6 +16,7 @@ export class MonthlyChartComponent {
   peakMonth = '';
   chart: Chart | null = null;
   noData = false;
+  hasActiveFilters = false;
 
   constructor(private dashboardService: DashboardService, private filterService: FilterService) { }
 
@@ -23,6 +24,7 @@ export class MonthlyChartComponent {
 
     this.filterService.filters$.subscribe(filters=>{
       this.loading = true;
+       this.hasActiveFilters = !!(filters.startDate || filters.endDate || filters.plan);
     if (this.chart) { this.chart.destroy(); this.chart = null;
     }
     this.dashboardService.getMonthlyGrowth(
