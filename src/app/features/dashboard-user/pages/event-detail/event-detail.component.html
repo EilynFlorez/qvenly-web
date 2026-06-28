@@ -545,6 +545,8 @@
             </table>
           </div>
         </div>
+      </ng-container>
+      
       <ng-container *ngIf="activeTab === 'surveys' && isOrganizer">
           <app-event-surveys [eventId]="event.id"
             [eventStatus]="event.status"
