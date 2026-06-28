@@ -15,9 +15,10 @@ export class InvitationService {
     return this.http.get<ApiResponse<InvitationResponse[]>>(`${this.eventsUrl}/${eventId}/invitations`, { withCredentials: true });
   }
 
-  sendInvitation(eventId: number, invitedEmail: string, expiresAt?: string): Observable<ApiResponse<InvitationResponse>> {
+  sendInvitation(eventId: number, invitedEmail: string, expiresAt?: string, eventRole?: string): Observable<ApiResponse<InvitationResponse>> {
     const body: Record<string, string> = { invitedEmail };
     if (expiresAt) body['expiresAt'] = expiresAt;
+    if (eventRole) body['eventRole'] = eventRole;
     return this.http.post<ApiResponse<InvitationResponse>>(
       `${this.eventsUrl}/${eventId}/invitations`,
       body,

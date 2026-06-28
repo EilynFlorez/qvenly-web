@@ -116,13 +116,13 @@
         </div>
       </div>
 
-      <div class="feature-card" *ngIf="activePlan.plan.maxAttendees > 0">
-        <div class="feature-card__icon feature-card__icon--teal">
+      <div class="feature-card" *ngIf="activePlan.plan.maxGuests > 0">
+        <div class="feature-card__icon feature-card__icon--purple">
           <i class="ti ti-users"></i>
         </div>
         <div class="feature-card__body">
-          <span class="feature-card__value">{{ activePlan.plan.maxAttendees }}</span>
-          <span class="feature-card__label">Asistentes</span>
+          <span class="feature-card__value">{{ activePlan.plan.maxGuests }}</span>
+          <span class="feature-card__label">Invitados</span>
         </div>
       </div>
 
@@ -133,26 +133,6 @@
         <div class="feature-card__body">
           <span class="feature-card__value">{{ activePlan.plan.maxOrganizers }}</span>
           <span class="feature-card__label">Organizador(es)</span>
-        </div>
-      </div>
-
-      <div class="feature-card" *ngIf="activePlan.plan.maxParticipants > 0">
-        <div class="feature-card__icon feature-card__icon--purple">
-          <i class="ti ti-user-plus"></i>
-        </div>
-        <div class="feature-card__body">
-          <span class="feature-card__value">{{ activePlan.plan.maxParticipants }}</span>
-          <span class="feature-card__label">Participantes</span>
-        </div>
-      </div>
-
-      <div class="feature-card" *ngIf="activePlan.plan.maxJudges > 0">
-        <div class="feature-card__icon feature-card__icon--orange">
-          <i class="ti ti-gavel"></i>
-        </div>
-        <div class="feature-card__body">
-          <span class="feature-card__value">{{ activePlan.plan.maxJudges }}</span>
-          <span class="feature-card__label">Jueces</span>
         </div>
       </div>
 
@@ -183,6 +163,11 @@
 <div class="feedback-card feedback-card--success" *ngIf="successMessage">
   <i class="ti ti-circle-check"></i>
   <p>{{ successMessage }}</p>
+</div>
+
+<div class="feedback-card feedback-card--error" *ngIf="renewError">
+  <i class="ti ti-alert-circle"></i>
+  <p>{{ renewError }}</p>
 </div>
 
 <!-- Acciones -->

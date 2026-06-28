@@ -52,21 +52,13 @@
 
                 <!-- Características -->
                 <ul class="plan-features">
-                    <li *ngIf="plan.maxAttendees > 0">
+                    <li *ngIf="plan.maxGuests > 0">
                         <i class="ti ti-users"></i>
-                        Hasta {{ plan.maxAttendees }} asistentes
+                        Hasta {{ plan.maxGuests }} invitados
                     </li>
                     <li *ngIf="plan.maxOrganizers > 0">
                         <i class="ti ti-user-check"></i>
                         {{ plan.maxOrganizers }} organizador(es)
-                    </li>
-                    <li *ngIf="plan.maxParticipants > 0">
-                        <i class="ti ti-user-plus"></i>
-                        Hasta {{ plan.maxParticipants }} participantes
-                    </li>
-                    <li *ngIf="plan.maxJudges > 0">
-                        <i class="ti ti-gavel"></i>
-                        Hasta {{ plan.maxJudges }} jueces
                     </li>
                     <li *ngIf="plan.maxStaff > 0">
                         <i class="ti ti-briefcase"></i>

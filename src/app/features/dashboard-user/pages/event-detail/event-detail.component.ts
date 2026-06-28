@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../../../core/core-events/services/event.service';
 import { InvitationService } from '../../../../core/core-events/services/invitation.service';
@@ -9,15 +9,18 @@ import {
 import { ActivityService } from '../../../../core/core-activities/services/activity.service';
 import {
   ActivityResponse, ActivityMember, AuditLogActivity,
-  ActivityMemberRole, ActivityStatus
+  ActivityMemberRole, ActivityStatus, ActivityImageResponse
 } from '../../../../core/core-activities/models/activity.model';
+import { AttendanceService } from '../../../../core/core-attendance/service/attendance.service';
+import { AttendanceResponse } from '../../../../core/core-attendance/models/attendance.model';
+import { Html5Qrcode } from 'html5-qrcode';
 
 @Component({
   selector: 'app-event-detail',
   templateUrl: './event-detail.component.html',
   styleUrls: ['./event-detail.component.scss']
 })
-export class EventDetailComponent implements OnInit {
+export class EventDetailComponent implements OnInit, OnDestroy {
 
   event: EventResponse | null = null;
   members: EventMember[] = [];
@@ -32,19 +35,25 @@ export class EventDetailComponent implements OnInit {
   processing = false;
   actionError = '';
 
-  readonly ROLES: EventRole[] = ['ORGANIZER', 'STAFF', 'JUDGE', 'PARTICIPANT', 'ATTENDEE'];
+  readonly ROLES: EventRole[] = ['ORGANIZER', 'STAFF', 'MEMBER'];
 
-  activeTab: 'general' | 'members' | 'invitations' | 'activities' | 'budget' | 'audit' = 'general';
+  activeTab: 'general' | 'members' | 'invitations' | 'activities' | 'attendance' | 'budget' | 'audit' = 'general';
 
   // ── Actividades ──────────────────────────────────────────────────────────────
   activities: ActivityResponse[] = [];
   activitiesLoading = false;
   activitiesError = false;
-  selectedActivity: ActivityResponse | null = null;
-  activityMembers: ActivityMember[] = [];
-  activityMembersLoading = false;
   myActivityAssignments: Set<number> = new Set();
+  myStaffAssignedActivities: Set<number> = new Set();
+  activityStatusFilter: 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED' = 'ALL';
+  activitySearchTerm = '';
+  showOnlyMyActivities = false;
   activityAuditLog: AuditLogActivity[] = [];
+  activityImages: ActivityImageResponse[] = [];
+  activityImagesLoading = false;
+  uploadingActivityImage = false;
+  activityImageUploadError = '';
+  newActivityPendingFiles: File[] = [];
 
   showCreateActivityModal = false;
   showEditActivityModal = false;
@@ -54,13 +63,11 @@ export class EventDetailComponent implements OnInit {
 
   showAssignMemberModal = false;
   assignActivityId: number | null = null;
-  assignMemberEmail = '';
   assignMemberRole: ActivityMemberRole = 'PARTICIPANT';
+  assignMemberRoleFilter: 'ALL' | 'STAFF' | 'MEMBER' = 'ALL';
+  selectedAssignMember: EventMember | null = null;
   assignMemberFunction = '';
   assignMemberError = '';
-
-  showActivityDetailModal = false;
-  activityMembersLoading2 = false;
 
   activityForm = {
     title: '',
@@ -83,6 +90,7 @@ export class EventDetailComponent implements OnInit {
   inviteError = '';
   inviteExpirationOption: '3' | '7' | '15' | '30' | 'custom' = '7';
   inviteCustomExpiresAt = '';
+  inviteRole: 'ORGANIZER' | 'STAFF' | 'MEMBER' = 'MEMBER';
 
   showBulkInviteModal = false;
   bulkInviteFile: File | null = null;
@@ -100,7 +108,7 @@ export class EventDetailComponent implements OnInit {
   showChangeRoleModal = false;
   changeRoleMemberId: number | null = null;
   changeRoleMemberEmail = '';
-  newRole: EventRole = 'PARTICIPANT';
+  newRole: EventRole = 'MEMBER';
 
   showCancelInviteModal = false;
   cancelInviteId: number | null = null;
@@ -117,6 +125,27 @@ export class EventDetailComponent implements OnInit {
   uploadingImage = false;
   imageUploadError = '';
 
+  enrollingActivityId: number | null = null;
+  enrollError = '';
+
+  // ── QR & Asistencia ──────────────────────────────────────────────────────────
+  showEventQrModal = false;
+  eventQrImage = '';
+  eventQrLoading = false;
+  eventQrError = '';
+
+  showScanModal = false;
+  scanToken = '';
+  scanResult: AttendanceResponse | null = null;
+  scanError = '';
+  scanProcessing = false;
+  cameraActive = false;
+  cameraError = false;
+  private html5QrCode: Html5Qrcode | null = null;
+
+  eventAttendance: AttendanceResponse[] = [];
+  attendanceLoading = false;
+
   private currentUserEmail = localStorage.getItem('email') || '';
 
   constructor(
@@ -124,13 +153,19 @@ export class EventDetailComponent implements OnInit {
     private router: Router,
     private eventService: EventService,
     private invitationService: InvitationService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private attendanceService: AttendanceService,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) { this.error = true; this.loading = false; return; }
     this.loadAll(id);
+  }
+
+  ngOnDestroy(): void {
+    this.stopCamera();
   }
 
   loadAll(id: number): void {
@@ -183,8 +218,11 @@ export class EventDetailComponent implements OnInit {
     if (tab === 'invitations' && this.invitations.length === 0 && this.event) {
       this.loadInvitations();
     }
-    if (tab === 'activities' && this.activities.length === 0 && this.event) {
-      this.loadActivities();
+    if (tab === 'activities' && this.event) {
+      if (this.activities.length === 0) this.loadActivities();
+    }
+    if (tab === 'attendance' && this.event && this.eventAttendance.length === 0) {
+      this.loadEventAttendance();
     }
   }
 
@@ -196,6 +234,11 @@ export class EventDetailComponent implements OnInit {
       );
     }
     return this.event?.ownerEmail === this.currentUserEmail;
+  }
+
+  get myEventRole(): EventRole | null {
+    const m = this.members.find(x => x.userEmail === this.currentUserEmail && x.status === 'ACTIVE');
+    return m ? m.eventRole : null;
   }
 
   get canLeave(): boolean {
@@ -218,6 +261,25 @@ export class EventDetailComponent implements OnInit {
     );
   }
 
+  get inProgressCount(): number {
+    return this.activities.filter(a => a.status === 'IN_PROGRESS').length;
+  }
+
+  get filteredActivities(): ActivityResponse[] {
+    let result = this.activities;
+    if (this.activityStatusFilter !== 'ALL') {
+      result = result.filter(a => a.status === this.activityStatusFilter);
+    }
+    if (this.showOnlyMyActivities) {
+      result = result.filter(a => this.myActivityAssignments.has(a.id));
+    }
+    if (this.activitySearchTerm.trim()) {
+      const term = this.activitySearchTerm.trim().toLowerCase();
+      result = result.filter(a => a.title.toLowerCase().includes(term));
+    }
+    return result;
+  }
+
   get filteredInvitations(): InvitationResponse[] {
     let result = this.invitations;
     if (this.invitationStatusFilter !== 'ALL') {
@@ -231,6 +293,21 @@ export class EventDetailComponent implements OnInit {
       );
     }
     return result;
+  }
+
+  get assignableEventMembers(): EventMember[] {
+    let result = this.members.filter(m => m.status === 'ACTIVE' && m.eventRole !== 'ORGANIZER');
+    if (this.assignMemberRoleFilter !== 'ALL') {
+      result = result.filter(m => m.eventRole === this.assignMemberRoleFilter);
+    }
+    return result;
+  }
+
+  get availableActivityRoles(): ActivityMemberRole[] {
+    if (!this.selectedAssignMember) return [];
+    if (this.selectedAssignMember.eventRole === 'STAFF') return ['STAFF'];
+    if (this.selectedAssignMember.eventRole === 'MEMBER') return ['PARTICIPANT', 'JUDGE'];
+    return [];
   }
 
   getMembersByRole(role: EventRole): EventMember[] {
@@ -453,6 +530,7 @@ export class EventDetailComponent implements OnInit {
     this.inviteEmail = ''; this.inviteError = '';
     this.inviteExpirationOption = '7';
     this.inviteCustomExpiresAt = '';
+    this.inviteRole = 'MEMBER';
     this.showInviteModal = true;
     if (this.invitations.length === 0) this.loadInvitations();
   }
@@ -476,7 +554,8 @@ export class EventDetailComponent implements OnInit {
     this.invitationService.sendInvitation(
       this.event.id,
       this.inviteEmail.trim(),
-      this.computeExpiresAt(this.inviteExpirationOption, this.inviteCustomExpiresAt)
+      this.computeExpiresAt(this.inviteExpirationOption, this.inviteCustomExpiresAt),
+      this.inviteRole
     ).subscribe({
       next: () => {
         this.showInviteModal = false; this.processing = false;
@@ -613,17 +692,46 @@ export class EventDetailComponent implements OnInit {
   loadMyActivityAssignments(): void {
     if (!this.event || this.isOrganizer) return;
     this.myActivityAssignments = new Set();
+    this.myStaffAssignedActivities = new Set();
     this.activities.forEach(activity => {
-      this.activityService.getMembersByActivity(activity.id).subscribe({
+      this.activityService.getMyAssignment(activity.id).subscribe({
         next: (res) => {
-          if (res.success) {
-            const isAssigned = res.data.some(
-              (m: ActivityMember) => m.userEmail === this.currentUserEmail && m.status === 'ACTIVE'
-            );
-            if (isAssigned) this.myActivityAssignments.add(activity.id);
+          if (res.success && res.data) {
+            this.myActivityAssignments.add(activity.id);
+            if (res.data.eventRole === 'STAFF') {
+              this.myStaffAssignedActivities.add(activity.id);
+            }
           }
-        }
+        },
+        error: () => {}
       });
+    });
+  }
+
+  canEnroll(activity: ActivityResponse): boolean {
+    if (this.myEventRole !== 'MEMBER') return false;
+    if (!activity.enrollmentEnabled) return false;
+    if (activity.status !== 'PENDING') return false;
+    if (this.myActivityAssignments.has(activity.id)) return false;
+    if (activity.maxEnrollment && activity.currentEnrollments >= activity.maxEnrollment) return false;
+    return true;
+  }
+
+  enrollInActivity(activityId: number): void {
+    this.enrollingActivityId = activityId;
+    this.enrollError = '';
+    this.activityService.enroll(activityId).subscribe({
+      next: () => {
+        this.myActivityAssignments.add(activityId);
+        this.activities = this.activities.map(a =>
+          a.id === activityId ? { ...a, currentEnrollments: a.currentEnrollments + 1 } : a
+        );
+        this.enrollingActivityId = null;
+      },
+      error: (err) => {
+        this.enrollError = err.error?.message || 'Error al inscribirte.';
+        this.enrollingActivityId = null;
+      }
     });
   }
 
@@ -632,7 +740,19 @@ export class EventDetailComponent implements OnInit {
     this.activityForm = { title: '', description: '', location: '',
       startDatetime: '', endDatetime: '', enrollmentEnabled: false, maxEnrollment: null };
     this.activityFormError = '';
+    this.newActivityPendingFiles = [];
     this.showCreateActivityModal = true;
+  }
+
+  onNewActivityFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    this.newActivityPendingFiles = [...this.newActivityPendingFiles, ...Array.from(input.files)];
+    input.value = '';
+  }
+
+  removePendingActivityFile(index: number): void {
+    this.newActivityPendingFiles = this.newActivityPendingFiles.filter((_, i) => i !== index);
   }
 
   openEditActivity(activity: ActivityResponse): void {
@@ -647,7 +767,42 @@ export class EventDetailComponent implements OnInit {
       maxEnrollment: activity.maxEnrollment
     };
     this.activityFormError = '';
+    this.activityImages = [];
+    this.activityImagesLoading = true;
+    this.activityImageUploadError = '';
+    this.activityService.getActivityImages(activity.id).subscribe({
+      next: (res) => { if (res.success) this.activityImages = res.data; this.activityImagesLoading = false; },
+      error: () => { this.activityImagesLoading = false; }
+    });
     this.showEditActivityModal = true;
+  }
+
+  onActivityImageFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0 || !this.editingActivityId) return;
+    const file = input.files[0];
+    this.uploadingActivityImage = true;
+    this.activityImageUploadError = '';
+    this.activityService.uploadActivityImage(this.editingActivityId, file).subscribe({
+      next: (res) => {
+        if (res.success) this.activityImages = [...this.activityImages, res.data];
+        this.uploadingActivityImage = false;
+        input.value = '';
+      },
+      error: (err) => {
+        this.activityImageUploadError = err.error?.message || 'Error al subir la imagen.';
+        this.uploadingActivityImage = false;
+        input.value = '';
+      }
+    });
+  }
+
+  deleteActivityImageFile(imageId: number): void {
+    if (!this.editingActivityId) return;
+    this.activityService.deleteActivityImage(this.editingActivityId, imageId).subscribe({
+      next: () => { this.activityImages = this.activityImages.filter(img => img.id !== imageId); },
+      error: (err) => { this.activityImageUploadError = err.error?.message || 'Error al eliminar la imagen.'; }
+    });
   }
 
   submitCreateActivity(): void {
@@ -667,9 +822,34 @@ export class EventDetailComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.activities = [...this.activities, res.data];
-          this.showCreateActivityModal = false;
+          const files = [...this.newActivityPendingFiles];
+          if (files.length > 0) {
+            const activityId = res.data.id;
+            let remaining = files.length;
+            let failedCount = 0;
+            const onDone = () => {
+              remaining--;
+              if (remaining === 0) {
+                if (failedCount > 0) this.activityFormError = 'Actividad creada. Algunas imágenes no se pudieron subir.';
+                this.newActivityPendingFiles = [];
+                this.showCreateActivityModal = false;
+                this.processing = false;
+              }
+            };
+            files.forEach(file => {
+              this.activityService.uploadActivityImage(activityId, file).subscribe({
+                next: () => onDone(),
+                error: () => { failedCount++; onDone(); }
+              });
+            });
+          } else {
+            this.newActivityPendingFiles = [];
+            this.showCreateActivityModal = false;
+            this.processing = false;
+          }
+        } else {
+          this.processing = false;
         }
-        this.processing = false;
       },
       error: (err) => {
         this.activityFormError = err.error?.message || 'Error al crear la actividad.';
@@ -750,18 +930,28 @@ export class EventDetailComponent implements OnInit {
 
   openAssignMember(activityId: number): void {
     this.assignActivityId = activityId;
-    this.assignMemberEmail = '';
+    this.selectedAssignMember = null;
+    this.assignMemberRoleFilter = 'ALL';
     this.assignMemberRole = 'PARTICIPANT';
     this.assignMemberFunction = '';
     this.assignMemberError = '';
     this.showAssignMemberModal = true;
   }
 
+  selectAssignMember(member: EventMember): void {
+    this.selectedAssignMember = member;
+    if (member.eventRole === 'STAFF') {
+      this.assignMemberRole = 'STAFF';
+    } else if (member.eventRole === 'MEMBER') {
+      this.assignMemberRole = 'PARTICIPANT';
+    }
+  }
+
   submitAssignMember(): void {
-    if (!this.assignActivityId || !this.assignMemberEmail.trim()) return;
+    if (!this.assignActivityId || !this.selectedAssignMember) return;
     this.processing = true; this.assignMemberError = '';
     this.activityService.assignMember(this.assignActivityId, {
-      userEmail: this.assignMemberEmail.trim(),
+      userEmail: this.selectedAssignMember.userEmail,
       eventRole: this.assignMemberRole,
       functionDescription: this.assignMemberFunction || undefined
     }).subscribe({
@@ -777,16 +967,7 @@ export class EventDetailComponent implements OnInit {
   }
 
   openActivityDetail(activity: ActivityResponse): void {
-    this.selectedActivity = activity;
-    this.activityMembersLoading = true;
-    this.showActivityDetailModal = true;
-    this.activityService.getMembersByActivity(activity.id).subscribe({
-      next: (res) => {
-        if (res.success) this.activityMembers = res.data;
-        this.activityMembersLoading = false;
-      },
-      error: () => { this.activityMembersLoading = false; }
-    });
+    this.router.navigate(['/dashboard-user/activities', activity.id]);
   }
 
   getActivityStatusLabel(status: ActivityStatus): string {
@@ -807,8 +988,129 @@ export class EventDetailComponent implements OnInit {
 
   getActivityRoleLabel(role: string): string {
     const labels: Record<string, string> = {
-      PARTICIPANT: 'Participante', JUDGE: 'Jurado', STAFF: 'Personal de apoyo'
+      PARTICIPANT: 'Participante', JUDGE: 'Jurado', STAFF: 'Personal de apoyo', ATTENDEE: 'Asistente'
     };
     return labels[role] || role;
+  }
+
+  // ── QR & Asistencia ──────────────────────────────────────────────────────────
+
+  get canShowEventQr(): boolean {
+    return this.myEventRole === 'MEMBER' && !!this.event && this.event.status === 'IN_PROGRESS';
+  }
+
+  get canScanEventAttendance(): boolean {
+    return this.myEventRole === 'ORGANIZER' || this.myEventRole === 'STAFF';
+  }
+
+  openEventQrModal(): void {
+    if (!this.event) return;
+    this.eventQrImage = '';
+    this.eventQrLoading = true;
+    this.eventQrError = '';
+    this.showEventQrModal = true;
+    this.attendanceService.getEventQr(this.event.id).subscribe({
+      next: (res) => {
+        if (res.success) this.eventQrImage = res.data.qrImage;
+        this.eventQrLoading = false;
+      },
+      error: (err) => {
+        this.eventQrError = err.error?.message || 'No se pudo generar el QR.';
+        this.eventQrLoading = false;
+      }
+    });
+  }
+
+  openScanModal(): void {
+    this.scanToken = '';
+    this.scanResult = null;
+    this.scanError = '';
+    this.cameraActive = false;
+    this.cameraError = false;
+    this.scanProcessing = false;
+    this.showScanModal = true;
+    setTimeout(() => this.startCamera(), 250);
+  }
+
+  closeScanModal(): void {
+    this.stopCamera();
+    this.showScanModal = false;
+  }
+
+  private startCamera(): void {
+    if (!this.showScanModal) return;
+    const el = document.getElementById('qr-reader');
+    if (!el) return;
+    this.html5QrCode = new Html5Qrcode('qr-reader');
+    this.html5QrCode.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText: string) => {
+        this.zone.run(() => {
+          if (this.scanProcessing || this.scanResult) return;
+          this.stopCamera();
+          this.processEventScan(decodedText);
+        });
+      },
+      (_err: string) => {}
+    ).then(() => {
+      this.zone.run(() => { this.cameraActive = true; });
+    }).catch(() => {
+      this.zone.run(() => { this.cameraError = true; this.html5QrCode = null; });
+    });
+  }
+
+  private stopCamera(): void {
+    if (!this.html5QrCode) return;
+    const scanner = this.html5QrCode;
+    this.html5QrCode = null;
+    this.cameraActive = false;
+    scanner.stop().then(() => scanner.clear()).catch(() => {});
+  }
+
+  resetScan(): void {
+    this.scanResult = null;
+    this.scanError = '';
+    this.scanToken = '';
+    this.cameraError = false;
+    this.cameraActive = false;
+    setTimeout(() => this.startCamera(), 250);
+  }
+
+  submitScanManual(): void {
+    if (!this.scanToken.trim() || this.scanProcessing) return;
+    this.stopCamera();
+    this.processEventScan(this.scanToken.trim());
+  }
+
+  private processEventScan(token: string): void {
+    this.scanProcessing = true;
+    this.scanError = '';
+    this.scanResult = null;
+    this.attendanceService.scan(token).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.scanResult = res.data;
+          this.loadEventAttendance();
+        }
+        this.scanProcessing = false;
+      },
+      error: (err) => {
+        this.scanError = err.error?.message || 'Error al registrar la asistencia.';
+        this.scanProcessing = false;
+      }
+    });
+  }
+
+  loadEventAttendance(): void {
+    if (!this.event) return;
+    this.attendanceLoading = true;
+    this.attendanceService.getEventAttendance(this.event.id).subscribe({
+      next: (res) => {
+        if (res.success) this.eventAttendance = res.data;
+        this.attendanceLoading = false;
+      },
+      error: () => { this.attendanceLoading = false; }
+    });
   }
 }

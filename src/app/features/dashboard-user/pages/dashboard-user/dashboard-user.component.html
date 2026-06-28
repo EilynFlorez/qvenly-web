@@ -22,8 +22,7 @@
     <a class="kpi-card__action" routerLink="/dashboard-user/plan" *ngIf="activePlan">
       Ver detalle <i class="ti ti-arrow-right"></i>
     </a>
-    <a class="kpi-card__action" routerLink="/dashboard-user/planes"
-      *ngIf="!loadingActivePlan && !activePlan">
+    <a class="kpi-card__action" routerLink="/dashboard-user/planes" *ngIf="!loadingActivePlan && !activePlan">
       Ver planes <i class="ti ti-arrow-right"></i>
     </a>
   </div>
@@ -69,6 +68,295 @@
 
 </div>
 
+<!-- Sección: Agenda (si tiene actividades) -->
+<div class="section">
+
+  <div class="section-card" *ngIf="loadingAgenda">
+    <div class="loading-row">
+      <div class="spinner"></div>
+      <span>Cargando agenda...</span>
+    </div>
+  </div>
+
+  <div class="section-card" *ngIf="!loadingAgenda && hasActivities">
+    <div class="section-card__header">
+      <h2 class="section-card__title">
+        <i class="ti ti-calendar-event"></i> Mi agenda
+      </h2>
+      <div class="view-toggle">
+        <button class="view-toggle__btn" [class.view-toggle__btn--active]="agendaViewMode === 'list'"
+          (click)="agendaViewMode = 'list'">
+          <i class="ti ti-list"></i> Lista
+        </button>
+        <button class="view-toggle__btn" [class.view-toggle__btn--active]="agendaViewMode === 'calendar'"
+          (click)="agendaViewMode = 'calendar'">
+          <i class="ti ti-calendar"></i> Calendario
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── Estadísticas ─────────────────────────────────────────────── -->
+    <div class="agenda-stats-grid">
+      <div class="agenda-stat-card">
+        <div class="agenda-stat-card__icon agenda-stat-card__icon--total">
+          <i class="ti ti-calendar"></i>
+        </div>
+        <div class="agenda-stat-card__text">
+          <p class="agenda-stat-card__label">Total actividades</p>
+          <p class="agenda-stat-card__value">{{ totalActivitiesCount }}</p>
+        </div>
+      </div>
+
+      <div class="agenda-stat-card">
+        <div class="agenda-stat-card__icon agenda-stat-card__icon--confirmed">
+          <i class="ti ti-circle-check"></i>
+        </div>
+        <div class="agenda-stat-card__text">
+          <p class="agenda-stat-card__label">Confirmadas</p>
+          <p class="agenda-stat-card__value">{{ confirmedCount }}</p>
+        </div>
+      </div>
+
+      <div class="agenda-stat-card">
+        <div class="agenda-stat-card__icon agenda-stat-card__icon--pending">
+          <i class="ti ti-hourglass"></i>
+        </div>
+        <div class="agenda-stat-card__text">
+          <p class="agenda-stat-card__label">Pendientes</p>
+          <p class="agenda-stat-card__value">{{ pendingCount }}</p>
+        </div>
+      </div>
+
+      <div class="agenda-stat-card">
+        <div class="agenda-stat-card__icon agenda-stat-card__icon--cancelled">
+          <i class="ti ti-x"></i>
+        </div>
+        <div class="agenda-stat-card__text">
+          <p class="agenda-stat-card__label">Canceladas</p>
+          <p class="agenda-stat-card__value">{{ cancelledCount }}</p>
+        </div>
+      </div>
+
+      <div class="agenda-stat-card">
+        <div class="agenda-stat-card__icon agenda-stat-card__icon--finished">
+          <i class="ti ti-checkbox"></i>
+        </div>
+        <div class="agenda-stat-card__text">
+          <p class="agenda-stat-card__label">Finalizadas</p>
+          <p class="agenda-stat-card__value">{{ finishedCount }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Filtros ──────────────────────────────────────────────────── -->
+    <div class="agenda-filters">
+      <div class="agenda-filters__search">
+        <i class="ti ti-search"></i>
+        <input type="text" placeholder="Buscar por nombre de actividad..." [(ngModel)]="filterName"
+          (ngModelChange)="applyAgendaFilters()" />
+      </div>
+
+      <select class="agenda-filters__select" [(ngModel)]="filterEventId" (ngModelChange)="applyAgendaFilters()">
+        <option [ngValue]="null">Todos los eventos</option>
+        <option *ngFor="let ev of uniqueEventsForFilter" [ngValue]="ev.eventId">{{ ev.eventTitle }}</option>
+      </select>
+
+      <input type="date" class="agenda-filters__date" [(ngModel)]="filterDate" (ngModelChange)="applyAgendaFilters()" />
+
+      <select class="agenda-filters__select" [(ngModel)]="filterStatus" (ngModelChange)="applyAgendaFilters()">
+        <option value="">Todos los estados</option>
+        <option value="PENDING">Pendiente</option>
+        <option value="IN_PROGRESS">En proceso</option>
+        <option value="FINISHED">Finalizada</option>
+        <option value="CANCELLED">Cancelada</option>
+      </select>
+
+      <button class="agenda-filters__clear" (click)="clearAgendaFilters()">
+        <i class="ti ti-x"></i> Limpiar filtros
+      </button>
+    </div>
+
+    <div class="error-row" *ngIf="agendaActionError">
+      <i class="ti ti-alert-circle"></i>
+      <span>{{ agendaActionError }}</span>
+    </div>
+
+    <!-- ─── Vista de Lista ───────────────────────────────────────────── -->
+    <div class="agenda-list" *ngIf="agendaViewMode === 'list'">
+      <div class="agenda-item" *ngFor="let item of sortedAgenda">
+        <div class="agenda-item__top">
+          <span class="agenda-item__event-badge">
+            <i class="ti ti-calendar-event"></i> {{ item.eventTitle }}
+          </span>
+          <span class="status-chip" [class.status-chip--confirmed]="item.confirmationStatus === 'CONFIRMED'"
+            [class.status-chip--pending]="item.confirmationStatus === 'PENDING'"
+            [class.status-chip--cancelled]="item.confirmationStatus === 'CANCELLED'">
+            <span class="status-chip__dot"></span>
+            {{ item.confirmationStatus === 'CONFIRMED' ? 'Confirmado' : item.confirmationStatus === 'PENDING' ?
+            'Pendiente' : 'Cancelado' }}
+          </span>
+        </div>
+
+        <h3 class="agenda-item__title">{{ item.activityTitle }}</h3>
+
+        <div class="agenda-item__meta">
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-clock"></i>
+            {{ item.startDatetime | date:'EEEE, dd MMM yyyy' }}
+          </span>
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-hourglass"></i>
+            {{ item.startDatetime | date:'HH:mm' }} – {{ item.endDatetime | date:'HH:mm' }}
+          </span>
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-user"></i>
+            {{ getAgendaRoleLabel(item.role) }}
+          </span>
+        </div>
+
+        <div class="agenda-item__actions" *ngIf="item.confirmationStatus === 'PENDING'">
+          <button class="btn-agenda btn-agenda--confirm" [disabled]="processingAgendaAction"
+            (click)="confirmAgendaItem(item)">
+            <i class="ti ti-check"></i> Confirmar
+          </button>
+          <button class="btn-agenda btn-agenda--cancel" [disabled]="processingAgendaAction"
+            (click)="openCancelAgenda(item)">
+            <i class="ti ti-x"></i> Cancelar
+          </button>
+        </div>
+      </div>
+
+      <!-- Mensaje cuando los filtros no devuelven resultados -->
+      <div class="empty-state" *ngIf="sortedAgenda.length === 0">
+        <i class="ti ti-calendar-off"></i>
+        <p>No hay actividades que coincidan con los filtros.</p>
+      </div>
+    </div>
+
+    <!-- ─── Vista de Calendario ──────────────────────────────────────── -->
+    <div class="agenda-calendar" *ngIf="agendaViewMode === 'calendar'">
+      <div class="agenda-calendar__header">
+        <button class="cal-nav-btn" mwlCalendarPreviousView [view]="calendarViewType" [(viewDate)]="viewDate">
+          <i class="ti ti-chevron-left"></i>
+        </button>
+        <h3 class="agenda-calendar__title">{{ viewDate | date:'MMMM yyyy' }}</h3>
+        <button class="cal-nav-btn" mwlCalendarNextView [view]="calendarViewType" [(viewDate)]="viewDate">
+          <i class="ti ti-chevron-right"></i>
+        </button>
+        <button class="cal-today-btn" mwlCalendarToday [(viewDate)]="viewDate">Hoy</button>
+      </div>
+
+      <mwl-calendar-month-view [viewDate]="viewDate" [events]="calendarEvents" [locale]="'es'"
+        (dayClicked)="dayClicked($event.day)">
+      </mwl-calendar-month-view>
+
+      <!-- Panel de detalle al hacer clic en un evento -->
+      <!-- Panel de detalle del día seleccionado -->
+      <div class="calendar-detail" *ngIf="selectedDate">
+        <div class="calendar-detail__header">
+          <h3 class="calendar-detail__date">{{ selectedDate | date:'EEEE, dd MMMM yyyy' }}</h3>
+          <button class="modal-close" (click)="closeDayDetail()"><i class="ti ti-x"></i></button>
+        </div>
+
+        <div class="empty-state" *ngIf="selectedDayItems.length === 0">
+          <i class="ti ti-calendar-off"></i>
+          <p>No hay actividades este día.</p>
+        </div>
+
+        <div class="calendar-detail__item" *ngFor="let item of selectedDayItems">
+          <div class="agenda-item__top">
+            <span class="agenda-item__event-badge">
+              <i class="ti ti-calendar-event"></i> {{ item.eventTitle }}
+            </span>
+            <span class="status-chip" [class.status-chip--confirmed]="item.confirmationStatus === 'CONFIRMED'"
+              [class.status-chip--pending]="item.confirmationStatus === 'PENDING'"
+              [class.status-chip--cancelled]="item.confirmationStatus === 'CANCELLED'">
+              <span class="status-chip__dot"></span>
+              {{ item.confirmationStatus === 'CONFIRMED' ? 'Confirmado' : item.confirmationStatus === 'PENDING' ?
+              'Pendiente' : 'Cancelado' }}
+            </span>
+          </div>
+
+          <h4 class="agenda-item__title">{{ item.activityTitle }}</h4>
+
+          <div class="agenda-item__meta">
+            <span class="agenda-item__meta-row">
+              <i class="ti ti-hourglass"></i>
+              {{ item.startDatetime | date:'HH:mm' }} – {{ item.endDatetime | date:'HH:mm' }}
+            </span>
+            <span class="agenda-item__meta-row">
+              <i class="ti ti-user"></i>
+              {{ getAgendaRoleLabel(item.role) }}
+            </span>
+          </div>
+
+          <div class="agenda-item__actions" *ngIf="item.confirmationStatus === 'PENDING'">
+            <button class="btn-agenda btn-agenda--confirm" [disabled]="processingAgendaAction"
+              (click)="confirmAgendaItem(item)">
+              <i class="ti ti-check"></i> Confirmar
+            </button>
+            <button class="btn-agenda btn-agenda--cancel" [disabled]="processingAgendaAction"
+              (click)="openCancelAgenda(item)">
+              <i class="ti ti-x"></i> Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin actividades en agenda -->
+  <div class="section-card" *ngIf="!loadingAgenda && !hasActivities">
+    <div class="empty-state">
+      <i class="ti ti-calendar-off"></i>
+      <p>No tienes actividades asignadas.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Sección: Historial de actividades -->
+<div class="section" *ngIf="finishedActivities.length > 0">
+  <div class="section-card">
+    <div class="section-card__header">
+      <h2 class="section-card__title">
+        <i class="ti ti-history"></i> Historial de actividades
+      </h2>
+    </div>
+
+    <div class="agenda-list">
+      <div class="agenda-item agenda-item--finished" *ngFor="let item of finishedActivities">
+        <div class="agenda-item__top">
+          <span class="agenda-item__event-badge">
+            <i class="ti ti-calendar-event"></i> {{ item.eventTitle }}
+          </span>
+          <span class="status-chip status-chip--finished">
+            <span class="status-chip__dot"></span>
+            Finalizada
+          </span>
+        </div>
+
+        <h3 class="agenda-item__title">{{ item.activityTitle }}</h3>
+
+        <div class="agenda-item__meta">
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-clock"></i>
+            {{ item.startDatetime | date:'EEEE, dd MMM yyyy' }}
+          </span>
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-hourglass"></i>
+            {{ item.startDatetime | date:'HH:mm' }} – {{ item.endDatetime | date:'HH:mm' }}
+          </span>
+          <span class="agenda-item__meta-row">
+            <i class="ti ti-user"></i>
+            {{ getAgendaRoleLabel(item.role) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Sección: Mi Plan / Planes disponibles -->
 <div class="section">
 
@@ -102,14 +390,11 @@
           <li *ngIf="activePlan.plan.maxEvents > 0">
             <i class="ti ti-calendar-event"></i> Hasta {{ activePlan.plan.maxEvents }} eventos
           </li>
-          <li *ngIf="activePlan.plan.maxAttendees > 0">
-            <i class="ti ti-users"></i> Hasta {{ activePlan.plan.maxAttendees }} asistentes
+          <li *ngIf="activePlan.plan.maxGuests > 0">
+            <i class="ti ti-users"></i> Hasta {{ activePlan.plan.maxGuests }} invitados
           </li>
           <li *ngIf="activePlan.plan.maxOrganizers > 0">
             <i class="ti ti-user-check"></i> {{ activePlan.plan.maxOrganizers }} organizador(es)
-          </li>
-          <li *ngIf="activePlan.plan.maxParticipants > 0">
-            <i class="ti ti-user-plus"></i> Hasta {{ activePlan.plan.maxParticipants }} participantes
           </li>
           <li *ngIf="activePlan.plan.maxStaff > 0">
             <i class="ti ti-briefcase"></i> Hasta {{ activePlan.plan.maxStaff }} personal de apoyo
@@ -163,17 +448,11 @@
           <li *ngIf="plan.maxEvents > 0">
             <i class="ti ti-calendar-event"></i> Hasta {{ plan.maxEvents }} eventos
           </li>
-          <li *ngIf="plan.maxAttendees > 0">
-            <i class="ti ti-users"></i> Hasta {{ plan.maxAttendees }} asistentes
+          <li *ngIf="plan.maxGuests > 0">
+            <i class="ti ti-users"></i> Hasta {{ plan.maxGuests }} invitados
           </li>
           <li *ngIf="plan.maxOrganizers > 0">
             <i class="ti ti-user-check"></i> {{ plan.maxOrganizers }} organizador(es)
-          </li>
-          <li *ngIf="plan.maxParticipants > 0">
-            <i class="ti ti-user-plus"></i> Hasta {{ plan.maxParticipants }} participantes
-          </li>
-          <li *ngIf="plan.maxJudges > 0">
-            <i class="ti ti-gavel"></i> Hasta {{ plan.maxJudges }} jueces
           </li>
           <li *ngIf="plan.maxStaff > 0">
             <i class="ti ti-briefcase"></i> Hasta {{ plan.maxStaff }} personal de apoyo
@@ -237,5 +516,27 @@
         <i class="ti ti-chevron-right action-item__arrow"></i>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal: cancelar participación desde la agenda -->
+<div class="modal-overlay" *ngIf="showCancelAgendaModal" (click)="showCancelAgendaModal = false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title"><i class="ti ti-x"></i> Cancelar participación</h3>
+      <button class="modal-close" (click)="showCancelAgendaModal = false"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">Ingresa el motivo de la cancelación:</p>
+      <textarea class="form-textarea" [(ngModel)]="cancelAgendaReason" rows="3" placeholder="Motivo..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" (click)="showCancelAgendaModal = false">Cerrar</button>
+      <button class="btn-modal-danger" [disabled]="!cancelAgendaReason.trim() || processingAgendaAction"
+        (click)="submitCancelAgenda()">
+        {{ processingAgendaAction ? 'Procesando...' : 'Cancelar participación' }}
+      </button>
+    </div>
+    <p class="modal-error" *ngIf="agendaActionError"><i class="ti ti-alert-circle"></i> {{ agendaActionError }}</p>
   </div>
 </div>

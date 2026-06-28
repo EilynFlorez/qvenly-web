@@ -2,9 +2,7 @@ export interface GeneralStats {
     totalUsers: number;
     totalOrganizers: number;
     totalStaff: number;
-    totalAssistants: number;
-    totalJudges: number;
-    totalParticipants: number;
+    totalGuests: number;
     totalEvents: number;
 }
 
@@ -34,9 +32,7 @@ export interface EventUserDetail{
     eventId: number;
     eventName: string;
     staff: number;
-    assistants: number;
-    judges: number;
-    participants: number;
+    guests: number;
 }
 
 export interface MonthlyGrowh{

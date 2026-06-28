@@ -75,6 +75,18 @@
         </button>
         <p class="action-error" *ngIf="actionError"><i class="ti ti-alert-circle"></i> {{ actionError }}</p>
       </div>
+
+      <!-- QR / Asistencia -->
+      <div class="action-bar" *ngIf="canShowEventQr || canScanEventAttendance">
+        <div class="action-bar__left">
+          <button class="btn-action btn-action--outline" *ngIf="canShowEventQr" (click)="openEventQrModal()">
+            <i class="ti ti-qrcode"></i> Mi QR de acceso
+          </button>
+          <button class="btn-action btn-action--outline" *ngIf="canScanEventAttendance" (click)="openScanModal()">
+            <i class="ti ti-scan"></i> Escanear asistencia
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- ── Tab bar ─────────────────────────────────────────────────────────── -->
@@ -93,6 +105,11 @@
               (click)="setTab('activities')">
         <i class="ti ti-calendar-event"></i> Actividades
         <span class="tab-count" *ngIf="activities.length > 0">{{ activities.length }}</span>
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'attendance'"
+              *ngIf="canScanEventAttendance" (click)="setTab('attendance')">
+        <i class="ti ti-users-check"></i> Asistencia
+        <span class="tab-count" *ngIf="eventAttendance.length > 0">{{ eventAttendance.length }}</span>
       </button>
       <button class="tab-btn tab-btn--disabled" *ngIf="isOrganizer" disabled>
         <i class="ti ti-cash"></i> Presupuesto
@@ -169,42 +186,6 @@
 
             <div class="limit-item">
               <div class="limit-item__header">
-                <span class="limit-item__label">Participantes</span>
-                <span class="limit-item__count">{{ limits.participants.current }} / {{ limits.participants.max }}</span>
-              </div>
-              <div class="limit-bar">
-                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.participants.full"
-                  [style.width.%]="getPercent(limits.participants.current, limits.participants.max)"></div>
-              </div>
-              <span class="limit-item__remaining">{{ limits.participants.remaining }} disponibles</span>
-            </div>
-
-            <div class="limit-item">
-              <div class="limit-item__header">
-                <span class="limit-item__label">Jueces</span>
-                <span class="limit-item__count">{{ limits.judges.current }} / {{ limits.judges.max }}</span>
-              </div>
-              <div class="limit-bar">
-                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.judges.full"
-                  [style.width.%]="getPercent(limits.judges.current, limits.judges.max)"></div>
-              </div>
-              <span class="limit-item__remaining">{{ limits.judges.remaining }} disponibles</span>
-            </div>
-
-            <div class="limit-item">
-              <div class="limit-item__header">
-                <span class="limit-item__label">Asistentes</span>
-                <span class="limit-item__count">{{ limits.attendees.current }} / {{ limits.attendees.max }}</span>
-              </div>
-              <div class="limit-bar">
-                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.attendees.full"
-                  [style.width.%]="getPercent(limits.attendees.current, limits.attendees.max)"></div>
-              </div>
-              <span class="limit-item__remaining">{{ limits.attendees.remaining }} disponibles</span>
-            </div>
-
-            <div class="limit-item">
-              <div class="limit-item__header">
                 <span class="limit-item__label">Personal de apoyo</span>
                 <span class="limit-item__count">{{ limits.staff.current }} / {{ limits.staff.max }}</span>
               </div>
@@ -213,6 +194,18 @@
                   [style.width.%]="getPercent(limits.staff.current, limits.staff.max)"></div>
               </div>
               <span class="limit-item__remaining">{{ limits.staff.remaining }} disponibles</span>
+            </div>
+
+            <div class="limit-item">
+              <div class="limit-item__header">
+                <span class="limit-item__label">Miembros</span>
+                <span class="limit-item__count">{{ limits.members.current }} / {{ limits.members.max }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [class.limit-bar__fill--full]="limits.members.full"
+                  [style.width.%]="getPercent(limits.members.current, limits.members.max)"></div>
+              </div>
+              <span class="limit-item__remaining">{{ limits.members.remaining }} disponibles</span>
             </div>
           </div>
         </div>
@@ -371,6 +364,27 @@
             </button>
           </div>
 
+          <button class="inprogress-chip" *ngIf="inProgressCount > 0" (click)="activityStatusFilter = 'IN_PROGRESS'">
+            <i class="ti ti-player-play"></i>
+            {{ inProgressCount }} en proceso
+          </button>
+
+          <div class="invitation-filters" *ngIf="activities.length > 0">
+            <input type="text" class="form-input" placeholder="Buscar por nombre..."
+                   [(ngModel)]="activitySearchTerm" />
+            <select class="form-input" [(ngModel)]="activityStatusFilter">
+              <option value="ALL">Todos los estados</option>
+              <option value="PENDING">Pendiente</option>
+              <option value="IN_PROGRESS">En proceso</option>
+              <option value="FINISHED">Finalizada</option>
+              <option value="CANCELLED">Cancelada</option>
+            </select>
+            <label class="checkbox-filter" *ngIf="!isOrganizer">
+              <input type="checkbox" [(ngModel)]="showOnlyMyActivities" />
+              Solo asignadas a mí
+            </label>
+          </div>
+
           <div class="loading-row" *ngIf="activitiesLoading">
             <div class="spinner"></div>
             <span>Cargando actividades...</span>
@@ -390,8 +404,13 @@
             </button>
           </div>
 
-          <div class="activities-list" *ngIf="!activitiesLoading && activities.length > 0">
-            <div class="activity-card" *ngFor="let activity of activities">
+          <div class="empty-state" *ngIf="!activitiesLoading && activities.length > 0 && filteredActivities.length === 0">
+            <i class="ti ti-filter-off"></i>
+            <p>Ninguna actividad coincide con los filtros aplicados.</p>
+          </div>
+
+          <div class="activities-list" *ngIf="!activitiesLoading && activities.length > 0 && filteredActivities.length > 0">
+            <div class="activity-card" *ngFor="let activity of filteredActivities">
               <div class="activity-card__header">
                 <div class="activity-card__info">
                   <span class="status-badge" [ngClass]="getActivityStatusClass(activity.status)">
@@ -402,35 +421,39 @@
                   </span>
                   <h4 class="activity-card__title">{{ activity.title }}</h4>
                 </div>
-                <div class="activity-card__actions" *ngIf="isOrganizer">
+                <div class="activity-card__actions">
                   <button class="btn-icon" title="Ver detalles" (click)="openActivityDetail(activity)">
                     <i class="ti ti-eye"></i>
                   </button>
-                  <button class="btn-icon" title="Editar"
-                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
-                          (click)="openEditActivity(activity)">
-                    <i class="ti ti-edit"></i>
-                  </button>
-                  <button class="btn-icon" title="Asignar miembro"
-                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
-                          (click)="openAssignMember(activity.id)">
-                    <i class="ti ti-user-plus"></i>
-                  </button>
+                  <ng-container *ngIf="isOrganizer">
+                    <button class="btn-icon" title="Editar"
+                            *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                            (click)="openEditActivity(activity)">
+                      <i class="ti ti-edit"></i>
+                    </button>
+                    <button class="btn-icon" title="Asignar miembro"
+                            *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                            (click)="openAssignMember(activity.id)">
+                      <i class="ti ti-user-plus"></i>
+                    </button>
+                  </ng-container>
                   <button class="btn-icon btn-icon--success" title="Iniciar"
-                          *ngIf="activity.status === 'PENDING'"
+                          *ngIf="activity.status === 'PENDING' && (isOrganizer || myStaffAssignedActivities.has(activity.id))"
                           (click)="startActivity(activity.id)" [disabled]="processing">
                     <i class="ti ti-player-play"></i>
                   </button>
                   <button class="btn-icon btn-icon--success" title="Finalizar"
-                          *ngIf="activity.status === 'IN_PROGRESS'"
+                          *ngIf="activity.status === 'IN_PROGRESS' && (isOrganizer || myStaffAssignedActivities.has(activity.id))"
                           (click)="finishActivity(activity.id)" [disabled]="processing">
                     <i class="ti ti-flag-check"></i>
                   </button>
-                  <button class="btn-icon btn-icon--danger" title="Cancelar"
-                          *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
-                          (click)="openCancelActivity(activity.id)">
-                    <i class="ti ti-x"></i>
-                  </button>
+                  <ng-container *ngIf="isOrganizer">
+                    <button class="btn-icon btn-icon--danger" title="Cancelar"
+                            *ngIf="activity.status !== 'FINISHED' && activity.status !== 'CANCELLED'"
+                            (click)="openCancelActivity(activity.id)">
+                      <i class="ti ti-x"></i>
+                    </button>
+                  </ng-container>
                 </div>
               </div>
               <div class="activity-card__body">
@@ -447,17 +470,73 @@
                 <p class="activity-card__desc" *ngIf="activity.description">
                   {{ activity.description }}
                 </p>
-                <div class="enrollment-badge" *ngIf="activity.enrollmentEnabled">
+                <div class="enrollment-badge" *ngIf="activity.enrollmentEnabled && (activity.status === 'PENDING' || activity.status === 'IN_PROGRESS')">
                   <i class="ti ti-users"></i>
                   Inscripción abierta
                   <span *ngIf="activity.maxEnrollment">
                     — {{ activity.currentEnrollments }}/{{ activity.maxEnrollment }} inscritos
                   </span>
                 </div>
+                <div class="enrollment-badge enrollment-badge--closed" *ngIf="activity.enrollmentEnabled && (activity.status === 'FINISHED' || activity.status === 'CANCELLED')">
+                  <i class="ti ti-users"></i>
+                  Inscripción cerrada
+                </div>
+
+                <!-- Botón de inscripción para invitados (rol MEMBER) -->
+                <div class="enroll-action" *ngIf="canEnroll(activity)">
+                  <button class="btn-enroll" [disabled]="enrollingActivityId === activity.id"
+                    (click)="enrollInActivity(activity.id)">
+                    <i class="ti ti-user-plus"></i>
+                    {{ enrollingActivityId === activity.id ? 'Inscribiendo...' : 'Inscribirse' }}
+                  </button>
+                </div>
+
+                <p class="enroll-error" *ngIf="enrollError">
+                  <i class="ti ti-alert-circle"></i> {{ enrollError }}
+                </p>
               </div>
             </div>
           </div>
 
+        </div>
+      </ng-container>
+
+      <!-- Asistencia al evento (org/staff) -->
+      <ng-container *ngIf="activeTab === 'attendance'">
+        <div class="detail-card">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="ti ti-users-check"></i> Asistencia al evento
+            </h3>
+            <button class="btn-outline-sm" (click)="loadEventAttendance()" [disabled]="attendanceLoading">
+              <i class="ti ti-refresh"></i> Actualizar
+            </button>
+          </div>
+          <div class="loading-row" *ngIf="attendanceLoading">
+            <div class="spinner"></div><span>Cargando asistencia...</span>
+          </div>
+          <div class="empty-state" *ngIf="!attendanceLoading && eventAttendance.length === 0">
+            <i class="ti ti-user-check"></i>
+            <p>Aún no hay asistentes registrados.</p>
+          </div>
+          <div class="attendance-table-wrap" *ngIf="!attendanceLoading && eventAttendance.length > 0">
+            <table class="attendance-table">
+              <thead>
+                <tr>
+                  <th>Asistente</th>
+                  <th>Registrado por</th>
+                  <th>Fecha y hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let att of eventAttendance">
+                  <td>{{ att.userEmail }}</td>
+                  <td>{{ att.scannedBy }}</td>
+                  <td>{{ att.registeredAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </ng-container>
 
@@ -493,13 +572,21 @@
   <div class="modal-overlay" *ngIf="showInviteModal" (click)="showInviteModal = false">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3 class="modal-title">Invitar miembro</h3>
+        <h3 class="modal-title">Enviar invitación</h3>
         <button class="modal-close" (click)="showInviteModal = false"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="modal-form-row">
           <label class="modal-label">Email</label>
           <input type="email" class="form-input" [(ngModel)]="inviteEmail" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="modal-form-row">
+          <label class="modal-label">Rol</label>
+          <select class="form-input" [(ngModel)]="inviteRole">
+            <option value="MEMBER">Miembro</option>
+            <option value="STAFF">Personal de apoyo</option>
+            <option value="ORGANIZER">Organizador</option>
+          </select>
         </div>
         <div class="modal-form-row">
           <label class="modal-label">Vencimiento de la invitación</label>
@@ -632,11 +719,9 @@
       <div class="modal-body">
         <p class="modal-desc">Cambiar el rol de <strong>{{ changeRoleMemberEmail }}</strong>:</p>
         <select class="form-input" [(ngModel)]="newRole">
-          <option value="ORGANIZER">Organizador</option>
+          <option value="MEMBER">Miembro</option>
           <option value="STAFF">Personal de apoyo</option>
-          <option value="JUDGE">Juez</option>
-          <option value="PARTICIPANT">Participante</option>
-          <option value="ATTENDEE">Asistente</option>
+          <option value="ORGANIZER">Organizador</option>
         </select>
       </div>
       <div class="modal-footer">
@@ -735,6 +820,20 @@
           <input type="number" class="form-input" [(ngModel)]="activityForm.maxEnrollment"
                  min="1" placeholder="Sin límite">
         </div>
+        <div class="form-group">
+          <label>Imágenes (opcional)</label>
+          <input type="file" class="form-input" accept="image/*" multiple
+                 (change)="onNewActivityFilesSelected($event)" />
+        </div>
+        <div class="pending-files-list" *ngIf="newActivityPendingFiles.length > 0">
+          <div class="pending-file-item" *ngFor="let f of newActivityPendingFiles; let i = index">
+            <i class="ti ti-photo"></i>
+            <span>{{ f.name }}</span>
+            <button type="button" class="btn-remove-file" (click)="removePendingActivityFile(i)" title="Quitar">
+              <i class="ti ti-x"></i>
+            </button>
+          </div>
+        </div>
         <p class="modal-error" *ngIf="activityFormError">
           <i class="ti ti-alert-circle"></i> {{ activityFormError }}
         </p>
@@ -788,6 +887,33 @@
           <label>Límite de inscripciones</label>
           <input type="number" class="form-input" [(ngModel)]="activityForm.maxEnrollment" min="1">
         </div>
+        <div class="image-gallery-section">
+          <label class="modal-label">Imágenes de la actividad ({{ activityImages.length }})</label>
+          <div class="image-gallery" *ngIf="!activityImagesLoading">
+            <div class="image-gallery__item" *ngFor="let img of activityImages">
+              <img [src]="img.imageUrl" alt="Imagen de la actividad" />
+              <button class="image-gallery__delete" (click)="deleteActivityImageFile(img.id)" title="Eliminar imagen">
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
+            <label class="image-gallery__upload">
+              <input type="file" accept="image/*" (change)="onActivityImageFileSelected($event)"
+                     [disabled]="uploadingActivityImage" hidden />
+              <i class="ti ti-loader-2 spin" *ngIf="uploadingActivityImage"></i>
+              <ng-container *ngIf="!uploadingActivityImage">
+                <i class="ti ti-plus"></i>
+                <span>Agregar</span>
+              </ng-container>
+            </label>
+          </div>
+          <div class="loading-row" *ngIf="activityImagesLoading">
+            <div class="spinner"></div>
+            <span>Cargando imágenes...</span>
+          </div>
+          <p class="modal-error" *ngIf="activityImageUploadError">
+            <i class="ti ti-alert-circle"></i> {{ activityImageUploadError }}
+          </p>
+        </div>
         <p class="modal-error" *ngIf="activityFormError">
           <i class="ti ti-alert-circle"></i> {{ activityFormError }}
         </p>
@@ -835,25 +961,49 @@
         <button class="modal-close" (click)="showAssignMemberModal = false"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-note">Solo puedes asignar miembros que ya pertenecen al evento.</p>
+        <p class="modal-note">Selecciona un miembro del evento. Los roles disponibles dependen de su rol.</p>
+
         <div class="form-group">
-          <label>Email del miembro <span class="required">*</span></label>
-          <input type="email" class="form-input" [(ngModel)]="assignMemberEmail"
-                 placeholder="correo@ejemplo.com">
-        </div>
-        <div class="form-group">
-          <label>Rol en la actividad <span class="required">*</span></label>
-          <select class="form-input" [(ngModel)]="assignMemberRole">
-            <option value="PARTICIPANT">Participante</option>
-            <option value="JUDGE">Jurado</option>
+          <label>Filtrar por rol</label>
+          <select class="form-input" [(ngModel)]="assignMemberRoleFilter">
+            <option value="ALL">Todos los roles</option>
             <option value="STAFF">Personal de apoyo</option>
+            <option value="MEMBER">Miembros</option>
           </select>
         </div>
+
+        <div class="assignable-member-list">
+          <div class="empty-state-sm" *ngIf="assignableEventMembers.length === 0">
+            No hay miembros disponibles con ese filtro.
+          </div>
+          <div class="assignable-member-item"
+               *ngFor="let m of assignableEventMembers"
+               [class.assignable-member-item--selected]="selectedAssignMember?.id === m.id"
+               (click)="selectAssignMember(m)">
+            <div class="assignable-member-item__avatar">{{ m.userEmail.charAt(0).toUpperCase() }}</div>
+            <div class="assignable-member-item__info">
+              <span class="assignable-member-item__email">{{ m.userEmail }}</span>
+              <span class="role-badge">{{ getRoleLabel(m.eventRole) }}</span>
+            </div>
+            <i class="ti ti-check assignable-member-item__check" *ngIf="selectedAssignMember?.id === m.id"></i>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="selectedAssignMember">
+          <label>Rol en la actividad <span class="required">*</span></label>
+          <select class="form-input" [(ngModel)]="assignMemberRole">
+            <option *ngFor="let role of availableActivityRoles" [value]="role">
+              {{ getActivityRoleLabel(role) }}
+            </option>
+          </select>
+        </div>
+
         <div class="form-group">
           <label>Función específica (opcional)</label>
           <input type="text" class="form-input" [(ngModel)]="assignMemberFunction"
                  placeholder="Ej: Evaluador principal...">
         </div>
+
         <p class="modal-error" *ngIf="assignMemberError">
           <i class="ti ti-alert-circle"></i> {{ assignMemberError }}
         </p>
@@ -861,7 +1011,7 @@
       <div class="modal-footer">
         <button class="btn-modal-cancel" (click)="showAssignMemberModal = false">Cancelar</button>
         <button class="btn-modal-primary" (click)="submitAssignMember()"
-                [disabled]="processing || !assignMemberEmail.trim()">
+                [disabled]="processing || !selectedAssignMember">
           <i class="ti ti-check"></i>
           {{ processing ? 'Asignando...' : 'Asignar' }}
         </button>
@@ -955,54 +1105,90 @@
     </div>
   </div>
 
-  <!-- Modal: Detalle de actividad -->
-  <div class="modal-overlay" *ngIf="showActivityDetailModal" (click)="showActivityDetailModal = false">
-    <div class="modal-card modal-card--lg" (click)="$event.stopPropagation()">
+  <!-- Modal: Mi QR del evento -->
+  <div class="modal-overlay" *ngIf="showEventQrModal" (click)="showEventQrModal = false">
+    <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3 class="modal-title">
-          <i class="ti ti-calendar-event"></i> {{ selectedActivity?.title }}
-        </h3>
-        <button class="modal-close" (click)="showActivityDetailModal = false"><i class="ti ti-x"></i></button>
+        <h3 class="modal-title"><i class="ti ti-qrcode"></i> Mi QR de acceso</h3>
+        <button class="modal-close" (click)="showEventQrModal = false"><i class="ti ti-x"></i></button>
       </div>
-      <div class="modal-body" *ngIf="selectedActivity">
-        <div class="activity-detail-meta">
-          <span class="status-badge" [ngClass]="getActivityStatusClass(selectedActivity.status)">
-            {{ getActivityStatusLabel(selectedActivity.status) }}
-          </span>
-          <span *ngIf="selectedActivity.location">
-            <i class="ti ti-map-pin"></i> {{ selectedActivity.location }}
-          </span>
-          <span>
-            <i class="ti ti-calendar"></i>
-            {{ selectedActivity.startDatetime | date:'dd/MM/yyyy HH:mm' }}
-            → {{ selectedActivity.endDatetime | date:'HH:mm' }}
-          </span>
+      <div class="modal-body">
+        <div class="loading-row" *ngIf="eventQrLoading">
+          <div class="spinner"></div><span>Generando QR...</span>
         </div>
-        <p *ngIf="selectedActivity.description" class="activity-detail-desc">
-          {{ selectedActivity.description }}
+        <div class="qr-wrap" *ngIf="!eventQrLoading && eventQrImage">
+          <img [src]="eventQrImage" alt="Código QR" class="qr-image" />
+          <p class="qr-hint">Muestra este código al organizador o personal para registrar tu asistencia.</p>
+        </div>
+        <p class="modal-error" *ngIf="!eventQrLoading && eventQrError">
+          <i class="ti ti-alert-circle"></i> {{ eventQrError }}
         </p>
-        <div class="activity-detail-members">
-          <h4><i class="ti ti-users"></i> Miembros asignados</h4>
-          <div class="loading-row" *ngIf="activityMembersLoading">
-            <div class="spinner"></div>
-            <span>Cargando...</span>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showEventQrModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Escanear asistencia evento -->
+  <div class="modal-overlay" *ngIf="showScanModal" (click)="closeScanModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-scan"></i> Escanear asistencia</h3>
+        <button class="modal-close" (click)="closeScanModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Resultado exitoso -->
+        <div class="scan-success" *ngIf="scanResult">
+          <i class="ti ti-circle-check"></i>
+          <div class="scan-success__info">
+            <p class="scan-success__email">{{ scanResult.userEmail }}</p>
+            <p class="scan-success__time">{{ scanResult.registeredAt | date:'dd/MM/yyyy HH:mm' }}</p>
           </div>
-          <div class="empty-state-sm" *ngIf="!activityMembersLoading && activityMembers.length === 0">
-            No hay miembros asignados aún.
-          </div>
-          <div class="member-row" *ngFor="let m of activityMembers">
-            <span class="member-email">{{ m.userEmail }}</span>
-            <span class="role-badge">{{ getActivityRoleLabel(m.eventRole) }}</span>
-            <span class="confirmation-badge"
-                  [class.confirmed]="m.confirmationStatus === 'CONFIRMED'">
-              {{ m.confirmationStatus === 'CONFIRMED' ? 'Confirmado' :
-                 m.confirmationStatus === 'CANCELLED' ? 'Cancelado' : 'Pendiente' }}
-            </span>
-            <span class="member-function" *ngIf="m.functionDescription">
-              {{ m.functionDescription }}
-            </span>
-          </div>
+          <button class="btn-scan-again" (click)="resetScan()">
+            <i class="ti ti-scan"></i> Escanear otro
+          </button>
         </div>
+
+        <ng-container *ngIf="!scanResult">
+          <!-- Vista de cámara -->
+          <div *ngIf="!cameraError" class="camera-container">
+            <div id="qr-reader"></div>
+            <p class="scan-hint" *ngIf="!cameraActive">Iniciando cámara...</p>
+          </div>
+
+          <!-- Error de cámara -->
+          <div class="camera-error-msg" *ngIf="cameraError">
+            <i class="ti ti-camera-off"></i>
+            <p>Cámara no disponible. Usa el campo manual.</p>
+          </div>
+
+          <!-- Input manual -->
+          <div class="manual-scan-wrap">
+            <label class="modal-label">Token manual</label>
+            <div class="manual-scan-row">
+              <input type="text" class="form-input" [(ngModel)]="scanToken"
+                placeholder="Pega el token aquí..." (keyup.enter)="submitScanManual()" />
+              <button class="btn-modal-primary"
+                [disabled]="!scanToken.trim() || scanProcessing"
+                (click)="submitScanManual()">
+                <i class="ti ti-check"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="loading-row" *ngIf="scanProcessing">
+            <div class="spinner"></div><span>Registrando asistencia...</span>
+          </div>
+          <p class="modal-error" *ngIf="scanError">
+            <i class="ti ti-alert-circle"></i> {{ scanError }}
+          </p>
+        </ng-container>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="closeScanModal()">Cerrar</button>
       </div>
     </div>
   </div>

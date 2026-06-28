@@ -1,6 +1,6 @@
 export type ActivityStatus = 'PENDING' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
 
-export type ActivityMemberRole = 'STAFF' | 'JUDGE' | 'PARTICIPANT';
+export type ActivityMemberRole = 'STAFF' | 'JUDGE' | 'PARTICIPANT' | 'ATTENDEE';
 
 export type ConfirmationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
 
@@ -105,4 +105,23 @@ export interface AuditLogActivity {
   performedByRole: string;
   changeDetail: string;
   performedAt: string;
+}
+
+export interface AgendaItem {
+  activityId: number;
+  activityTitle: string;
+  startDatetime: string;
+  endDatetime: string;
+  activityStatus: ActivityStatus;
+  eventId: number;
+  eventTitle: string;
+  role: ActivityMemberRole;
+  confirmationStatus: ConfirmationStatus;
+}
+
+export interface ActivityImageResponse {
+  id: number;
+  activityId: number;
+  imageUrl: string;
+  uploadedAt: string;
 }

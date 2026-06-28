@@ -1,0 +1,310 @@
+<div class="activity-detail-container">
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Cargando actividad...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-row" *ngIf="!loading && error">
+    <i class="ti ti-alert-circle"></i>
+    <span>No se pudo cargar la actividad.</span>
+    <button class="btn-retry" (click)="goBack()">← Volver</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && activity">
+
+    <!-- Encabezado -->
+    <div class="page-header">
+      <div class="page-header__top">
+        <button class="btn-back" (click)="goBack()">
+          <i class="ti ti-arrow-left"></i> Volver al evento
+        </button>
+        <span class="status-badge" [ngClass]="getActivityStatusClass(activity.status)">
+          {{ getActivityStatusLabel(activity.status) }}
+        </span>
+      </div>
+      <h1 class="activity-title">{{ activity.title }}</h1>
+    </div>
+
+    <!-- Barra QR / Escanear -->
+    <div class="action-bar" *ngIf="canShowActivityQr || canScanActivityAttendance">
+      <div class="action-bar__left">
+        <button class="btn-action btn-action--outline" *ngIf="canShowActivityQr" (click)="openActivityQrModal()">
+          <i class="ti ti-qrcode"></i> Mi QR de actividad
+        </button>
+        <button class="btn-action btn-action--outline" *ngIf="canScanActivityAttendance" (click)="openScanModal()">
+          <i class="ti ti-scan"></i> Escanear asistencia
+        </button>
+      </div>
+    </div>
+
+    <!-- Info general -->
+    <div class="detail-card">
+      <h2 class="detail-card__title">
+        <i class="ti ti-info-circle"></i> Información general
+      </h2>
+      <div class="info-grid">
+        <div class="info-item" *ngIf="activity.description">
+          <span class="info-item__label">Descripción</span>
+          <span class="info-item__value">{{ activity.description }}</span>
+        </div>
+        <div class="info-item" *ngIf="activity.location">
+          <span class="info-item__label"><i class="ti ti-map-pin"></i> Ubicación</span>
+          <span class="info-item__value">{{ activity.location }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-calendar"></i> Inicio</span>
+          <span class="info-item__value">{{ activity.startDatetime | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-calendar-off"></i> Fin</span>
+          <span class="info-item__value">{{ activity.endDatetime | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-user"></i> Creado por</span>
+          <span class="info-item__value">{{ activity.createdByEmail }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-item__label"><i class="ti ti-clock"></i> Fecha de creación</span>
+          <span class="info-item__value">{{ activity.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="info-item" *ngIf="activity.enrollmentEnabled">
+          <span class="info-item__label"><i class="ti ti-users"></i> Inscripciones</span>
+          <span class="info-item__value">
+            {{ activity.currentEnrollments }}
+            <ng-container *ngIf="activity.maxEnrollment"> / {{ activity.maxEnrollment }}</ng-container>
+            inscritos
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Galería de imágenes -->
+    <div class="detail-card" *ngIf="imagesLoading || activityImages.length > 0">
+      <h2 class="detail-card__title">
+        <i class="ti ti-photo"></i> Imágenes
+      </h2>
+      <div class="loading-row loading-row--inline" *ngIf="imagesLoading">
+        <div class="spinner"></div>
+        <span>Cargando imágenes...</span>
+      </div>
+      <div class="event-images-gallery__grid" *ngIf="!imagesLoading && activityImages.length > 0">
+        <div class="event-images-gallery__item" *ngFor="let img of activityImages">
+          <img [src]="img.imageUrl" alt="Imagen de la actividad" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Mi asignación (no organizadores) -->
+    <div class="detail-card" *ngIf="!isOrganizer && (myAssignmentLoading || myAssignment)">
+      <h2 class="detail-card__title">
+        <i class="ti ti-user-check"></i> Tu asignación
+      </h2>
+      <div class="loading-row loading-row--inline" *ngIf="myAssignmentLoading">
+        <div class="spinner"></div>
+        <span>Cargando...</span>
+      </div>
+      <div class="member-row" *ngIf="!myAssignmentLoading && myAssignment">
+        <span class="role-badge">{{ getActivityRoleLabel(myAssignment.eventRole) }}</span>
+        <span class="confirmation-badge" [class.confirmed]="myAssignment.confirmationStatus === 'CONFIRMED'">
+          {{ myAssignment.confirmationStatus === 'CONFIRMED' ? 'Confirmado' :
+             myAssignment.confirmationStatus === 'CANCELLED' ? 'Cancelado' : 'Pendiente' }}
+        </span>
+        <span class="member-function" *ngIf="myAssignment.functionDescription">
+          {{ myAssignment.functionDescription }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Miembros asignados (solo organizador) -->
+    <div class="detail-card" *ngIf="isOrganizer">
+      <h2 class="detail-card__title">
+        <i class="ti ti-users"></i> Miembros asignados
+      </h2>
+      <div class="invitation-filters" *ngIf="activityMembers.length > 0">
+        <input type="text" class="form-input" placeholder="Buscar por email..."
+               [(ngModel)]="memberSearchTerm" />
+        <select class="form-input" [(ngModel)]="memberRoleFilter">
+          <option value="ALL">Todos los roles</option>
+          <option value="STAFF">Personal de apoyo</option>
+          <option value="JUDGE">Jurado</option>
+          <option value="PARTICIPANT">Participante</option>
+          <option value="ATTENDEE">Asistente</option>
+        </select>
+      </div>
+      <div class="loading-row loading-row--inline" *ngIf="membersLoading">
+        <div class="spinner"></div>
+        <span>Cargando miembros...</span>
+      </div>
+      <div class="empty-state-sm" *ngIf="!membersLoading && activityMembers.length === 0">
+        No hay miembros asignados aún.
+      </div>
+      <div class="member-row" *ngFor="let m of filteredActivityMembers">
+        <span class="member-email">{{ m.userEmail }}</span>
+        <span class="role-badge">{{ getActivityRoleLabel(m.eventRole) }}</span>
+        <span class="confirmation-badge" [class.confirmed]="m.confirmationStatus === 'CONFIRMED'">
+          {{ m.confirmationStatus === 'CONFIRMED' ? 'Confirmado' :
+             m.confirmationStatus === 'CANCELLED' ? 'Cancelado' : 'Pendiente' }}
+        </span>
+        <span class="member-function" *ngIf="m.functionDescription">
+          {{ m.functionDescription }}
+        </span>
+        <span class="member-assigned-at">
+          <i class="ti ti-calendar-plus"></i> {{ m.assignedAt | date:'dd/MM/yyyy' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Historial de auditoría (solo organizador) -->
+    <div class="detail-card" *ngIf="isOrganizer && (auditLoading || auditLog.length > 0)">
+      <h2 class="detail-card__title">
+        <i class="ti ti-history"></i> Historial de actividad
+      </h2>
+      <div class="loading-row loading-row--inline" *ngIf="auditLoading">
+        <div class="spinner"></div>
+        <span>Cargando historial...</span>
+      </div>
+      <div class="timeline" *ngIf="!auditLoading && auditLog.length > 0">
+        <div class="timeline-item" *ngFor="let log of sortedAuditLog">
+          <div class="timeline-item__dot">
+            <i class="ti {{ getAuditIcon(log.actionType) }}"></i>
+          </div>
+          <div class="timeline-item__body">
+            <p class="timeline-item__action">{{ getAuditActionLabel(log.actionType) }}</p>
+            <p class="timeline-item__by">{{ log.performedByEmail }}</p>
+            <p class="timeline-item__date">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p class="timeline-item__detail" *ngIf="log.changeDetail">{{ log.changeDetail }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asistencia de la actividad (org/staff) -->
+    <div class="detail-card" *ngIf="canScanActivityAttendance">
+      <div class="detail-card__header">
+        <h2 class="detail-card__title">
+          <i class="ti ti-users-check"></i> Asistencia
+        </h2>
+        <button class="btn-outline-sm" (click)="loadActivityAttendance()" [disabled]="actAttendanceLoading">
+          <i class="ti ti-refresh"></i>
+        </button>
+      </div>
+      <div class="loading-row loading-row--inline" *ngIf="actAttendanceLoading">
+        <div class="spinner"></div><span>Cargando asistencia...</span>
+      </div>
+      <div class="empty-state-sm" *ngIf="!actAttendanceLoading && activityAttendance.length === 0">
+        Aún no hay asistentes registrados.
+      </div>
+      <div class="attendance-table-wrap" *ngIf="!actAttendanceLoading && activityAttendance.length > 0">
+        <table class="attendance-table">
+          <thead>
+            <tr>
+              <th>Asistente</th>
+              <th>Registrado por</th>
+              <th>Fecha y hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let att of activityAttendance">
+              <td>{{ att.userEmail }}</td>
+              <td>{{ att.scannedBy }}</td>
+              <td>{{ att.registeredAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <!-- Modal: Mi QR de actividad -->
+  <div class="modal-overlay" *ngIf="showActivityQrModal" (click)="showActivityQrModal = false">
+    <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-qrcode"></i> Mi QR de actividad</h3>
+        <button class="modal-close" (click)="showActivityQrModal = false"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="loading-row" *ngIf="actQrLoading">
+          <div class="spinner"></div><span>Generando QR...</span>
+        </div>
+        <div class="qr-wrap" *ngIf="!actQrLoading && actQrImage">
+          <img [src]="actQrImage" alt="Código QR" class="qr-image" />
+          <p class="qr-hint">Muestra este código al organizador o personal para registrar tu asistencia.</p>
+        </div>
+        <p class="modal-error" *ngIf="!actQrLoading && actQrError">
+          <i class="ti ti-alert-circle"></i> {{ actQrError }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="showActivityQrModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Escanear asistencia actividad -->
+  <div class="modal-overlay" *ngIf="showScanModal" (click)="closeScanModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="ti ti-scan"></i> Escanear asistencia</h3>
+        <button class="modal-close" (click)="closeScanModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Resultado exitoso -->
+        <div class="scan-success" *ngIf="scanResult">
+          <i class="ti ti-circle-check"></i>
+          <div class="scan-success__info">
+            <p class="scan-success__email">{{ scanResult.userEmail }}</p>
+            <p class="scan-success__time">{{ scanResult.registeredAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+          <button class="btn-scan-again" (click)="resetScan()">
+            <i class="ti ti-scan"></i> Escanear otro
+          </button>
+        </div>
+
+        <ng-container *ngIf="!scanResult">
+          <!-- Vista de cámara -->
+          <div *ngIf="!cameraError" class="camera-container">
+            <div id="act-qr-reader"></div>
+            <p class="scan-hint" *ngIf="!cameraActive">Iniciando cámara...</p>
+          </div>
+
+          <!-- Error de cámara -->
+          <div class="camera-error-msg" *ngIf="cameraError">
+            <i class="ti ti-camera-off"></i>
+            <p>Cámara no disponible. Usa el campo manual.</p>
+          </div>
+
+          <!-- Input manual -->
+          <div class="manual-scan-wrap">
+            <label class="modal-label">Token manual</label>
+            <div class="manual-scan-row">
+              <input type="text" class="form-input" [(ngModel)]="scanToken"
+                placeholder="Pega el token aquí..." (keyup.enter)="submitScanManual()" />
+              <button class="btn-modal-primary"
+                [disabled]="!scanToken.trim() || scanProcessing"
+                (click)="submitScanManual()">
+                <i class="ti ti-check"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="loading-row" *ngIf="scanProcessing">
+            <div class="spinner"></div><span>Registrando asistencia...</span>
+          </div>
+          <p class="modal-error" *ngIf="scanError">
+            <i class="ti ti-alert-circle"></i> {{ scanError }}
+          </p>
+        </ng-container>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="closeScanModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+</div>

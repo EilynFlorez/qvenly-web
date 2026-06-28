@@ -241,3 +241,91 @@
   animation: spin 0.8s linear infinite;
   display: inline-block;
 }
+
+.plan-card--active {
+  border-color: $teal;
+  box-shadow: 0 4px 16px rgba(0,184,169,0.1);
+}
+
+.plan-card__badge--active {
+  background: linear-gradient(90deg, $teal, $teal-dark);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: $white;
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 420px;
+  text-align: center;
+
+  &__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: $orange-bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    i { font-size: 26px; color: $orange; }
+  }
+
+  &__title {
+    font-size: 17px;
+    font-weight: 700;
+    color: $gray-900;
+    margin: 0 0 10px;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: $gray-500;
+    line-height: 1.6;
+    margin: 0 0 22px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+}
+
+// ── Botones genéricos (para el modal de confirmación) ──────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: $font;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+  &--primary {
+    background: $teal;
+    color: $white;
+    &:hover { background: $teal-dark; }
+  }
+
+  &--outline {
+    background: transparent;
+    border-color: $teal-border;
+    color: $teal;
+    &:hover { background: $teal-light; border-color: $teal; }
+  }
+}

@@ -3,6 +3,7 @@ import { AuthService } from '../../../../core/core-auth/services/auth.service';
 import { UserPlanService } from '../../../../core/core-plans/services/user-plan.service';
 import { PlanHistoryResponse, UserPlanResponse } from '../../../../core/core-plans/models/plan.model';
 import { PlanHistoryService } from '../../../../core/core-plans/services/plan-history.service';
+import { PaymentService } from '../../../../core/core-payments/services/payment.service';
 
 @Component({
   selector: 'app-mi-plan',
@@ -25,11 +26,15 @@ export class MiPlanComponent implements OnInit {
 
   /** Mensaje de éxito tras renovar */
   successMessage = '';
+  renewError = '';
+
+
 
   constructor(
     private authService: AuthService,
     private userPlanService: UserPlanService,
-    private planHistoryService: PlanHistoryService
+    private planHistoryService: PlanHistoryService,
+    private paymentService: PaymentService
   ) { }
 
   ngOnInit(): void {
@@ -83,22 +88,39 @@ export class MiPlanComponent implements OnInit {
   /**
  * Renueva el plan activo del organizador.
  */
+
+  get canRenew(): boolean {
+    return this.getDaysRemaining() <= 2;
+  }
+
   renewPlan(): void {
     if (!this.activePlan) return;
 
-    this.renewing = true;
-    this.successMessage = '';
+    if (!this.canRenew) {
+      this.renewError = `Aún no puedes renovar tu plan. Te quedan ${this.getDaysRemaining()} días disponibles. ` +
+        `Podrás renovar cuando falten 2 días o menos para el vencimiento.`;
+      return;
+    }
 
-    this.userPlanService.renewPlan(this.activePlan.idUserPlan).subscribe({
+    this.renewError = '';
+    this.renewing = true;
+
+    this.paymentService.createPayment({
+      userId: this.authService.getUserId()!,
+      planId: this.activePlan.plan.idPlan,
+      planName: this.activePlan.plan.name,
+      price: this.activePlan.plan.price
+    }).subscribe({
       next: (response) => {
         if (response.success) {
-          this.activePlan = response.data;
-          this.successMessage = 'Tu plan fue renovado exitosamente. Revisa tu correo.';
+          window.location.href = response.data.checkoutUrl;
+        } else {
+          this.renewError = response.message;
+          this.renewing = false;
         }
-        this.renewing = false;
       },
-      error: () => {
-        this.error = true;
+      error: (err) => {
+        this.renewError = err.error?.message || 'Error al procesar el pago de renovación.';
         this.renewing = false;
       }
     });
