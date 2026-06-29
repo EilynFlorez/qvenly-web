@@ -9,7 +9,7 @@
       <p class="chart-sub">Comparativa de eventos creados por cada organizador</p>
     </div>
 
-    <div class="badge-top" *ngIf="topOrganizers.length === 1">
+    <div class="badge-top" *ngIf="topOrganizers.length === 1 && topOrganizers[0] !== 'null'">
       <i class="ti ti-crown"></i>
       {{ topOrganizers[0] }}
     </div>
@@ -20,10 +20,16 @@
     </div>
   </div>
 
-   <!-- Sin datos -->
-  <div *ngIf="noData" class="no-data">
+    <!-- Sin datos sin filtros -->
+  <div *ngIf="noData && !hasActiveFilters" class="no-data">
     <i class="ti ti-chart-bar-off"></i>
     <p>No hay datos de eventos disponibles</p>
+  </div>
+
+  <!-- Sin datos con filtros -->
+  <div *ngIf="noData && hasActiveFilters" class="no-data">
+    <i class="ti ti-filter-off"></i>
+    <p>No se encontraron resultados para los filtros seleccionados</p>
   </div>
 
   <!-- Con datos -->

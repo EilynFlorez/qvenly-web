@@ -22,6 +22,9 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
 registerLocaleData(localeEs);
+import { EventSurveysComponent } from './pages/event-surveys/event-surveys.component';
+import { SurveyResultsComponent } from './pages/survey-results/survey-results.component';
+import { UserSurveysComponent } from './pages/user-surveys/user-surveys.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,10 @@ registerLocaleData(localeEs);
     PaymentResultComponent,
     PlanesComponent,
     EventHistoryComponent,
-    ActivityDetailComponent
+    ActivityDetailComponent,
+    EventSurveysComponent,
+    SurveyResultsComponent,
+    UserSurveysComponent
   ],
   imports: [
     CommonModule,

@@ -1,0 +1,141 @@
+<div class="results-wrapper">
+
+  <!-- Header con botón volver -->
+  <div class="subview-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="ti ti-arrow-left"></i> Volver a encuestas
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Cargando resultados...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-row" *ngIf="!loading && error">
+    <i class="ti ti-alert-circle"></i>
+    <span>No se pudieron cargar los resultados.</span>
+    <button class="btn-retry" (click)="loadResults()">Reintentar</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && results">
+
+    <!-- Info general -->
+    <div class="results-hero">
+      <div class="results-hero__info">
+        <h3 class="results-title">{{ results.surveyTitle }}</h3>
+        <div class="results-stats">
+          <span class="stat-chip">
+            <i class="ti ti-users"></i>
+            {{ results.totalResponses || 0 }} respuesta{{ results.totalResponses !== 1 ? 's' : '' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="results-hero__actions">
+        <select class="form-input results-filter"
+                [(ngModel)]="roleFilter"
+                (change)="onRoleFilterChange()"
+                [disabled]="!canFilter"
+                [title]="!canFilter ? 'Esta encuesta solo tiene un rol destinatario, no se puede filtrar' : 'Filtrar por rol'">
+          <option value="">Todos los roles</option>
+          <option *ngFor="let r of results.targetRoles" [value]="r">
+            {{ getRoleLabel(r) }}
+          </option>
+        </select>
+       <button class="btn-outline-sm" (click)="exportExcel()">
+            <i class="ti ti-file-type-xls"></i> Excel
+        </button>
+        <button class="btn-outline-sm" (click)="exportPdf()">
+            <i class="ti ti-file-type-pdf"></i> PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Sin respuestas -->
+    <div class="empty-state" *ngIf="!results.questionResults?.length">
+      <i class="ti ti-chart-bar-off"></i>
+      <p>Aún no hay respuestas para esta encuesta.</p>
+    </div>
+
+    <!-- Resultados por pregunta -->
+    <div class="results-questions" *ngIf="results.questionResults?.length">
+      <div class="result-card" *ngFor="let qr of results.questionResults; let i = index">
+
+        <!-- Header pregunta -->
+        <div class="result-card__header">
+          <span class="question-num">{{ i + 1 }}</span>
+          <div class="result-card__info">
+            <p class="result-card__text">{{ qr.questionText }}</p>
+            <span class="tag tag--type">{{ getQuestionTypeLabel(qr.questionType) }}</span>
+          </div>
+        </div>
+
+        <!-- SINGLE / MULTIPLE CHOICE -->
+        <div class="result-bars"
+             *ngIf="qr.questionType === 'SINGLE_CHOICE' || qr.questionType === 'MULTIPLE_CHOICE'">
+          <div class="result-bar-row" *ngFor="let opt of qr.optionResults">
+            <span class="result-bar-label">{{ opt.optionText }}</span>
+            <div class="result-bar-track">
+              <div class="result-bar-fill"
+                   [style.width]="getBarWidth(opt.count, results.totalResponses)">
+              </div>
+            </div>
+            <span class="result-bar-count">
+              {{ opt.count }} · {{ getBarPercent(opt.count, results.totalResponses) }}%
+            </span>
+          </div>
+        </div>
+
+        <!-- RATING -->
+        <div class="result-rating" *ngIf="qr.questionType === 'RATING'">
+          <div class="result-rating__avg-block">
+            <span class="result-rating__avg">{{ qr.averageRating | number:'1.1-1' }}</span>
+            <span class="result-rating__scale">/ 5</span>
+          </div>
+          <div class="result-rating__detail">
+            <div class="rating-stars">
+              <i class="ti" *ngFor="let s of [1,2,3,4,5]"
+                 [ngClass]="s <= qr.averageRating ? 'ti-star-filled' : 'ti-star'">
+              </i>
+            </div>
+            <span class="result-rating__label">
+              promedio de {{ qr.responseCount }} respuesta{{ qr.responseCount !== 1 ? 's' : '' }}
+            </span>
+          </div>
+          <div class="rating-histogram">
+            <div class="rating-hist-row" *ngFor="let star of [5,4,3,2,1]">
+              <span class="rating-hist-label">
+                {{ star }} <i class="ti ti-star-filled"></i>
+              </span>
+              <div class="rating-hist-track">
+                <div class="rating-hist-fill"
+                     [style.width]="getRatingBarWidth(qr.ratingDistribution, star, qr.responseCount)">
+                </div>
+              </div>
+              <span class="rating-hist-count">
+                {{ getRatingCount(qr.ratingDistribution, star) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPEN TEXT -->
+        <div class="result-open" *ngIf="qr.questionType === 'OPEN_TEXT'">
+          <div class="result-open__item" *ngFor="let ans of qr.openAnswers">
+            <i class="ti ti-message"></i>
+            <span>{{ ans }}</span>
+          </div>
+          <p class="empty-hint" *ngIf="!qr.openAnswers?.length">
+            Sin respuestas de texto aún.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </ng-container>
+
+</div>

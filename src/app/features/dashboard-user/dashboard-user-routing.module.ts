@@ -13,6 +13,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { PaymentResultComponent } from './pages/payment-result/payment-result.component';
 import { EventHistoryComponent } from './pages/event-history/event-history.component';
 import { ActivityDetailComponent } from './pages/activity-detail/activity-detail.component';
+import { UserSurveysComponent } from './pages/user-surveys/user-surveys.component';
 
 const routes: Routes = [
   {
@@ -30,7 +31,8 @@ const routes: Routes = [
       { path: 'notifications',   component: NotificationsComponent },
       { path: 'profile',         component: ProfileComponent },
       { path: 'payment/result',  component: PaymentResultComponent },
-      { path: 'activities/:id',  component: ActivityDetailComponent }
+      { path: 'activities/:id',  component: ActivityDetailComponent },
+      {path: 'surveys',          component: UserSurveysComponent}
     ]
   }
 ];
