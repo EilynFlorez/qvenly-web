@@ -1,0 +1,23 @@
+<main class="page">
+  <div class="page-container">
+
+    <div class="page-header">
+      <span class="page-badge"><span class="badge-dot"></span> Soporte</span>
+      <h1>Centro de Ayuda</h1>
+      <p>Encuentra respuestas a las preguntas más frecuentes sobre Qvenly.</p>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item" *ngFor="let faq of faqs; let i = index">
+        <button class="faq-question" (click)="toggle(i)" [class.open]="openIndex === i">
+          <span>{{ faq.q }}</span>
+          <i class="ti" [class.ti-chevron-down]="openIndex !== i" [class.ti-chevron-up]="openIndex === i"></i>
+        </button>
+        <div class="faq-answer" [class.visible]="openIndex === i">
+          <p>{{ faq.a }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>

@@ -11,7 +11,25 @@
       <li><a href="/#caracteristicas">Características</a></li>
       <li><a href="/#tipos-evento">Tipos de Evento</a></li>
       <li><a href="/#planes">Planes</a></li>
-      <li><a href="#">Ayuda</a></li>
+      <li><a routerLink="/ayuda">Ayuda</a></li>
+
+      <li><a routerLink="/contacto">Contacto</a></li>
+
+      <!-- Legal dropdown -->
+      <li class="nav-dropdown"
+          (mouseenter)="activeDropdown = 'legal'"
+          (mouseleave)="activeDropdown = null">
+        <button class="nav-dropdown__trigger"
+                [class.open]="activeDropdown === 'legal'"
+                (click)="toggleDropdown('legal'); $event.stopPropagation()">
+          Legal <i class="ti ti-chevron-down"></i>
+        </button>
+        <div class="nav-dropdown__menu" [class.visible]="activeDropdown === 'legal'">
+          <a routerLink="/terminos" (click)="closeDropdowns()">Términos de Servicio</a>
+          <a routerLink="/privacidad" (click)="closeDropdowns()">Política de Privacidad</a>
+          <a routerLink="/cookies" (click)="closeDropdowns()">Política de Cookies</a>
+        </div>
+      </li>
     </ul>
 
     <div class="navbar-actions">
@@ -28,18 +46,35 @@
 
   </div>
 
-  <!-- Menú móvil controlado por isMenuOpen -->
+  <!-- Menú móvil -->
   <div class="navbar-mobile" [class.open]="isMenuOpen">
     <ul>
-      <li><a routerLink="/">Inicio</a></li>
-      <li><a href="/#caracteristicas">Características</a></li>
-      <li><a href="/#tipos-evento">Tipos de Evento</a></li>
-      <li><a href="/#planes">Planes</a></li>
-      <li><a href="#">Ayuda</a></li>
+      <li><a routerLink="/" (click)="toggleMenu()">Inicio</a></li>
+      <li><a href="/#caracteristicas" (click)="toggleMenu()">Características</a></li>
+      <li><a href="/#tipos-evento" (click)="toggleMenu()">Tipos de Evento</a></li>
+      <li><a href="/#planes" (click)="toggleMenu()">Planes</a></li>
+      <li><a routerLink="/ayuda" (click)="toggleMenu()">Ayuda</a></li>
+
+      <li><a routerLink="/contacto" (click)="toggleMenu()">Contacto</a></li>
+
+      <!-- Legal móvil -->
+      <li class="mobile-section">
+        <button class="mobile-section__trigger"
+                [class.open]="mobileExpanded === 'legal'"
+                (click)="toggleMobileSection('legal')">
+          Legal <i class="ti ti-chevron-down"></i>
+        </button>
+        <div class="mobile-section__body" [class.open]="mobileExpanded === 'legal'">
+          <a routerLink="/terminos" (click)="toggleMenu()">Términos de Servicio</a>
+          <a routerLink="/privacidad" (click)="toggleMenu()">Política de Privacidad</a>
+          <a routerLink="/cookies" (click)="toggleMenu()">Política de Cookies</a>
+        </div>
+      </li>
     </ul>
+
     <div class="navbar-mobile-actions">
-      <a routerLink="/auth/login" class="btn-login">Iniciar Sesión</a>
-      <a routerLink="/auth/register" class="btn-register">Registrarse</a>
+      <a routerLink="/auth/login" class="btn-login" (click)="toggleMenu()">Iniciar Sesión</a>
+      <a routerLink="/auth/register" class="btn-register" (click)="toggleMenu()">Registrarse</a>
     </div>
   </div>
 

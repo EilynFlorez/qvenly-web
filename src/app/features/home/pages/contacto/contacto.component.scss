@@ -1,0 +1,142 @@
+$fs-lg:   2.25rem;
+$fs-md:   1.25rem;
+$fs-base: 0.875rem;
+$fs-sm:   0.75rem;
+
+$color-text:         #111827;
+$color-text-soft:    #6b7280;
+$color-accent:       #14b8a6;
+$color-accent-dark:  #0d9488;
+$color-accent-light: #f0fdfa;
+$color-white:        #ffffff;
+$color-bg:           #f9fafb;
+$color-border:       #e5e7eb;
+
+.page {
+  width: 100%;
+  background: $color-white;
+  padding: 4rem 0 5rem;
+}
+
+.page-container {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding-inline: 1.5rem;
+
+  @media (min-width: 768px) { padding-inline: 2rem; }
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  h1 {
+    font-size: $fs-lg;
+    font-weight: 700;
+    color: $color-text;
+    margin: 0 0 0.75rem;
+  }
+
+  p {
+    font-size: $fs-base;
+    color: $color-text-soft;
+    margin: 0;
+  }
+}
+
+.page-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $color-accent-light;
+  border: 1px solid #ccfbf1;
+  color: $color-accent-dark;
+  font-size: $fs-sm;
+  font-weight: 600;
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+}
+
+.badge-dot {
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  background: $color-accent;
+  border-radius: 50%;
+}
+
+// ── Tarjetas de contacto ──────────────────────────────────────────────────────
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem 1.5rem;
+  background: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: 1rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+
+  &:hover {
+    border-color: $color-accent;
+    box-shadow: 0 4px 20px rgba(20, 184, 166, 0.12);
+  }
+}
+
+.contact-icon {
+  width: 3rem;
+  height: 3rem;
+  background: $color-accent-light;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 1.5rem;
+    color: $color-accent;
+  }
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.contact-label {
+  font-size: $fs-sm;
+  font-weight: 600;
+  color: $color-text-soft;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.contact-value {
+  font-size: $fs-base;
+  font-weight: 500;
+  color: $color-accent-dark;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover { color: $color-accent; text-decoration: underline; }
+
+  &--text {
+    color: $color-text;
+
+    &:hover { color: $color-text; text-decoration: none; }
+  }
+}
