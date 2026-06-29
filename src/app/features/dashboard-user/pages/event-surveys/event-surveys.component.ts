@@ -27,16 +27,27 @@ export class EventSurveysComponent implements OnInit {
   showCreateModal = false;
   showPublishConfirmModal = false;
   showCancelModal = false;
-
+  showPublishSuccessModal = false;
+  publishedSurveyRoles: string[] = [];
   // ── Estado ────────────────────────────────────────────────────────────────
   processing = false;
   formError = '';
   cancelError = '';
 
+  // ── Editar ────────────────────────────────────────────────────────────────
+  showEditModal = false;
+  editSurveyId: number | null = null;
+
   publishSurveyId: number | null = null;
   cancelSurveyId: number | null = null;
   selectedSurveyId: number | null = null;
   cancelReason = '';
+
+  // ── Eliminar ──────────────────────────────────────────────────────────────
+  showDeleteModal = false;
+  deleteSurveyId: number | null = null;
+  deleteError = '';
+
 
   // ── Preview ───────────────────────────────────────────────────────────────
   previewLoading = false;
@@ -155,7 +166,64 @@ export class EventSurveysComponent implements OnInit {
         return '';
 }
 
-  submitCreate(): void {
+    submitCreate(): void {
+      const err = this.validateForm();
+      if (err) { this.formError = err; return; }
+      this.processing = true;
+      const body = {
+        ...this.surveyForm,
+        deadline: this.surveyForm.deadline ? this.surveyForm.deadline + ':00' : null,
+        questions: this.surveyForm.questions.map((q, i) => ({ ...q, displayOrder: i }))
+      };
+      this.http.post<any>(
+        `${environment.apiUrl}/api/events/${this.eventId}/surveys`,
+        body, { withCredentials: true }
+      ).subscribe({
+        next: () => { this.showCreateModal = false; this.processing = false; this.loadSurveys(); },
+        error: err => {
+          this.formError = err.error?.message || 'Error al crear la encuesta.';
+          this.processing = false;
+        }
+      });
+    }
+
+  // ── Editar (RF130.2) ──────────────────────────────────────────────────────
+    openEditModal(survey: any): void {
+    this.formError = '';
+    this.editSurveyId = survey.id;
+    // Carga el detalle completo para obtener las preguntas
+    this.http.get<any>(
+      `${environment.apiUrl}/api/events/${this.eventId}/surveys/${survey.id}`,
+      { withCredentials: true }
+    ).subscribe({
+      next: res => {
+        const s = res.data;
+        this.surveyForm = {
+          title: s.title,
+          description: s.description || '',
+          deadline: s.deadline ? s.deadline.substring(0, 16) : '',
+          anonymous: s.anonymous,
+          targetRoles: [...s.targetRoles],
+          questions: s.questions.map((q: any) => ({
+            questionText: q.questionText,
+            questionType: q.questionType,
+            required: q.required,
+            displayOrder: q.displayOrder,
+            options: q.options ? q.options.map((o: any) => ({
+              optionText: o.optionText,
+              displayOrder: o.displayOrder
+            })) : []
+          }))
+        };
+        this.showEditModal = true;
+      },
+      error: () => {
+        this.formError = 'No se pudo cargar la encuesta para editar.';
+      }
+    });
+  }
+
+  submitEdit(): void {
     const err = this.validateForm();
     if (err) { this.formError = err; return; }
     this.processing = true;
@@ -164,13 +232,17 @@ export class EventSurveysComponent implements OnInit {
       deadline: this.surveyForm.deadline ? this.surveyForm.deadline + ':00' : null,
       questions: this.surveyForm.questions.map((q, i) => ({ ...q, displayOrder: i }))
     };
-    this.http.post<any>(
-      `${environment.apiUrl}/api/events/${this.eventId}/surveys`,
+    this.http.put<any>(
+      `${environment.apiUrl}/api/events/${this.eventId}/surveys/${this.editSurveyId}`,
       body, { withCredentials: true }
     ).subscribe({
-      next: () => { this.showCreateModal = false; this.processing = false; this.loadSurveys(); },
+      next: () => {
+        this.showEditModal = false;
+        this.processing = false;
+        this.loadSurveys();
+      },
       error: err => {
-        this.formError = err.error?.message || 'Error al crear la encuesta.';
+        this.formError = err.error?.message || 'Error al actualizar la encuesta.';
         this.processing = false;
       }
     });
@@ -185,6 +257,7 @@ export class EventSurveysComponent implements OnInit {
  confirmPublish(): void {
   if (!this.publishSurveyId) return;
   this.processing = true;
+  const survey = this.surveys.find(s => s.id === this.publishSurveyId);
   this.http.patch<any>(
     `${environment.apiUrl}/api/events/${this.eventId}/surveys/${this.publishSurveyId}/publish`,
     {}, { withCredentials: true }
@@ -192,12 +265,16 @@ export class EventSurveysComponent implements OnInit {
     next: () => {
       this.showPublishConfirmModal = false;
       this.processing = false;
+      console.log('survey:', survey);
+      console.log('targetRoles:', survey?.targetRoles);
+      this.publishedSurveyRoles = survey?.targetRoles || [];
+      this.showPublishSuccessModal = true;
       this.loadSurveys();
     },
     error: () => {
-    this.showPublishConfirmModal = false;
-    this.processing = false;
-  }
+      this.showPublishConfirmModal = false;
+      this.processing = false;
+    }
   });
 }
 
@@ -228,6 +305,31 @@ export class EventSurveysComponent implements OnInit {
     });
   }
 
+
+  openDeleteModal(surveyId: number): void {
+    this.deleteSurveyId = surveyId;
+    this.deleteError = '';
+    this.showDeleteModal = true;
+}
+
+confirmDelete(): void {
+    if (!this.deleteSurveyId) return;
+    this.processing = true;
+    this.http.delete<any>(
+        `${environment.apiUrl}/api/events/${this.eventId}/surveys/${this.deleteSurveyId}`,
+        { withCredentials: true }
+    ).subscribe({
+        next: () => {
+            this.showDeleteModal = false;
+            this.processing = false;
+            this.loadSurveys();
+        },
+        error: err => {
+            this.deleteError = err.error?.message || 'Error al eliminar la encuesta.';
+            this.processing = false;
+        }
+    });
+}
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   get canCreate(): boolean {

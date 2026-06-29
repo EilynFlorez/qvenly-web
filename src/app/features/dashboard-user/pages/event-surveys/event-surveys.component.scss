@@ -472,3 +472,21 @@
     &:hover:not(:disabled) { background: $teal-light; }
   }
 }
+
+.role-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.role-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #0f766e;
+}

@@ -61,12 +61,19 @@
             <div class="activity-card__actions" (click)="$event.stopPropagation()">
 
               <!-- DRAFT: solo vista previa + publicar (sin cancelar) -->
-              <!-- DRAFT: solo vista previa + publicar -->
-              <ng-container *ngIf="survey.status === 'DRAFT' && isOrganizer">
+           <ng-container *ngIf="survey.status === 'DRAFT' && isOrganizer">
                 <button class="btn-icon" title="Vista previa"
                         (click)="goToPreview(survey.id)">
                   <i class="ti ti-eye"></i>
                 </button>
+                <button class="btn-icon" title="Editar"
+                        (click)="openEditModal(survey)">
+                  <i class="ti ti-edit"></i>
+                </button>
+                 <button class="btn-icon btn-icon--danger" title="Eliminar"
+                        (click)="openDeleteModal(survey.id)">
+                  <i class="ti ti-trash"></i>
+                 </button>
                 <button class="btn-icon-text btn-icon-text--success"
                         [title]="eventStatus === 'IN_PROGRESS' ? 'Publicar' : 'El evento debe estar en progreso para publicar'"
                         (click)="openPublishConfirm(survey.id)"
@@ -86,13 +93,17 @@
                         (click)="openCancelModal(survey.id)">
                   <i class="ti ti-x"></i>
                 </button>
-              </ng-container>
+            </ng-container>
 
               <!-- CANCELLED -->
               <ng-container *ngIf="survey.status === 'CANCELLED'">
                 <button class="btn-icon" title="Ver encuesta"
                         (click)="goToPreview(survey.id)">
                   <i class="ti ti-eye"></i>
+                </button>
+                <button class="btn-icon btn-icon--danger" title="Eliminar"
+                        (click)="openDeleteModal(survey.id)">
+                  <i class="ti ti-trash"></i>
                 </button>
               </ng-container>
 
@@ -105,6 +116,10 @@
                 <button class="btn-icon btn-icon--info" title="Ver resultados"
                         (click)="goToResults(survey.id)">
                   <i class="ti ti-chart-bar"></i>
+                </button>
+                <button class="btn-icon btn-icon--danger" title="Eliminar"
+                        (click)="openDeleteModal(survey.id)">
+                  <i class="ti ti-trash"></i>
                 </button>
               </ng-container>
             </div>
@@ -391,6 +406,37 @@
   </div>
 </div>
 
+<!-- MODAL: ENCUESTA PUBLICADA CON ÉXITO -->
+<div class="modal-overlay" *ngIf="showPublishSuccessModal" (click)="showPublishSuccessModal = false">
+  <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="ti ti-circle-check" style="color: #14b8a6;"></i> Encuesta publicada
+      </h3>
+      <button class="modal-close" (click)="showPublishSuccessModal = false">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="margin: 0 0 12px; font-size: 14px; color: #374151;">
+        La encuesta fue publicada exitosamente y se enviaron notificaciones a:
+      </p>
+      <div class="role-tags">
+        <span class="role-tag" *ngFor="let role of publishedSurveyRoles">
+          <i class="ti ti-users"></i> {{ getRoleLabel(role) }}
+        </span>
+      </div>
+      <p style="margin: 12px 0 0; font-size: 13px; color: #6b7280;">
+        Los destinatarios recibirán un correo y una notificación en la plataforma.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-primary" (click)="showPublishSuccessModal = false">
+        <i class="ti ti-check"></i> Entendido
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL: CANCELAR ENCUESTA -->
 <div class="modal-overlay" *ngIf="showCancelModal" (click)="showCancelModal = false">
@@ -425,3 +471,149 @@
     </div>
   </div>
 </div>
+
+
+<!-- MODAL: EDITAR ENCUESTA -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="showEditModal = false">
+  <div class="modal-card modal-card--lg" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="ti ti-edit"></i> Editar encuesta
+      </h3>
+      <button class="modal-close" (click)="showEditModal = false">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label>Título <span class="required">*</span></label>
+        <input type="text" class="form-input" [(ngModel)]="surveyForm.title"
+               placeholder="Ej: Encuesta de satisfacción" maxlength="150">
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="form-textarea" [(ngModel)]="surveyForm.description"
+                  rows="2" placeholder="Descripción opcional"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha límite <span class="required">*</span></label>
+          <input type="datetime-local" class="form-input" [(ngModel)]="surveyForm.deadline">
+        </div>
+        <div class="form-group form-group--checkbox" style="align-self: flex-end; padding-bottom: 8px;">
+          <input type="checkbox" id="anonymousEdit" [(ngModel)]="surveyForm.anonymous">
+          <label for="anonymousEdit">Respuestas anónimas</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>¿Quiénes pueden responder? <span class="required">*</span></label>
+        <div class="checkbox-group">
+          <label class="checkbox-option" *ngFor="let role of availableRoles">
+            <input type="checkbox"
+                   [checked]="surveyForm.targetRoles.includes(role.value)"
+                   (change)="toggleRole(role.value)">
+            {{ role.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="section-header" style="margin-bottom: 8px;">
+          <label style="margin: 0;">Preguntas <span class="required">*</span></label>
+          <button class="btn-outline-sm" (click)="addQuestion()">
+            <i class="ti ti-plus"></i> Agregar pregunta
+          </button>
+        </div>
+
+        <div class="question-list">
+          <div class="question-item" *ngFor="let q of surveyForm.questions; let i = index">
+            <div class="question-item__header">
+              <span class="question-num">{{ i + 1 }}</span>
+              <input type="text" class="form-input" [(ngModel)]="q.questionText"
+                     placeholder="Texto de la pregunta" style="flex: 1;">
+              <select class="form-input" [(ngModel)]="q.questionType" style="width: 160px;"
+                      (change)="onTypeChange(q)">
+                <option value="SINGLE_CHOICE">Opción única</option>
+                <option value="MULTIPLE_CHOICE">Múltiple opción</option>
+                <option value="OPEN_TEXT">Texto abierto</option>
+                <option value="RATING">Calificación</option>
+              </select>
+              <input type="checkbox" [id]="'req-edit-' + i" [(ngModel)]="q.required">
+              <label [for]="'req-edit-' + i" style="font-size: 12px; white-space: nowrap;">Obligatoria</label>
+              <button class="btn-icon btn-icon--danger" (click)="removeQuestion(i)">
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
+
+            <div class="options-list"
+                 *ngIf="q.questionType === 'SINGLE_CHOICE' || q.questionType === 'MULTIPLE_CHOICE'">
+              <div class="option-item" *ngFor="let opt of q.options; let j = index">
+                <input type="text" class="form-input" [(ngModel)]="opt.optionText"
+                       placeholder="Opción {{ j + 1 }}">
+                <button class="btn-icon btn-icon--danger" (click)="removeOption(q, j)"
+                        *ngIf="q.options.length > 2">
+                  <i class="ti ti-x"></i>
+                </button>
+              </div>
+              <button class="btn-link" (click)="addOption(q)">
+                <i class="ti ti-plus"></i> Agregar opción
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="modal-error" *ngIf="formError">
+        <i class="ti ti-alert-circle"></i> {{ formError }}
+      </p>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" (click)="showEditModal = false">Cancelar</button>
+      <button class="btn-modal-primary" (click)="submitEdit()"
+              [disabled]="processing || !surveyForm.title.trim()">
+        <i class="ti ti-check"></i>
+        {{ processing ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: ELIMINAR ENCUESTA -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="showDeleteModal = false">
+  <div class="modal-card modal-card--sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <i class="ti ti-trash"></i> Eliminar encuesta
+      </h3>
+      <button class="modal-close" (click)="showDeleteModal = false">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-warning">
+        ¿Estás seguro de que deseas eliminar esta encuesta? Esta acción no se puede deshacer
+        y ya no podrás ver los resultados asociados a ella.
+      </p>
+      <p class="modal-error" *ngIf="deleteError">
+        <i class="ti ti-alert-circle"></i> {{ deleteError }}
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" (click)="showDeleteModal = false">Cancelar</button>
+      <button class="btn-modal-danger" (click)="confirmDelete()" [disabled]="processing">
+        <i class="ti ti-trash"></i>
+        {{ processing ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
