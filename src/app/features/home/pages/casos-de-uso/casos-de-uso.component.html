@@ -1,0 +1,24 @@
+<main class="page">
+  <div class="page-container">
+
+    <div class="page-header">
+      <span class="page-badge"><span class="badge-dot"></span> Usos</span>
+      <h1>Casos de Uso</h1>
+      <p>Descubre cómo Qvenly se adapta a todo tipo de eventos y sectores.</p>
+    </div>
+
+    <div class="cases-grid">
+      <div class="case-card" *ngFor="let c of cases">
+        <div class="case-icon">
+          <i class="ti {{ c.icon }}"></i>
+        </div>
+        <h3>{{ c.title }}</h3>
+        <p>{{ c.desc }}</p>
+        <div class="case-tags">
+          <span class="case-tag" *ngFor="let tag of c.tags">{{ tag }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>

@@ -7,6 +7,12 @@ import { EventTypesComponent } from './components/event-types/event-types.compon
 import { FeaturesSectionComponent } from './components/features-section/features-section.component';
 import { HomeComponent } from './pages/home/home.component';
 import { PricingSectionComponent } from './components/pricing-section/pricing-section.component';
+import { AyudaComponent } from './pages/ayuda/ayuda.component';
+import { ContactoComponent } from './pages/contacto/contacto.component';
+import { CasosDeUsoComponent } from './pages/casos-de-uso/casos-de-uso.component';
+import { TerminosComponent } from './pages/terminos/terminos.component';
+import { PrivacidadComponent } from './pages/privacidad/privacidad.component';
+import { CookiesComponent } from './pages/cookies/cookies.component';
 
 
 @NgModule({
@@ -15,7 +21,13 @@ import { PricingSectionComponent } from './components/pricing-section/pricing-se
     EventTypesComponent,
     FeaturesSectionComponent,
     HomeComponent,
-    PricingSectionComponent
+    PricingSectionComponent,
+    AyudaComponent,
+    ContactoComponent,
+    CasosDeUsoComponent,
+    TerminosComponent,
+    PrivacidadComponent,
+    CookiesComponent
   ],
   imports: [
     CommonModule,
