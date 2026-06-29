@@ -45,8 +45,11 @@
             {{ getRoleLabel(r) }}
           </option>
         </select>
-        <button class="btn-outline-sm">
-          <i class="ti ti-file-type-xls"></i> Excel
+       <button class="btn-outline-sm" (click)="exportExcel()">
+            <i class="ti ti-file-type-xls"></i> Excel
+        </button>
+        <button class="btn-outline-sm" (click)="exportPdf()">
+            <i class="ti ti-file-type-pdf"></i> PDF
         </button>
       </div>
     </div>
