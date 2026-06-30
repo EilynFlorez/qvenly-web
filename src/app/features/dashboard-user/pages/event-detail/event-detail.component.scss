@@ -64,7 +64,7 @@
 // ── Action bar ────────────────────────────────────────────────────────────────
 .action-bar {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  padding: 16px 20px;
+  padding: 14px 18px;
   background: $white; border: 1px solid $teal-border; border-radius: $radius-md;
 
   &__left { display: flex; gap: 10px; flex-wrap: wrap; flex: 1; }
@@ -350,7 +350,7 @@
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 .tab-bar {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   border-bottom: 1.5px solid $gray-200;
   margin-bottom: 20px;
   overflow-x: auto;
@@ -361,22 +361,24 @@
 .tab-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
+  gap: 5px;
+  padding: 9px 12px;
   font-size: $fs-body;
   font-weight: 500;
   font-family: $font;
   color: $gray-500;
   background: transparent;
   border: none;
+  outline: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
   white-space: nowrap;
   margin-bottom: -1.5px;
-  transition: color 0.15s;
-  i { font-size: 15px; }
+  transition: color 0.15s, border-color 0.15s;
+  i { font-size: 14px; }
   &:hover:not(:disabled) { color: $gray-900; }
-  &--active { color: $teal; border-bottom-color: $teal; }
+  &:focus-visible { outline: 2px solid $teal; outline-offset: 2px; border-radius: 4px; }
+  &--active { color: $teal; border-bottom-color: $teal; font-weight: 600; }
   &--disabled { color: $gray-400; cursor: not-allowed; opacity: 0.6; }
 }
 

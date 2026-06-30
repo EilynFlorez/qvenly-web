@@ -246,7 +246,7 @@ export class DashboardUserComponent implements OnInit {
 
   getAgendaRoleLabel(role: ActivityMemberRole): string {
     const labels: Record<ActivityMemberRole, string> = {
-      STAFF: 'Personal de apoyo', JUDGE: 'Jurado', PARTICIPANT: 'Participante', ATTENDEE: 'Asistente'
+      STAFF: 'Personal de apoyo', PARTICIPANT: 'Participante', ATTENDEE: 'Asistente'
     };
     return labels[role] || role;
   }

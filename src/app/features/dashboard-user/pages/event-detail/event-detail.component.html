@@ -120,6 +120,11 @@
         <i class="ti ti-list-check"></i> Auditoría
       </button>
 
+      <button class="tab-btn" [class.tab-btn--active]="activeTab === 'stats'"
+              *ngIf="isOrganizer" (click)="setTab('stats')">
+        <i class="ti ti-chart-bar"></i> Estadísticas
+      </button>
+
       <button class="tab-btn" [class.tab-btn--active]="activeTab === 'surveys'"
         *ngIf="isOrganizer" (click)="setTab('surveys')">
         <i class="ti ti-clipboard-list"></i> Retroalimentación
@@ -354,6 +359,108 @@
         <div class="empty-members" *ngIf="auditLog.length === 0">
           <i class="ti ti-list-check"></i>
           <p>No hay registros de auditoría disponibles.</p>
+        </div>
+
+      </ng-container>
+
+      <!-- Estadísticas (solo organizador) -->
+      <ng-container *ngIf="activeTab === 'stats' && isOrganizer">
+
+        <div class="detail-card">
+          <h2 class="detail-card__title">
+            <i class="ti ti-chart-bar"></i> Resumen general
+          </h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-item__label">Total de miembros</span>
+              <span class="info-item__value">{{ statsTotalMembers }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-item__label">Total de actividades</span>
+              <span class="info-item__value">{{ statsTotalActivities }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h2 class="detail-card__title">
+            <i class="ti ti-users"></i> Miembros por rol
+          </h2>
+          <div class="limits-grid">
+            <div class="limit-item" *ngFor="let r of statsMembersByRole">
+              <div class="limit-item__header">
+                <span class="limit-item__label">{{ r.label }}</span>
+                <span class="limit-item__count">{{ r.count }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [style.width.%]="(r.count / statsMaxRoleCount) * 100"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-card__header">
+            <h2 class="detail-card__title">
+              <i class="ti ti-calendar-event"></i> Actividades por estado
+            </h2>
+          </div>
+          <div class="invitation-filters">
+            <div class="form-group">
+              <label>Desde</label>
+              <input type="date" class="form-input" [(ngModel)]="statsDateFrom" />
+            </div>
+            <div class="form-group">
+              <label>Hasta</label>
+              <input type="date" class="form-input" [(ngModel)]="statsDateTo" />
+            </div>
+          </div>
+          <div class="limits-grid">
+            <div class="limit-item" *ngFor="let s of statsActivitiesByStatus">
+              <div class="limit-item__header">
+                <span class="limit-item__label">{{ s.label }}</span>
+                <span class="limit-item__count">{{ s.count }}</span>
+              </div>
+              <div class="limit-bar">
+                <div class="limit-bar__fill" [style.width.%]="(s.count / statsMaxStatusCount) * 100"></div>
+              </div>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="statsActivitiesByStatus.length === 0">
+            <i class="ti ti-calendar-off"></i>
+            <p>No hay actividades en el rango seleccionado.</p>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h2 class="detail-card__title">
+            <i class="ti ti-users-group"></i> Participación por actividad
+          </h2>
+          <div class="loading-row" *ngIf="activityBreakdownLoading">
+            <div class="spinner"></div>
+            <span>Calculando participación...</span>
+          </div>
+          <div class="assigned-badge" *ngIf="!activityBreakdownLoading && topActivityByParticipation as top">
+            <i class="ti ti-trophy"></i>
+            Mayor participación: {{ top.activity.title }} ({{ top.total }} miembros)
+          </div>
+          <div class="invitation-list" *ngIf="!activityBreakdownLoading">
+            <div class="invitation-item" *ngFor="let row of activityParticipationRows">
+              <div class="invitation-item__info">
+                <p class="invitation-item__email">{{ row.activity.title }}</p>
+                <p class="invitation-item__meta">
+                  Personal: {{ row.staff }} · Participantes: {{ row.participant }} · Asistentes: {{ row.attendee }}
+                </p>
+              </div>
+              <div class="invitation-item__right">
+                <span class="role-badge">{{ row.total }} total</span>
+              </div>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="!activityBreakdownLoading && activityParticipationRows.length === 0">
+            <i class="ti ti-users-minus"></i>
+            <p>No hay datos de participación para mostrar.</p>
+          </div>
         </div>
 
       </ng-container>

@@ -1,6 +1,6 @@
 export type ActivityStatus = 'PENDING' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
 
-export type ActivityMemberRole = 'STAFF' | 'JUDGE' | 'PARTICIPANT' | 'ATTENDEE';
+export type ActivityMemberRole = 'STAFF' | 'PARTICIPANT' | 'ATTENDEE';
 
 export type ConfirmationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
 
