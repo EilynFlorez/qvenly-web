@@ -25,6 +25,7 @@ registerLocaleData(localeEs);
 import { EventSurveysComponent } from './pages/event-surveys/event-surveys.component';
 import { SurveyResultsComponent } from './pages/survey-results/survey-results.component';
 import { UserSurveysComponent } from './pages/user-surveys/user-surveys.component';
+import { ChatbotComponent } from './components/chatbot/chatbot.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { UserSurveysComponent } from './pages/user-surveys/user-surveys.componen
     ActivityDetailComponent,
     EventSurveysComponent,
     SurveyResultsComponent,
-    UserSurveysComponent
+    UserSurveysComponent,
+    ChatbotComponent,
   ],
   imports: [
     CommonModule,

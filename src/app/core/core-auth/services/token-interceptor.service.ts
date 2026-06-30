@@ -35,7 +35,9 @@ export class TokenInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const authReq = req.clone({ withCredentials: true });
+    const authReq = req.url.includes('localhost:11434')
+      ? req
+      : req.clone({ withCredentials: true });
 
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
