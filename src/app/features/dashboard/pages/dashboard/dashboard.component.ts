@@ -40,6 +40,12 @@ export class DashboardComponent {
   }
 
 
+  sidebarOpen = true;
+
+  onSidebarToggled(open: boolean): void {
+    this.sidebarOpen = open;
+  }
+
   currenFilters: DashboardFilters = {
     startDate: '',
     endDate: '',
