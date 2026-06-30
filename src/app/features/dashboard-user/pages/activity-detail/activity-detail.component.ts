@@ -32,7 +32,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   membersLoading = false;
   imagesLoading = false;
 
-  memberRoleFilter: 'ALL' | 'STAFF' | 'JUDGE' | 'PARTICIPANT' | 'ATTENDEE' = 'ALL';
+  memberRoleFilter: 'ALL' | 'STAFF' | 'PARTICIPANT' | 'ATTENDEE' = 'ALL';
   memberSearchTerm = '';
 
   // ── QR & Asistencia ──────────────────────────────────────────────────────────
@@ -196,7 +196,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   getActivityRoleLabel(role: string): string {
     const labels: Record<string, string> = {
-      PARTICIPANT: 'Participante', JUDGE: 'Jurado', STAFF: 'Personal de apoyo', ATTENDEE: 'Asistente'
+      PARTICIPANT: 'Participante', STAFF: 'Personal de apoyo', ATTENDEE: 'Asistente'
     };
     return labels[role] || role;
   }

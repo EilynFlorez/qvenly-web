@@ -38,7 +38,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
 
   readonly ROLES: EventRole[] = ['ORGANIZER', 'STAFF', 'MEMBER'];
 
-  activeTab: 'general' | 'members' | 'invitations' | 'activities' |  'attendance' | 'budget' | 'audit' | 'surveys' = 'general';
+  activeTab: 'general' | 'members' | 'invitations' | 'activities' | 'stats' | 'attendance' | 'budget' | 'audit' | 'surveys' = 'general';
 
   // ── Actividades ──────────────────────────────────────────────────────────────
   activities: ActivityResponse[] = [];
@@ -55,6 +55,12 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   uploadingActivityImage = false;
   activityImageUploadError = '';
   newActivityPendingFiles: File[] = [];
+
+  // ── Estadísticas (solo organizador) ─────────────────────────────────────────
+  statsDateFrom = '';
+  statsDateTo = '';
+  activityRoleBreakdown: Map<number, { STAFF: number; PARTICIPANT: number; ATTENDEE: number }> = new Map();
+  activityBreakdownLoading = false;
 
   showCreateActivityModal = false;
   showEditActivityModal = false;
@@ -225,6 +231,15 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     if (tab === 'attendance' && this.event && this.eventAttendance.length === 0) {
       this.loadEventAttendance();
     }
+    if (tab === 'stats' && this.activityRoleBreakdown.size === 0) {
+      if (this.activities.length === 0 && this.event) {
+        this.activityService.getActivitiesByEvent(this.event.id).subscribe({
+          next: (res) => { if (res.success) { this.activities = res.data; this.loadActivityRoleBreakdown(); } }
+        });
+      } else {
+        this.loadActivityRoleBreakdown();
+      }
+    }
   }
 
   // ── Computed ─────────────────────────────────────────────────────────────────
@@ -281,6 +296,71 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     return result;
   }
 
+  get statsTotalMembers(): number {
+    return this.members.filter(m => m.status === 'ACTIVE').length;
+  }
+
+  get statsMembersByRole(): { role: string; label: string; count: number }[] {
+    return this.ROLES.map(role => ({
+      role,
+      label: this.getRoleLabel(role),
+      count: this.getMembersByRole(role).length
+    })).filter(r => r.count > 0);
+  }
+
+  get filteredStatsActivities(): ActivityResponse[] {
+    let result = this.activities;
+    if (this.statsDateFrom) {
+      result = result.filter(a => new Date(a.startDatetime) >= new Date(this.statsDateFrom));
+    }
+    if (this.statsDateTo) {
+      result = result.filter(a => new Date(a.startDatetime) <= new Date(this.statsDateTo + 'T23:59:59'));
+    }
+    return result;
+  }
+
+  get statsTotalActivities(): number {
+    return this.filteredStatsActivities.length;
+  }
+
+  get statsActivitiesByStatus(): { status: string; label: string; count: number }[] {
+    const statuses: ActivityStatus[] = ['PENDING', 'IN_PROGRESS', 'FINISHED', 'CANCELLED'];
+    return statuses.map(status => ({
+      status,
+      label: this.getActivityStatusLabel(status),
+      count: this.filteredStatsActivities.filter(a => a.status === status).length
+    })).filter(s => s.count > 0);
+  }
+
+  get activityParticipationRows(): { activity: ActivityResponse; staff: number; participant: number; attendee: number; total: number }[] {
+    return this.filteredStatsActivities
+      .map(activity => {
+        const breakdown = this.activityRoleBreakdown.get(activity.id) || { STAFF: 0, PARTICIPANT: 0, ATTENDEE: 0 };
+        return {
+          activity,
+          staff: breakdown.STAFF,
+          participant: breakdown.PARTICIPANT,
+          attendee: breakdown.ATTENDEE,
+          total: breakdown.STAFF + breakdown.PARTICIPANT + breakdown.ATTENDEE
+        };
+      })
+      .sort((a, b) => b.total - a.total);
+  }
+
+  get topActivityByParticipation(): { activity: ActivityResponse; total: number } | null {
+    const rows = this.activityParticipationRows;
+    if (rows.length === 0 || rows[0].total === 0) return null;
+    return { activity: rows[0].activity, total: rows[0].total };
+  }
+
+  get statsMaxRoleCount(): number {
+    return Math.max(1, ...this.statsMembersByRole.map(r => r.count));
+  }
+
+  get statsMaxStatusCount(): number {
+    return Math.max(1, ...this.statsActivitiesByStatus.map(s => s.count));
+  }
+
   get filteredInvitations(): InvitationResponse[] {
     let result = this.invitations;
     if (this.invitationStatusFilter !== 'ALL') {
@@ -307,7 +387,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
   get availableActivityRoles(): ActivityMemberRole[] {
     if (!this.selectedAssignMember) return [];
     if (this.selectedAssignMember.eventRole === 'STAFF') return ['STAFF'];
-    if (this.selectedAssignMember.eventRole === 'MEMBER') return ['PARTICIPANT', 'JUDGE'];
+    if (this.selectedAssignMember.eventRole === 'MEMBER') return ['PARTICIPANT'];
     return [];
   }
 
@@ -709,6 +789,35 @@ export class EventDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadActivityRoleBreakdown(): void {
+    this.activityBreakdownLoading = true;
+    this.activityRoleBreakdown = new Map();
+    let remaining = this.activities.length;
+    if (remaining === 0) { this.activityBreakdownLoading = false; return; }
+    this.activities.forEach(activity => {
+      this.activityService.getMembersByActivity(activity.id).subscribe({
+        next: (res) => {
+          const counts = { STAFF: 0, PARTICIPANT: 0, ATTENDEE: 0 };
+          if (res.success) {
+            res.data.forEach(m => {
+              if (m.status !== 'ACTIVE') return;
+              if (m.eventRole === 'STAFF') counts.STAFF++;
+              else if (m.eventRole === 'PARTICIPANT') counts.PARTICIPANT++;
+              else if (m.eventRole === 'ATTENDEE') counts.ATTENDEE++;
+            });
+          }
+          this.activityRoleBreakdown.set(activity.id, counts);
+          remaining--;
+          if (remaining === 0) this.activityBreakdownLoading = false;
+        },
+        error: () => {
+          remaining--;
+          if (remaining === 0) this.activityBreakdownLoading = false;
+        }
+      });
+    });
+  }
+
   canEnroll(activity: ActivityResponse): boolean {
     if (this.myEventRole !== 'MEMBER') return false;
     if (!activity.enrollmentEnabled) return false;
@@ -989,7 +1098,7 @@ export class EventDetailComponent implements OnInit, OnDestroy {
 
   getActivityRoleLabel(role: string): string {
     const labels: Record<string, string> = {
-      PARTICIPANT: 'Participante', JUDGE: 'Jurado', STAFF: 'Personal de apoyo', ATTENDEE: 'Asistente'
+      PARTICIPANT: 'Participante', STAFF: 'Personal de apoyo', ATTENDEE: 'Asistente'
     };
     return labels[role] || role;
   }
