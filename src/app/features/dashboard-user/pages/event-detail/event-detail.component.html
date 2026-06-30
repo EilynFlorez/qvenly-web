@@ -111,10 +111,6 @@
         <i class="ti ti-users-check"></i> Asistencia
         <span class="tab-count" *ngIf="eventAttendance.length > 0">{{ eventAttendance.length }}</span>
       </button>
-      <button class="tab-btn tab-btn--disabled" *ngIf="isOrganizer" disabled>
-        <i class="ti ti-cash"></i> Presupuesto
-        <span class="tab-badge">Próximo</span>
-      </button>
       <button class="tab-btn" [class.tab-btn--active]="activeTab === 'audit'"
               *ngIf="isOrganizer" (click)="setTab('audit')">
         <i class="ti ti-list-check"></i> Auditoría

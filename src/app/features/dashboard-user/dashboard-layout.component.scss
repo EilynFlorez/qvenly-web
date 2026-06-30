@@ -19,12 +19,43 @@
   flex-direction: column;
   background-color: $white;
   top: 0;
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+
+.sidebar--collapsed {
+  width: 0;
+  overflow: hidden;
+  border-right: none;
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $gray-500;
+  font-size: 18px;
+  padding: 4px;
+  &:hover { color: $teal; }
+}
+
+.sidebar-reopen {
+  margin-right: 12px;
+  background: $white;
+  border: 1px solid $teal-border;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  color: $teal;
+  font-size: 18px;
+  padding: 6px 8px;
+  box-shadow: $shadow-card;
+  &:hover { background: $teal-light; }
 }
 
 .sidebar-logo {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 10px;
   padding: 10px 20px;
   border-bottom: 1px solid $teal-border;
@@ -127,6 +158,11 @@ main {
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
 }
 
 .topbar-title {

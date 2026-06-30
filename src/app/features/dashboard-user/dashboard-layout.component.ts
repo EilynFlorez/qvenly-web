@@ -12,6 +12,7 @@ export class DashboardLayoutComponent implements OnInit {
   userName = '';
   userEmail = '';
   userInitials = '';
+  sidebarOpen = true;
 
   constructor(
     private authService: AuthService,
