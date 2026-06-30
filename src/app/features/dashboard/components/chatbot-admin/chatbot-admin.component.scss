@@ -10,6 +10,12 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
+  pointer-events: none;
+
+  > .chatbot__fab,
+  > .chatbot__panel.chatbot__panel--open {
+    pointer-events: all;
+  }
 }
 
 // ── FAB ───────────────────────────────────────────────────────────────────────
