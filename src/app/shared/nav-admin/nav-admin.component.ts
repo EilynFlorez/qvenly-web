@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/core-auth/services/auth.service';
 
@@ -12,6 +12,8 @@ export class NavAdminComponent implements OnInit {
   userName = '';
   userEmail = '';
   userInitials = '';
+  sidebarOpen = true;
+  @Output() sidebarToggled = new EventEmitter<boolean>();
 
   constructor(
     private authService: AuthService,
@@ -26,6 +28,11 @@ export class NavAdminComponent implements OnInit {
       .map(n => n.charAt(0).toUpperCase())
       .slice(0, 2)
       .join('') || 'AD';
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+    this.sidebarToggled.emit(this.sidebarOpen);
   }
 
   onLogout(): void {

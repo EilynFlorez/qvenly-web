@@ -1,12 +1,15 @@
 <div class="layout">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.sidebar--collapsed]="!sidebarOpen">
     <div class="sidebar-logo">
       <div class="logo-icon">
         <img src="assets/images/logoQvn.png" alt="">
       </div>
       <span class="logo-name">Qvenly</span>
+      <button class="sidebar-toggle" (click)="toggleSidebar()">
+        <i class="ti ti-menu"></i>
+      </button>
     </div>
 
     <nav class="sidebar-nav">
