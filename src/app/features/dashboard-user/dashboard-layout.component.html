@@ -1,12 +1,15 @@
 <div class="layout">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.sidebar--collapsed]="!sidebarOpen">
     <div class="sidebar-logo">
       <div class="logo-icon">
         <img src="assets/images/logoQvn.png" alt="Qvenly">
       </div>
       <span class="logo-name">Qvenly</span>
+      <button class="sidebar-toggle" (click)="sidebarOpen = !sidebarOpen">
+        <i class="ti ti-menu"></i>
+      </button>
     </div>
 
     <nav class="sidebar-nav">
@@ -63,10 +66,15 @@
       <!-- Topbar -->
       <div class="topbar">
         <div class="topbar-left">
-          <h1 class="topbar-title">
-            Bienvenido, <span class="topbar-title--accent">{{ userName }}</span>
-          </h1>
-          <p class="topbar-sub">Gestiona tu plan y tus eventos desde aquí</p>
+          <button class="sidebar-reopen" *ngIf="!sidebarOpen" (click)="sidebarOpen = true">
+            <i class="ti ti-menu"></i>
+          </button>
+          <div>
+            <h1 class="topbar-title">
+              Bienvenido, <span class="topbar-title--accent">{{ userName }}</span>
+            </h1>
+            <p class="topbar-sub">Gestiona tu plan y tus eventos desde aquí</p>
+          </div>
         </div>
 
         <div class="topbar-right">
