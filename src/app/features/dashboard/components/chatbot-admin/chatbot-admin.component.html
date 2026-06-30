@@ -1,0 +1,67 @@
+<div class="chatbot">
+
+  <!-- Panel -->
+  <div class="chatbot__panel" [class.chatbot__panel--open]="isOpen">
+
+    <!-- Header -->
+    <div class="chatbot__header">
+      <div class="chatbot__header-left">
+        <div class="chatbot__avatar">A</div>
+        <div class="chatbot__header-info">
+          <span class="chatbot__name">Asistente Admin</span>
+          <span class="chatbot__status">
+            <i class="chatbot__status-dot"></i> En línea
+          </span>
+        </div>
+      </div>
+      <button class="chatbot__close" (click)="toggleChat()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="chatbot__body" #messageList>
+      <div
+        *ngFor="let msg of messages"
+        class="chatbot__msg"
+        [class.chatbot__msg--bot]="msg.from === 'bot'"
+        [class.chatbot__msg--user]="msg.from === 'user'"
+      >
+        <div class="chatbot__bubble">{{ msg.text }}</div>
+      </div>
+
+      <!-- Indicador de carga -->
+      <div *ngIf="isLoading" class="chatbot__msg chatbot__msg--bot">
+        <div class="chatbot__bubble chatbot__bubble--loading">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chatbot__footer">
+      <textarea
+        class="chatbot__input"
+        [(ngModel)]="inputText"
+        (keydown)="onKeyDown($event)"
+        placeholder="Escribe tu consulta..."
+        rows="1"
+        [disabled]="isLoading"
+      ></textarea>
+      <button
+        class="chatbot__send"
+        (click)="send()"
+        [disabled]="!inputText.trim() || isLoading"
+      >
+        <i class="ti ti-send-2"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- FAB -->
+  <button class="chatbot__fab" (click)="toggleChat()">
+    <i class="ti" [class.ti-message-chatbot]="!isOpen" [class.ti-x]="isOpen"></i>
+  </button>
+
+</div>
